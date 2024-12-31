@@ -6,8 +6,8 @@ import (
 )
 
 func NewJsonEncoder(out io.Writer, size int) *JsonEncoder {
-	if size < MinimumBufferLength {
-		size = MinimumBufferLength
+	if size < profile.MinimumBufferLength {
+		size = profile.MinimumBufferLength
 	}
 	return &JsonEncoder{
 		out:  out,

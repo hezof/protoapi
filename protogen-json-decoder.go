@@ -154,7 +154,7 @@ func (r *JsonDecoder) next() JsonToken {
 			switch c {
 			case '\u0020', '\u000A', '\u000D', '\u0009':
 			case '{':
-				if r.depth++; r.depth > MaximumNestingDepth {
+				if r.depth++; r.depth > profile.MaximumNestingDepth {
 					r.exceedMaximumNestingDepthError()
 					r.depth--
 					return 0
@@ -168,7 +168,7 @@ func (r *JsonDecoder) next() JsonToken {
 				r.token = ObjectEnd
 				return ObjectEnd
 			case '[':
-				if r.depth++; r.depth > MaximumNestingDepth {
+				if r.depth++; r.depth > profile.MaximumNestingDepth {
 					r.exceedMaximumNestingDepthError()
 					r.depth--
 					return 0
@@ -705,10 +705,10 @@ func (l *ParseError) Error() string {
 
 func newParseError(ctx *JsonDecoder, mark int, reason string) error {
 	var data string
-	if ctx.size-mark <= MaximumErrorLength {
+	if ctx.size-mark <= profile.MaximumErrorLength {
 		data = string(ctx.buff[mark:ctx.size]) + "..."
 	} else {
-		data = string(ctx.buff[mark:mark+MaximumErrorLength]) + "..."
+		data = string(ctx.buff[mark:mark+profile.MaximumErrorLength]) + "..."
 	}
 	return &ParseError{
 		Reason: reason,

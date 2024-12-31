@@ -24,10 +24,9 @@ type Registry func(impl interface{}, aspects []Aspect) *ServiceMeta
 type Body int32
 
 const (
-	JsonBody  Body = 0  // 解析body使用application/json
-	ProtoJson Body = 1  // 解析body使用google.golang.org/protobuf/encoding/protojson
-	FormBody  Body = 2  // 解析body使用multipart/form-data或application/x-www-form-urlencoded
-	OmitBody  Body = 15 // 忽略解析body
+	JsonBody Body = 0 // 解析body使用application/json
+	FormBody Body = 2 // 解析body使用multipart/form-data或application/x-www-form-urlencoded
+	OmitBody Body = 3 // 忽略解析body
 )
 
 type Result int32
