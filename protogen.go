@@ -45,8 +45,8 @@ const (
 	JsonStyle   Style = 2
 )
 
-// HttpMeta http配置元数据
-type HttpMeta struct {
+// Http http配置元数据
+type Http struct {
 	Get       string // GET请求
 	Put       string // PUT请求
 	Post      string // POST请求
@@ -62,8 +62,8 @@ type HttpMeta struct {
 	Result    Result // 是否"不"包裹Result! 可用WrapperFactory()指定Wrapper实例!
 }
 
-// RoleMeta role配置元数据
-type RoleMeta struct {
+// Role role配置元数据
+type Role struct {
 	Code uint64 // 角色标识
 	Name string // 角色名称
 	Desc string // 角色描述
@@ -76,8 +76,8 @@ type MethodMeta struct {
 	FullMethod   string       // proto方法全称:  /package.service/method
 	ClientStream bool         // client stream
 	ServerStream bool         // server stream
-	Http         *HttpMeta    // protoapi.http设置
-	Role         *RoleMeta    // protoapi.role设置
+	Http         *Http        // protoapi.http设置
+	Role         *Role        // protoapi.role设置
 	Func         Func         // 方法函数
 }
 

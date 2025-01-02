@@ -8,11 +8,9 @@ import (
 // Handler 处理句柄. 注意事项: handler存储在前缀树(httprouter), 必须保证所有属性在运行时只读!
 type Handler struct {
 	Meta          *MethodMeta  // 自动创建的handler才有meta-info. 手动创建的handler无meta-info
-	Kind          uint8        // Handler所属类别! 0-None,0x10-KindRestful,0x20-KindWebsocket,0x11/0x12-Streaming
-	Path          string       // http配置路径
-	Status        int          // http成功状态,默认200
-	Unwrap        bool         // http成功结果不用Result包裹
-	BodyMaxBytes  int64        // 请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
+	Method        string       // http请求方法
+	Path          string       // http请求路径
+	BodyMaxBytes  int64        // http请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
 	FormMaxMemory int64        // 文件内部部分最大字节数. 默认 32 << 20
 	HandleChain   []HandleFunc // 处理链表, 最长不超过HandleChainCapacity设置
 }

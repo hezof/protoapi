@@ -180,27 +180,33 @@ func (rw *proxyResponseWriter) WriteHeader(statusCode int) {
 *************************************/
 
 var (
-	jsonContentType   = []string{"application/json; charset=utf-8"}
-	htmlContentType   = []string{"text/html; charset=utf-8"}
-	plainContentType  = []string{"text/plain; charset=utf-8"}
-	streamContentType = []string{"application/octet-streaming"}
-	closeConnection   = []string{"close"}
+	jsonContentType     = []string{"application/json; charset=utf-8"}
+	htmlContentType     = []string{"text/html; charset=utf-8"}
+	plainContentType    = []string{"text/plain; charset=utf-8"}
+	streamContentType   = []string{"application/octet-streaming"}
+	eventsContentType   = []string{"text/event-stream"}
+	eventsCacheControl  = []string{"no-cache"}
+	keepAliveConnection = []string{"keep-alive"}
+	closeConnection     = []string{"close"}
 )
 
-// WriteApplyResult 不会级联调用HttpResultPlugin
-func (c *Context) WriteApplyResult(rsp interface{}) (err error) {
-	if c.Handler.Unwrap {
-		err = c.WriteJson(c.Handler.Status, rsp)
-	} else {
-		// 重用wrapper输出,减少临时对象GC!
-		c.wrapper.Data = rsp
-		err = c.WriteJson(c.Handler.Status, &c.wrapper)
-		c.wrapper.Data = nil // 及时清理
+// WriteApplyResult 写出请求结果
+func (c *Context) WriteApplyResult(rsp MessageEncoder) error {
+	if c.mux.closed != 0 {
+		c.ResponseWriter.Header()["Connection"] = closeConnection
 	}
-	return
+	c.ResponseWriter.Header()["Content-Type"] = jsonContentType
+	c.ResponseWriter.WriteHeader(int(c.Handler.Meta.Http.Status))
+	if c.Handler.Meta.Http.Result == SimpleResult {
+
+	} else {
+
+	}
+
+	return nil
 }
 
-// WriteErrorResult 不会级联调用HttpResultPlugin
+// WriteErrorResult 写出错误结果
 func (c *Context) WriteErrorResult(err error) error {
 	// 统一转换错误为StatusError
 	result := StatusErrorFrom(err, DefaultErrorStatus)

@@ -6,11 +6,9 @@ package protoapi
 
 import (
 	"bytes"
-	"reflect"
 	"strings"
 	"unicode"
 	"unicode/utf8"
-	"unsafe"
 )
 
 var (
@@ -92,14 +90,14 @@ func (n *node) addChild(child *node) {
 
 func countParams(path string) uint16 {
 	var n uint16
-	s := StringToBytes(path)
+	s := UnsafeBytes(path)
 	n += uint16(bytes.Count(s, strColon))
 	n += uint16(bytes.Count(s, strStar))
 	return n
 }
 
 func countSections(path string) uint16 {
-	s := StringToBytes(path)
+	s := UnsafeBytes(path)
 	return uint16(bytes.Count(s, strSlash))
 }
 
@@ -183,7 +181,7 @@ walk:
 
 			n.children = []*node{&child}
 			// []byte for proper unicode char conversion, see #65
-			n.indices = BytesToString([]byte{n.path[i]})
+			n.indices = UnsafeString([]byte{n.path[i]})
 			n.path = path[:i]
 			n.handlers = nil
 			n.wildChild = false
@@ -216,7 +214,7 @@ walk:
 			// Otherwise insert it
 			if c != ':' && c != '*' && n.nType != catchAll {
 				// []byte for proper unicode char conversion, see #65
-				n.indices += BytesToString([]byte{c})
+				n.indices += UnsafeString([]byte{c})
 				child := &node{
 					fullPath: fullPath,
 				}
@@ -840,24 +838,4 @@ walk: // Outer loop for walking the tree
 		}
 	}
 	return nil
-}
-
-// StringToBytes converts string to byte slice without a memory allocation.
-// For more details, see https://github.com/golang/go/issues/53003#issuecomment-1140276077.
-func StringToBytes(s string) (b []byte) {
-	sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
-	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-	bh.Data = sh.Data
-	bh.Len = sh.Len
-	bh.Cap = sh.Len
-	return
-}
-
-// BytesToString converts byte slice to string without a memory allocation.
-// For more details, see https://github.com/golang/go/issues/53003#issuecomment-1140276077.
-func BytesToString(b []byte) string {
-	if b == nil {
-		return ""
-	}
-	return *(*string)(unsafe.Pointer(&b))
 }
