@@ -134,51 +134,6 @@ func (c *Context) CopyBody() ([]byte, error) {
 	}
 }
 
-/*************************************
- 与gin.Context兼容的方法
-*************************************/
-
-/*************************************
- 辅助数据结构
-*************************************/
-
-// BuffBody 一次性读写Body, 配合ReadBody()一块使用
-type BuffBody struct {
-	head int
-	data []byte
-}
-
-func (b *BuffBody) Read(p []byte) (int, error) {
-	if b.head >= len(b.data) {
-		return 0, io.EOF
-	}
-	n := copy(p, b.data[b.head:])
-	b.head += n
-	return n, nil
-}
-
-func (b *BuffBody) Close() error {
-	b.head = len(b.data)
-	return nil
-}
-
-var _ io.ReadCloser = (*BuffBody)(nil)
-
-// proxyResponseWriter 截获status用于拦截器(length已经去掉)
-type proxyResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (rw *proxyResponseWriter) WriteHeader(statusCode int) {
-	rw.statusCode = statusCode
-	rw.ResponseWriter.WriteHeader(statusCode)
-}
-
-/*************************************
- 与Handler相关的方法.
-*************************************/
-
 var (
 	jsonContentType     = []string{"application/json; charset=utf-8"}
 	htmlContentType     = []string{"text/html; charset=utf-8"}
@@ -208,17 +163,7 @@ func (c *Context) WriteApplyResult(rsp MessageEncoder) error {
 
 // WriteErrorResult 写出错误结果
 func (c *Context) WriteErrorResult(err error) error {
-	// 统一转换错误为StatusError
-	result := StatusErrorFrom(err, DefaultErrorStatus)
-	// 打印未知道错误作为预警信息!
-	if result.Code == CodeUnknown {
-		// 打印未知错误(code==2)用于日志预警
-		log.Error("unknown error: uri=%v, err=%v", c.Request.RequestURI, err)
-	}
-	if lenResMap > 0 {
-		c.i18nErrorResult(result, fastGetResMapByAcceptLanguage(c.getAcceptLanguage()))
-	}
-	return c.WriteJson(result.status, result)
+
 }
 
 func (c *Context) WriteJson(status int, obj interface{}) error {
@@ -264,3 +209,44 @@ func (c *Context) WriteHtmlBytes(status int, data []byte) error {
 	_, err := c.ResponseWriter.Write(data)
 	return err
 }
+
+/*************************************
+ 辅助数据结构
+*************************************/
+
+// BuffBody 一次性读写Body, 配合ReadBody()一块使用
+type BuffBody struct {
+	head int
+	data []byte
+}
+
+func (b *BuffBody) Read(p []byte) (int, error) {
+	if b.head >= len(b.data) {
+		return 0, io.EOF
+	}
+	n := copy(p, b.data[b.head:])
+	b.head += n
+	return n, nil
+}
+
+func (b *BuffBody) Close() error {
+	b.head = len(b.data)
+	return nil
+}
+
+var _ io.ReadCloser = (*BuffBody)(nil)
+
+// proxyResponseWriter 截获status用于拦截器(length已经去掉)
+type proxyResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rw *proxyResponseWriter) WriteHeader(statusCode int) {
+	rw.statusCode = statusCode
+	rw.ResponseWriter.WriteHeader(statusCode)
+}
+
+/*************************************
+ 与gin.Context兼容的方法
+*************************************/

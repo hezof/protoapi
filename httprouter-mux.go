@@ -142,14 +142,8 @@ func (m *mux) HttpPanicFunc(f HandleFunc) {
 }
 
 func (m *mux) HttpPanic(h *Handler) {
+	// 避免空指针
 	if h != nil {
-		// 避免空指针
-		if h.Status == 0 {
-			h.Status = http.StatusInternalServerError
-		}
-		if h.NewEncoder == nil {
-			h.NewEncoder = NewEncoder
-		}
 		m.httpPanic = h
 	}
 }

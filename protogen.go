@@ -19,7 +19,7 @@ protogen.api.go定义下述plugins的API承诺.
 type Func func(ctx *Context, in io.Reader) (proto.Message, error)
 
 // Registry protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
-type Registry func(impl interface{}, aspects []Aspect) *ServiceMeta
+type Registry func(impl interface{}, aspects []ServiceProcessor) *ServiceSetting
 
 type Body int32
 
@@ -69,37 +69,37 @@ type Role struct {
 	Desc string // 角色描述
 }
 
-// MethodMeta 对应Service.Method的元数据
-type MethodMeta struct {
-	Parent       *ServiceMeta // 父服务
-	Method       string       // proto方法名称
-	FullMethod   string       // proto方法全称:  /package.service/method
-	ClientStream bool         // client stream
-	ServerStream bool         // server stream
-	Http         *Http        // protoapi.http设置
-	Role         *Role        // protoapi.role设置
-	Func         Func         // 方法函数
+// MethodSetting 对应Service.Method的元数据
+type MethodSetting struct {
+	Parent       *ServiceSetting // 父服务
+	Method       string          // proto方法名称
+	FullMethod   string          // proto方法全称:  /package.service/method
+	ClientStream bool            // client stream
+	ServerStream bool            // server stream
+	Http         *Http           // protoapi.http设置
+	Role         *Role           // protoapi.role设置
+	Func         Func            // 方法函数
 }
 
-// ServiceMeta 对应Service的元数据
-type ServiceMeta struct {
-	Impl     interface{}       // service实现
-	Desc     *grpc.ServiceDesc // service描述
-	Package  string            // proto包名称
-	Service  string            // proto服务名称
-	HttpOnly bool              // 是否仅用于HTTP
-	Aspects  []*Aspect         // aop切面列表
-	Methods  []*MethodMeta     // methods设置
+// ServiceSetting 对应Service的元数据
+type ServiceSetting struct {
+	Impl     interface{}         // service实现
+	Desc     *grpc.ServiceDesc   // service描述
+	Package  string              // proto包名称
+	Service  string              // proto服务名称
+	HttpOnly bool                // 是否仅用于HTTP
+	Aspects  []*ServiceProcessor // aop切面列表
+	Methods  []*MethodSetting    // methods设置
 }
 
-// Aspect 切面接口
-type Aspect interface {
+// ServiceProcessor 切面接口
+type ServiceProcessor interface {
 	// Order 切面执行顺序[主,次]. Before Advice按[major,minor]的升序执行. After Advice按[major,minor]的降序执行.
 	Order() [2]int
 	// Before Advice执行前置处理, 返回ctx, req作为后面节点入参. 返回err会将执行流程跳至After Advice()
-	Before(meta *MethodMeta, ctx context.Context, req proto.Message) (context.Context, error)
+	Before(meta *MethodSetting, ctx context.Context, req proto.Message) (context.Context, error)
 	// After 事后内容. 返回ctx, rsp, err覆盖后面的传递内容.
-	After(meta *MethodMeta, ctx context.Context, req, rsp proto.Message, err error) (context.Context, proto.Message, error)
+	After(meta *MethodSetting, ctx context.Context, req, rsp proto.Message, err error) (context.Context, proto.Message, error)
 }
 
 // Validator 校验接口
