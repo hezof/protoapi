@@ -3,6 +3,7 @@ package protoapi
 import (
 	"github.com/hezof/protoapi/internal/websocket"
 	"io"
+	"ksogit.kingsoft.net/kgo/log"
 )
 
 // Handler 处理句柄. 注意事项: handler存储在前缀树(httprouter), 必须保证所有属性在运行时只读!
@@ -16,7 +17,7 @@ type Handler struct {
 }
 
 // RestfulHandleFunc 可以error做为response返回!
-func RestfulHandleFunc(fun HttpFunc, processor []ServiceProcessor) HandleFunc {
+func RestfulHandleFunc(fun Call) HandleFunc {
 	return func(ctx *Context) {
 
 		// 业务处理(前置校验).
@@ -44,7 +45,7 @@ func RestfulHandleFunc(fun HttpFunc, processor []ServiceProcessor) HandleFunc {
 /*
 WebsocketHandleFunc 根据HttpFunc生成HandleFunc. 如果plugins为空自动从代码忽略!
 */
-func WebsocketHandleFunc(fun HttpFunc, upgrader *websocket.Upgrader, processor []ServiceProcessor) HandleFunc {
+func WebsocketHandleFunc(fun Call, upgrader *websocket.Upgrader) HandleFunc {
 
 	return func(ctx *Context) {
 
@@ -64,7 +65,7 @@ func WebsocketHandleFunc(fun HttpFunc, upgrader *websocket.Upgrader, processor [
 			in     io.Reader
 			out    io.WriteCloser
 			rsp    interface{}
-			resMap map[int]*resource
+			resMap map[uint32]*resource
 		)
 		for {
 			// 获取读入流
@@ -85,15 +86,7 @@ func WebsocketHandleFunc(fun HttpFunc, upgrader *websocket.Upgrader, processor [
 			}
 			// 业务逻辑(前置校验)
 			rsp, err = fun(ctx, in)
-			// 后置处理(结果覆盖)
-			// 优化: 后置处理根据processor定义先后逆序执行
-			for i := len(processor) - 1; i >= 0; i-- {
-				rsp, err = processor[i].PostProcessHTTP(ctx, rsp, err)
-			}
-
-			// 编码输出
-			enc := ctx.Handler.NewEncoder(out)
-			enc.SetEscapeHTML(false)
+			// 错误处理
 			if err != nil {
 				// 统一转换错误为StatusError
 				result := StatusErrorFrom(err, DefaultErrorStatus)

@@ -1,10 +1,10 @@
 package protoapi
 
 type Profile struct {
-	ResultCodePrefix            string // code前缀, 默认: `"code":`, 0表示成功
-	ResultNamePrefix            string // name前缀, 默认: `"name":`, OK表示成功
-	ResultDataPrefix            string // data前缀, 默认: `"data":`.
-	ResultMessagePrefix         string // message前缀, 默认: `"message":`
+	ResultCodeField             string // code前缀, 默认: `"code":`, 0表示成功
+	ResultNameField             string // name前缀, 默认: `"name":`, OK表示成功
+	ResultDataField             string // data前缀, 默认: `"data":`.
+	ResultMessageField          string // message前缀, 默认: `"message":`
 	DecoderBufferSize           int    // 默认8K
 	EncoderBufferSize           int    // 默认8K
 	MaximumNestingDepth         int    // limit maximum depth of nesting, as allowed by https://tools.ietf.org/html/rfc7159#section-9
@@ -17,10 +17,10 @@ type Profile struct {
 }
 
 var profile = Profile{
-	ResultCodePrefix:            `"code":`,
-	ResultNamePrefix:            `"name":`,
-	ResultDataPrefix:            `"data":`,
-	ResultMessagePrefix:         `"message":`,
+	ResultCodeField:             `code`,
+	ResultNameField:             `name`,
+	ResultDataField:             `data`,
+	ResultMessageField:          `message`,
 	DecoderBufferSize:           8 * 1024,
 	EncoderBufferSize:           8 * 1024,
 	MaximumNestingDepth:         128,
@@ -33,10 +33,10 @@ var profile = Profile{
 }
 
 func InitProfile(p Profile) {
-	profile.ResultCodePrefix = NvlS(p.ResultCodePrefix, profile.ResultCodePrefix)
-	profile.ResultNamePrefix = NvlS(p.ResultNamePrefix, profile.ResultNamePrefix)
-	profile.ResultDataPrefix = NvlS(p.ResultDataPrefix, profile.ResultDataPrefix)
-	profile.ResultMessagePrefix = NvlS(p.ResultMessagePrefix, profile.ResultMessagePrefix)
+	profile.ResultCodeField = NvlS(p.ResultCodeField, profile.ResultCodeField)
+	profile.ResultNameField = NvlS(p.ResultNameField, profile.ResultNameField)
+	profile.ResultDataField = NvlS(p.ResultDataField, profile.ResultDataField)
+	profile.ResultMessageField = NvlS(p.ResultMessageField, profile.ResultMessageField)
 	profile.DecoderBufferSize = NvlI(p.DecoderBufferSize, profile.DecoderBufferSize)
 	profile.EncoderBufferSize = NvlI(p.EncoderBufferSize, profile.EncoderBufferSize)
 	profile.MaximumNestingDepth = NvlI(p.MaximumNestingDepth, profile.MaximumNestingDepth)

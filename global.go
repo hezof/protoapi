@@ -8,9 +8,9 @@ package protoapi
 var globalService []*component
 
 type component struct {
-	Registry  Registry
+	Registry  ServiceRegistry
 	Implement interface{}
-	Aspects   []ServiceProcessor
+	Aspects   []ServiceAspect
 }
 
 func globalServiceVisitor(s *Server) {
@@ -19,7 +19,7 @@ func globalServiceVisitor(s *Server) {
 	}
 }
 
-func RegisterService(registry Registry, implement interface{}, aspects ...ServiceProcessor) {
+func RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) {
 	globalService = append(globalService, &component{
 		Registry:  registry,
 		Implement: implement,

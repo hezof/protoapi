@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/hezof/protoapi/internal/websocket"
-	"net"
-	"net/http"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"ksogit.kingsoft.net/kgo/log"
+	"net"
+	"net/http"
 )
 
 /**
@@ -39,14 +39,14 @@ type Server struct {
 	*/
 	*routerGroup                                            // 分组路由(过程数据)
 	_serviceSetting   []*ServiceSetting                     // 服务设置(过程数据)
+	_methodSetting    map[string]*MethodSetting             // 方法设置(过程数据)
 	_requestSetting   map[string]map[string]*RequestSetting // 平面后的规则(过程数据)
-	_serviceProcessor []ServiceProcessor                    // 服务校验器(过程参数)
+	_serviceAspect    []ServiceAspect                       // 服务校验器(过程参数)
 	_servicePlugin    []ServicePlugin                       // 服务插件(过程数据)
 	_requestPlugin    []RequestPlugin                       // 请求插件(过程数据)
 	_grpcServerOption []grpc.ServerOption                   // grpc拦截器(过程数据)
 	_httpServerOption []HandleFunc                          // http拦截器(过程数据)
 	_grpcServerInvoke []func(server *grpc.Server)           // grpc服务器回调(过程数据)
-	_grpcMetaInfo     map[string]*MethodSetting             // Grpc元信息. 键是FullMethod,值是GrpcMetaInfo
 	_grpcPanicFunc    GrpcPanicFunc                         // Grpc panic函数
 }
 
@@ -54,14 +54,14 @@ type Server struct {
 func (s *Server) cleanup() {
 	s.routerGroup = nil
 	s._serviceSetting = nil
+	s._methodSetting = nil
 	s._requestSetting = nil
-	s._serviceProcessor = nil
+	s._serviceAspect = nil
 	s._servicePlugin = nil
 	s._requestPlugin = nil
 	s._grpcServerOption = nil
 	s._httpServerOption = nil
 	s._grpcServerInvoke = nil
-	s._grpcMetaInfo = nil
 	s._grpcPanicFunc = nil
 }
 
@@ -118,8 +118,8 @@ func (s *Server) OnRegisterHttpService(f func(name, addr string, undo bool)) {
 	配置添加
  **********************************************/
 
-func (s *Server) ServiceProcessor(vs ...ServiceProcessor) {
-	s._serviceProcessor = append(s._serviceProcessor, vs...)
+func (s *Server) ServiceAspect(vs ...ServiceAspect) {
+	s._serviceAspect = append(s._serviceAspect, vs...)
 }
 
 func (s *Server) ServicePlugin(vs ...ServicePlugin) {
@@ -153,11 +153,10 @@ func (s *Server) GrpcPanicFunc(f GrpcPanicFunc) {
 	服务注册
  **********************************************/
 
-func (s *Server) RegisterService(reg ServiceRegistry, implement interface{}, processor ...ServiceProcessor) *Server {
-	// 兼容旧的protogen生成的ServiceRegistry原型,仍然保留ServiceValidatorHTTP接口
-	processor, validatorHTTP := concatServiceProcessor(s._serviceProcessor, processor)
-	serviceSetting := reg(implement, validatorHTTP)
-	serviceSetting.Processor = processor
+func (s *Server) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) *Server {
+	aspects = concatServiceAspects(s._serviceAspect, aspects)
+	serviceSetting := registry(implement, aspects)
+	serviceSetting.Aspects = aspects
 	s._serviceSetting = append(s._serviceSetting, serviceSetting)
 	return s
 }
@@ -177,11 +176,6 @@ func (s *Server) protect(f func()) {
 
 func (s *Server) ListenAndServe() (err error) {
 
-	// 兼容旧版ErrorStatus到新版DefaultErrorStatus
-	if ErrorStatus != 0 {
-		DefaultErrorStatus = ErrorStatus
-	}
-
 	/********************************************************
 	* 如果没有配置grpc或http地址则自动结束服务初始化流程!
 	 ********************************************************/
@@ -199,11 +193,11 @@ func (s *Server) ListenAndServe() (err error) {
 	}
 	if len(s.onExit) > 0 {
 		// 此处defer没用闭包
-		defer func(pf func(f func()), exit []func()) {
+		defer func(exit []func()) {
 			for _, f := range exit {
-				pf(f)
+				s.protect(f)
 			}
-		}(s.protect, s.onExit)
+		}(s.onExit)
 	}
 
 	/********************************************************
@@ -241,85 +235,66 @@ func (s *Server) ListenAndServe() (err error) {
 	/********************************************************
 	* 添加MethodSetting相应的AccessSetting以及MethodGroup
 	 ********************************************************/
-	s._grpcMetaInfo = make(map[string]*GrpcMeta)
+	s._methodSetting = make(map[string]*MethodSetting)
 	for _, ss := range s._serviceSetting {
-		for _, sm := range ss.Methods {
+		for _, ms := range ss.Methods {
 			// 计算全方法
-			fm := fullMethod(ss.Package, ss.Service, sm.Method)
-			// 生成元信息
-			mi := &Meta{
-				Group:      sm.Group, // 添加分组代号,方便权限管理
-				Package:    ss.Package,
-				Service:    ss.Service,
-				Method:     sm.Method,
-				FullMethod: fm,
-			}
-			// 设置grpc元信息用于ServiceValidator
-			if len(ss.Processor) > 0 {
-				s._grpcMetaInfo[fm] = &GrpcMeta{
-					Meta:      mi,
-					Processor: ss.Processor,
-				}
-			}
+			ms.FullMethod = fullMethod(ms.Package, ms.Service, ms.Method)
+			// 添加方法设置
+			s._methodSetting[ms.FullMethod] = ms
 
 			// 添加method相应的RequestSetting
-			if sm.WebsocketFunc != nil {
+			if ms.Websocket != "" {
 				if upgrader == nil {
 					upgrader = newWebsocketUpgrader(s.config)
 				}
 				s.routerGroup.Handler(http.MethodGet, &Handler{
-					Meta:         mi,
-					Kind:         KindWebsocket,
-					Path:         sm.WebsocketPath,
-					Status:       sm.WebsocketStatus,
-					Unwrap:       sm.WebsocketUnwrap,
-					NewEncoder:   GetNewEncoder(sm.WebsocketIgnoreOmitempty),
-					HandleChain:  []HandleFunc{WebsocketHandleFunc(sm.WebsocketFunc, upgrader, ss.Processor)},
+					Meta:         ms,
+					Method:       http.MethodGet,
+					Path:         ms.Websocket,
+					HandleChain:  []HandleFunc{WebsocketHandleFunc(ms.Call, upgrader)},
 					BodyMaxBytes: -1, // 如果是Websocket长链接则自动忽略BodyMaxBytes参数
 				})
 			}
-			if sm.PostFunc != nil {
+			if ms.Post != "" {
 				s.routerGroup.Handler(http.MethodPost, &Handler{
-					Meta:        mi,
-					Kind:        KindRestful | sm.Stream,
-					Path:        sm.PostPath,
-					Status:      sm.PostStatus,
-					Unwrap:      sm.PostUnwrap,
-					NewEncoder:  GetNewEncoder(sm.PostIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(sm.PostFunc, ss.Processor)},
+					Meta:        ms,
+					Method:      http.MethodPost,
+					Path:        ms.Post,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
 				})
 			}
-			if sm.GetFunc != nil {
+			if ms.GetFunc != nil {
 				s.routerGroup.Handler(http.MethodGet, &Handler{
 					Meta:        mi,
-					Kind:        KindRestful | sm.Stream,
-					Path:        sm.GetPath,
-					Status:      sm.GetStatus,
-					Unwrap:      sm.GetUnwrap,
-					NewEncoder:  GetNewEncoder(sm.GetIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(sm.GetFunc, ss.Processor)},
+					Kind:        KindRestful | ms.Stream,
+					Path:        ms.GetPath,
+					Status:      ms.GetStatus,
+					Unwrap:      ms.GetUnwrap,
+					NewEncoder:  GetNewEncoder(ms.GetIgnoreOmitempty),
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.GetFunc, ss.Processor)},
 				})
 			}
-			if sm.PutFunc != nil {
+			if ms.PutFunc != nil {
 				s.routerGroup.Handler(http.MethodPut, &Handler{
 					Meta:        mi,
-					Kind:        KindRestful | sm.Stream,
-					Path:        sm.PutPath,
-					Status:      sm.PutStatus,
-					Unwrap:      sm.PutUnwrap,
-					NewEncoder:  GetNewEncoder(sm.PutIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(sm.PutFunc, ss.Processor)},
+					Kind:        KindRestful | ms.Stream,
+					Path:        ms.PutPath,
+					Status:      ms.PutStatus,
+					Unwrap:      ms.PutUnwrap,
+					NewEncoder:  GetNewEncoder(ms.PutIgnoreOmitempty),
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.PutFunc, ss.Processor)},
 				})
 			}
-			if sm.DeleteFunc != nil {
+			if ms.DeleteFunc != nil {
 				s.routerGroup.Handler(http.MethodDelete, &Handler{
 					Meta:        mi,
-					Kind:        KindRestful | sm.Stream,
-					Path:        sm.DeletePath,
-					Status:      sm.DeleteStatus,
-					Unwrap:      sm.DeleteUnwrap,
-					NewEncoder:  GetNewEncoder(sm.DeleteIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(sm.DeleteFunc, ss.Processor)},
+					Kind:        KindRestful | ms.Stream,
+					Path:        ms.DeletePath,
+					Status:      ms.DeleteStatus,
+					Unwrap:      ms.DeleteUnwrap,
+					NewEncoder:  GetNewEncoder(ms.DeleteIgnoreOmitempty),
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.DeleteFunc, ss.Processor)},
 				})
 			}
 		}
@@ -380,8 +355,8 @@ func (s *Server) ListenAndServe() (err error) {
 		}
 		// 很关键: 必须确保"boostrap interceptor"位于最后位置, 即必须是grpc server最后添加的ServerOption
 		grpcServer = grpc.NewServer(append(opts,
-			generateBootstrapUnaryInterceptor(s._grpcMetaInfo, s._grpcPanicFunc, s.config.GrpcI18nError),
-			generateBootstrapStreamInterceptor(s._grpcMetaInfo, s._grpcPanicFunc, s.config.GrpcI18nError),
+			generateBootstrapUnaryInterceptor(s._methodSetting, s._grpcPanicFunc, s.config.GrpcI18nError),
+			generateBootstrapStreamInterceptor(s._methodSetting, s._grpcPanicFunc, s.config.GrpcI18nError),
 		)...)
 		for _, ps := range s._serviceSetting {
 			// v0.9.9+支持service仅用于http

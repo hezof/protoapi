@@ -177,3 +177,19 @@ var (
 	escapeHtmlTable   = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '&', '<', '>', '\\')
 	noEscapeHtmlTable = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '\\')
 )
+
+func EncodeMessageEncoder(w *JsonEncoder, name string, encoder MessageEncoder) {
+	if encoder != nil {
+		w.ensure(5 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon, leftBrace)
+		_ = encoder.EncodeJSON(w)
+		if last := len(w.buff) - 1; w.buff[last] == comma {
+			w.buff[last] = rightBrace
+			w.buff = append(w.buff, comma)
+		} else {
+			w.buff = append(w.buff, rightBrace, comma)
+		}
+	}
+}

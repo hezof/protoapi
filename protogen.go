@@ -15,11 +15,11 @@ protogen.api.go定义下述plugins的API承诺.
 - protoc-gen-go-openapi
 */
 
-// Func 每个service的method生成一个相应的HttpFunc闭包, 用于适配restful/websocket/sse等
-type Func func(ctx *Context, in io.Reader) (proto.Message, error)
+// Call 每个service的method生成一个相应的HttpFunc闭包, 用于适配restful/websocket/sse等
+type Call func(ctx *Context, in io.Reader) (MessageEncoder, error)
 
-// Registry protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
-type Registry func(impl interface{}, aspects []ServiceProcessor) *ServiceSetting
+// ServiceRegistry protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
+type ServiceRegistry func(impl interface{}, aspects []ServiceAspect) *ServiceSetting
 
 type Body int32
 
@@ -66,34 +66,32 @@ type Http struct {
 type Role struct {
 	Code uint64 // 角色标识
 	Name string // 角色名称
-	Desc string // 角色描述
 }
 
 // MethodSetting 对应Service.Method的元数据
 type MethodSetting struct {
-	Parent       *ServiceSetting // 父服务
-	Method       string          // proto方法名称
-	FullMethod   string          // proto方法全称:  /package.service/method
-	ClientStream bool            // client stream
-	ServerStream bool            // server stream
-	Http         *Http           // protoapi.http设置
-	Role         *Role           // protoapi.role设置
-	Func         Func            // 方法函数
+	Package      string // proto包名称
+	Service      string // proto服务名称
+	Method       string // proto方法名称
+	FullMethod   string // proto方法全称:  /package.service/method
+	ClientStream bool   // client stream
+	ServerStream bool   // server stream
+	Http                // protoapi.http设置
+	Role                // protoapi.role设置
+	Call                // 方法函数
 }
 
 // ServiceSetting 对应Service的元数据
 type ServiceSetting struct {
-	Impl     interface{}         // service实现
-	Desc     *grpc.ServiceDesc   // service描述
-	Package  string              // proto包名称
-	Service  string              // proto服务名称
-	HttpOnly bool                // 是否仅用于HTTP
-	Aspects  []*ServiceProcessor // aop切面列表
-	Methods  []*MethodSetting    // methods设置
+	HttpOnly bool              // 是否仅用于HTTP
+	Impl     interface{}       // service实现
+	Desc     *grpc.ServiceDesc // service描述
+	Aspects  []ServiceAspect   // aop切面列表
+	Methods  []*MethodSetting  // methods设置
 }
 
-// ServiceProcessor 切面接口
-type ServiceProcessor interface {
+// ServiceAspect 切面接口
+type ServiceAspect interface {
 	// Order 切面执行顺序[主,次]. Before Advice按[major,minor]的升序执行. After Advice按[major,minor]的降序执行.
 	Order() [2]int
 	// Before Advice执行前置处理, 返回ctx, req作为后面节点入参. 返回err会将执行流程跳至After Advice()

@@ -3,6 +3,8 @@ package protoapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/hezof/protoapi/internal/websocket"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -149,4 +151,35 @@ func LookPath(path string) (string, bool) {
 		}
 	}
 	return res, true
+}
+
+// fullMethod is the full RPC method string, i.e., /package.service/method.
+func fullMethod(packageName, serviceName, methodName string) string {
+	return "/" + packageName + "." + serviceName + "/" + methodName
+}
+
+func concatServiceAspects(v1 []ServiceAspect, v2 []ServiceAspect) []ServiceAspect {
+	n1, n2 := len(v1), len(v2)
+	if n1 == 0 && n2 == 0 {
+		return nil
+	}
+
+	rt := make([]ServiceAspect, n1+n2)
+	copy(rt, v1)
+	copy(rt[n1:], v2)
+
+	return rt
+}
+
+// newWebsocketUpgrader 根据配置生成websocket的upgrader
+func newWebsocketUpgrader(c *Config) *websocket.Upgrader {
+	upgrader := new(websocket.Upgrader)
+	upgrader.ReadBufferSize = c.WbskReadBuffer
+	upgrader.WriteBufferSize = c.WbskWriteBuffer
+	if c.WbskOriginDisable {
+		upgrader.CheckOrigin = func(r *http.Request) bool {
+			return true
+		}
+	}
+	return upgrader
 }
