@@ -1,19 +1,12 @@
 package protoapi
 
 import (
-	"google.golang.org/protobuf/proto"
 	"io"
 )
 
-// MessageDecoder Message的解码器
-type MessageDecoder interface {
-	proto.Message
+// JsonCodec JSON解码器
+type JsonCodec interface {
 	DecodeJSON(r *JsonDecoder)
-}
-
-// MessageEncoder Message的编码器
-type MessageEncoder interface {
-	proto.Message
 	EncodeJSON(w *JsonEncoder)
 }
 

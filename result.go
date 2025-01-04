@@ -3,7 +3,6 @@ package protoapi
 import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 /*
@@ -26,12 +25,12 @@ type StatusResult struct {
 	Data    any    `json:"data,omitempty"`    // 结果数据
 }
 
-func (r *StatusResult) ProtoReflect() protoreflect.Message {
-	return r.Data.(protoreflect.Message)
+func (sr *StatusResult) DecodeJSON(r *JsonDecoder) {
+	panic("implement me")
 }
 
-func (r *StatusResult) EncodeJSON(w *JsonEncoder) {
-	EncodeMessage(w, r, func(w *JsonEncoder, r *StatusResult) {
+func (sr *StatusResult) EncodeJSON(w *JsonEncoder) {
+	EncodeMessage(w, sr, func(w *JsonEncoder, r *StatusResult) {
 		EncodeUint32_WithEmpty(w, profile.ResultCodeField, r.Code)
 		EncodeString_OmitEmpty(w, profile.ResultNameField, r.Name)
 		EncodeString_OmitEmpty(w, profile.ResultMessageField, r.Message)
@@ -39,17 +38,17 @@ func (r *StatusResult) EncodeJSON(w *JsonEncoder) {
 	})
 }
 
-var _ MessageEncoder = (*StatusResult)(nil)
+var _ JsonCodec = (*StatusResult)(nil)
 
-func (r *StatusResult) Error() string {
-	return ToJson(r)
+func (sr *StatusResult) Error() string {
+	return ToJson(sr)
 }
 
 var _ error = (*StatusResult)(nil) // 断言接口
 
 // GRPCStatus 支持status.FromError
-func (r *StatusResult) GRPCStatus() *status.Status {
-	return status.New(codes.Code(r.Code), r.Message)
+func (sr *StatusResult) GRPCStatus() *status.Status {
+	return status.New(codes.Code(sr.Code), sr.Message)
 }
 
 func StatusError(status uint32, code uint32, message string, args ...interface{}) *StatusResult {

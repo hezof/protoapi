@@ -45,7 +45,7 @@ type JsonDecoder struct {
 	firstError error     // 上下文错误
 }
 
-func (r *JsonDecoder) Decode(v MessageDecoder) {
+func (r *JsonDecoder) Decode(v JsonDecodc) {
 	v.DecodeJSON(r)
 }
 
