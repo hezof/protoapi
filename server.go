@@ -569,7 +569,7 @@ func generateBootstrapUnaryInterceptor(metas map[string]*MethodSetting, grpcPani
 		}
 
 		// 语法校验
-		if vd, ok := req.(Validator); ok {
+		if vd, ok := req.(MessageValidator); ok {
 			if err = vd.Validate(ctx); err != nil {
 				goto __AFTER__
 			}
