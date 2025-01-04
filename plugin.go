@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"bytes"
-	"context"
 	"strings"
 )
 
@@ -23,33 +22,25 @@ RequestPlugin 请求插件.通过此扩展接口可以:
 type RequestPlugin func(all map[string]map[string]*RequestSetting)
 
 /*
-MessagePlugin 消息校验插件. 支持protoapi.validate里面的plugin机制
+MessageValidatePluginProvider message校验插件提供者
 */
-type MessagePlugin func(ctx context.Context, packageName, messageName, fieldName string, val interface{}, errStatus, errCode int32) error
+type MessageValidatePluginProvider func(args []string) MessageValidatePlugin
 
-/*
-MessageValidatePluginProvider 消息校验器提供者,支持plugin表达式解析, 支持在protoapi.validate的plugin里面使用EL!
-*/
-type MessageValidatePluginProvider func(args []string) MessagePlugin
-
-/*
-全局的HttpResultPlugin与MessageValidatorPluginProvider.
-需要注意: 基于性能考虑, 不提供线程安全. 调用都需要在server服务启动前完成相应的添加/设置操作.
-*/
-var (
-	globalMessageValidatePluginProvider = make(map[string]MessageValidatePluginProvider)
-)
+var globalMessageValidatePluginProvider = make(map[string]MessageValidatePluginProvider)
 
 func SetMessageValidatePluginProvider(k string, p MessageValidatePluginProvider) {
 	globalMessageValidatePluginProvider[k] = p
 }
 
-func EvalMessageValidatePlugin(expr string) MessagePlugin {
-	name, args := CompilePluginExpression(expr)
-	if p := globalMessageValidatePluginProvider[name]; p != nil {
-		return p(args)
-	}
-	return nil
+/*
+FieldValidatePluginProvider field校验插件提供者
+*/
+type FieldValidatePluginProvider func(args []string) FieldValidatePlugin
+
+var globalFieldValidatePluginProvider = make(map[string]FieldValidatePluginProvider)
+
+func SetFieldValidatePluginProvider(k string, p FieldValidatePluginProvider) {
+	globalFieldValidatePluginProvider[k] = p
 }
 
 /*

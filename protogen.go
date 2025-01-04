@@ -10,11 +10,8 @@ import (
 )
 
 /*
-protogen.api.go定义下述plugins的API承诺.
-- protoc-gen-go-protoapi,
-- protoc-gen-go-protojson,
-- protoc-gen-go-validator,
-- protoc-gen-go-openapi
+	protogen.go定义protogen生成代码使用的API!
+	所有API承诺向后兼容! 否则影响protogen历史版本...
 */
 
 // Call 每个service的method生成一个相应的HttpFunc闭包, 用于适配restful/websocket/sse等
@@ -54,12 +51,32 @@ type ServiceAspect interface {
 	After(meta *MethodSetting, ctx context.Context, req, rsp any, err error) (context.Context, any, error)
 }
 
-// MessageValidator 校验接口
+// MessageValidator message校验接口
 type MessageValidator interface {
 	Validate(ctx context.Context) error
 }
 
+// MessageValidatePlugin message校验插件
 type MessageValidatePlugin func(ctx context.Context, req any, err *Error) error
+
+// FieldValidatePlugin field校验插件
+type FieldValidatePlugin func(ctx context.Context, key string, val any, err *Error) error
+
+func AssertMessageValidatePlugin(el string) MessageValidatePlugin {
+	name, args := CompilePluginExpression(el)
+	if p := globalMessageValidatePluginProvider[name]; p != nil {
+		return p(args)
+	}
+	panic(fmt.Sprintf("assert message validate plugin failed: %s", el))
+}
+
+func AssertFieldValidatePlugin(el string) FieldValidatePlugin {
+	name, args := CompilePluginExpression(el)
+	if p := globalFieldValidatePluginProvider[name]; p != nil {
+		return p(args)
+	}
+	panic(fmt.Sprintf("assert field validate plugin failed: %s", el))
+}
 
 // AssertEncode 断言编码. 用于protogen传值
 func AssertEncode(msg proto.Message) string {
