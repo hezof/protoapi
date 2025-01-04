@@ -179,31 +179,44 @@ var (
 	noEscapeHtmlTable = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '\\')
 )
 
-func EncodeMessageEncoder(w *JsonEncoder, name string, encoder MessageEncoder) {
-	if encoder != nil {
-		w.ensure(5 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		_ = encoder.EncodeJSON(w)
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
-	}
-}
-
-func EncodeMessageMarshal(w *JsonEncoder, name string, data interface{}) {
-	if data != nil {
-		w.ensure(5 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		bs, err := json.Marshal(data)
+func EncodeAny(w *JsonEncoder, value any) {
+	switch value := value.(type) {
+	case bool:
+		EncodeBool(w, value)
+	case int:
+		EncodeInt64(w, int64(value))
+	case int8:
+		EncodeInt32(w, int32(value))
+	case int16:
+		EncodeInt32(w, int32(value))
+	case int32:
+		EncodeInt32(w, value)
+	case int64:
+		EncodeInt64(w, value)
+	case uint:
+		EncodeUint64(w, uint64(value))
+	case uint8:
+		EncodeUint32(w, uint32(value))
+	case uint16:
+		EncodeUint32(w, uint32(value))
+	case uint32:
+		EncodeUint32(w, value)
+	case uint64:
+		EncodeUint64(w, value)
+	case float32:
+		EncodeFloat(w, value)
+	case float64:
+		EncodeDouble(w, value)
+	case string:
+		EncodeString(w, value)
+	case []byte:
+		EncodeBytes(w, value)
+	case MessageEncoder:
+		value.EncodeJSON(w)
+	default:
+		bs, err := json.Marshal(value)
 		if err != nil {
-			if w.firstError != nil {
+			if w.firstError == nil {
 				w.firstError = err
 			}
 			return
@@ -211,6 +224,44 @@ func EncodeMessageMarshal(w *JsonEncoder, name string, data interface{}) {
 			w.ensure(len(bs))
 			w.buff = append(w.buff, bs...)
 		}
-		w.buff = append(w.buff, rightBrace, comma)
 	}
+}
+
+func EncodeAny_OmitEmpty(w *JsonEncoder, name string, value any) {
+	if value != nil {
+		w.ensure(5 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon)
+		EncodeAny(w, value)
+		w.buff = append(w.buff, comma)
+	}
+}
+
+func EncodeAny_WithEmpty(w *JsonEncoder, name string, value any) {
+	if value != nil {
+		w.ensure(5 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon)
+		EncodeAny(w, value)
+		w.buff = append(w.buff, comma)
+	} else {
+		w.ensure(9 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
+	}
+}
+
+// ToJson Json转换快捷方法
+func ToJson(v any) string {
+	if enc, ok := v.(MessageEncoder); ok {
+		out := NewJsonEncoder(nil, 1024)
+		enc.EncodeJSON(out)
+		bs, _ := out.Close()
+		return UnsafeString(bs)
+	}
+	bs, _ := json.Marshal(v)
+	return UnsafeString(bs)
 }

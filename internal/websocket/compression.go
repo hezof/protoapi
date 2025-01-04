@@ -27,13 +27,17 @@ var (
 
 func decompressNoContextTakeover(r io.Reader) io.ReadCloser {
 	const tail =
-	// Put four bytes as specified in RFC
+	// Add four bytes as specified in RFC
 	"\x00\x00\xff\xff" +
-		// Put final block to squelch unexpected EOF error from flate reader.
+		// Add final block to squelch unexpected EOF error from flate reader.
 		"\x01\x00\x00\xff\xff"
 
 	fr, _ := flateReaderPool.Get().(io.ReadCloser)
-	fr.(flate.Resetter).Reset(io.MultiReader(r, strings.NewReader(tail)), nil)
+	mr := io.MultiReader(r, strings.NewReader(tail))
+	if err := fr.(flate.Resetter).Reset(mr, nil); err != nil {
+		// Reset never fails, but handle error in case that changes.
+		fr = flate.NewReader(mr)
+	}
 	return &flateReadWrapper{fr}
 }
 

@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"encoding/base64"
 	"fmt"
 	"math"
 	"strconv"
@@ -15,17 +16,18 @@ import (
  *************************************/
 
 func EncodeBool(w *JsonEncoder, value bool) {
-	w.ensure(5)
 	if value {
+		w.ensure(4)
 		w.buff = append(w.buff, 't', 'r', 'u', 'e')
 	} else {
+		w.ensure(5)
 		w.buff = append(w.buff, 'f', 'a', 'l', 's', 'e')
 	}
 }
 
 func EncodeBool_OmitEmpty(w *JsonEncoder, name string, value bool) {
 	if value {
-		w.ensure(9 + len(name))
+		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 't', 'r', 'u', 'e', comma)
@@ -33,12 +35,13 @@ func EncodeBool_OmitEmpty(w *JsonEncoder, name string, value bool) {
 }
 
 func EncodeBool_WithEmpty(w *JsonEncoder, name string, value bool) {
-	w.ensure(9 + len(name))
 	if value {
+		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 't', 'r', 'u', 'e', comma)
 	} else {
+		w.ensure(9 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 'f', 'a', 'l', 's', 'e', comma)
@@ -74,10 +77,11 @@ func EncodeInt32_ConvEmpty(w *JsonEncoder, name string, value int32) {
  *************************************/
 
 func EncodeInt64(w *JsonEncoder, value int64) {
-	w.ensure(21)
 	if value != 0 {
+		w.ensure(21)
 		w.buff = append(w.buff, strconv.AppendInt(w.number[0:0], value, 10)...)
 	} else {
+		w.ensure(1)
 		w.buff = append(w.buff, '0')
 	}
 }
@@ -94,14 +98,15 @@ func EncodeInt64_OmitEmpty(w *JsonEncoder, name string, value int64) {
 }
 
 func EncodeInt64_WithEmpty(w *JsonEncoder, name string, value int64) {
-	w.ensure(25 + len(name))
 	if value != 0 {
+		w.ensure(25 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon)
 		w.buff = append(w.buff, strconv.AppendInt(w.number[0:0], value, 10)...)
 		w.buff = append(w.buff, comma)
 	} else {
+		w.ensure(5 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, '0', comma)
@@ -137,10 +142,11 @@ func EncodeUint32_ConvEmpty(w *JsonEncoder, name string, value uint32) {
  *************************************/
 
 func EncodeUint64(w *JsonEncoder, value uint64) {
-	w.ensure(21)
 	if value != 0 {
+		w.ensure(21)
 		w.buff = append(w.buff, strconv.AppendUint(w.number[0:0], value, 10)...)
 	} else {
+		w.ensure(1)
 		w.buff = append(w.buff, '0')
 	}
 }
@@ -157,14 +163,15 @@ func EncodeUint64_OmitEmpty(w *JsonEncoder, name string, value uint64) {
 }
 
 func EncodeUint64_WithEmpty(w *JsonEncoder, name string, value uint64) {
-	w.ensure(25 + len(name))
 	if value != 0 {
+		w.ensure(25 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon)
 		w.buff = append(w.buff, strconv.AppendUint(w.number[0:0], value, 10)...)
 		w.buff = append(w.buff, comma)
 	} else {
+		w.ensure(5 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, '0', comma)
@@ -186,10 +193,11 @@ func EncodeFloat(w *JsonEncoder, value float32) {
 		}
 		return
 	}
-	w.ensure(21)
 	if value != 0 {
+		w.ensure(21)
 		w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], float64(value), 'g', -1, 32)...)
 	} else {
+		w.ensure(1)
 		w.buff = append(w.buff, '0')
 	}
 }
@@ -218,14 +226,15 @@ func EncodeFloat_WithEmpty(w *JsonEncoder, name string, value float32) {
 		}
 		return
 	}
-	w.ensure(25 + len(name))
 	if value != 0 {
+		w.ensure(25 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon)
 		w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], float64(value), 'g', -1, 32)...)
 		w.buff = append(w.buff, comma)
 	} else {
+		w.ensure(5 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, '0', comma)
@@ -279,14 +288,15 @@ func EncodeDouble_WithEmpty(w *JsonEncoder, name string, value float64) {
 		}
 		return
 	}
-	w.ensure(25 + len(name))
 	if value != 0 {
+		w.ensure(25 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon)
 		w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], value, 'g', -1, 64)...)
 		w.buff = append(w.buff, comma)
 	} else {
+		w.ensure(5 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, '0', comma)
@@ -302,12 +312,13 @@ func EncodeDouble_ConvEmpty(w *JsonEncoder, name string, value float64) {
  *************************************/
 
 func EncodeString(w *JsonEncoder, value string) {
-	w.ensure(2 + len(value))
 	if value != "" {
+		w.ensure(2 + len(value))
 		w.buff = append(w.buff, quotes)
 		w.escape(value, &noEscapeHtmlTable)
 		w.buff = append(w.buff, quotes)
 	} else {
+		w.ensure(2)
 		w.buff = append(w.buff, quotes, quotes)
 	}
 }
@@ -324,14 +335,15 @@ func EncodeString_OmitEmpty(w *JsonEncoder, name string, value string) {
 }
 
 func EncodeString_WithEmpty(w *JsonEncoder, name string, value string) {
-	w.ensure(4 + len(name) + len(value))
 	if value != "" {
+		w.ensure(6 + len(name) + len(value))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
 		w.escape(value, &noEscapeHtmlTable)
 		w.buff = append(w.buff, quotes, comma)
 	} else {
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
@@ -343,19 +355,20 @@ func EncodeString_ConvEmpty(w *JsonEncoder, name string, value string) {
 }
 
 func EncodeString_EscapeHtml(w *JsonEncoder, value string) {
-	w.ensure(2 + len(value))
 	if value != "" {
+		w.ensure(2 + len(value))
 		w.buff = append(w.buff, quotes)
 		w.escape(value, &escapeHtmlTable)
 		w.buff = append(w.buff, quotes)
 	} else {
+		w.ensure(2)
 		w.buff = append(w.buff, quotes, quotes)
 	}
 }
 
 func EncodeString_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value string) {
 	if value != "" {
-		w.ensure(4 + len(name) + len(value))
+		w.ensure(6 + len(name) + len(value))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
@@ -365,14 +378,15 @@ func EncodeString_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value string
 }
 
 func EncodeString_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value string) {
-	w.ensure(4 + len(name) + len(value))
 	if value != "" {
+		w.ensure(6 + len(name) + len(value))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
 		w.escape(value, &escapeHtmlTable)
 		w.buff = append(w.buff, quotes, comma)
 	} else {
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
@@ -388,13 +402,15 @@ func EncodeString_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, value string
  *************************************/
 
 func EncodeBytes(w *JsonEncoder, value []byte) {
-	w.ensure(2 + len(value))
 	switch {
 	case value == nil:
+		w.ensure(4)
 		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
 	case len(value) == 0:
+		w.ensure(2)
 		w.buff = append(w.buff, quotes, quotes)
 	default:
+		w.ensure(2 + len(value))
 		w.buff = append(w.buff, quotes)
 		w.base64(value)
 		w.buff = append(w.buff, quotes)
@@ -403,7 +419,7 @@ func EncodeBytes(w *JsonEncoder, value []byte) {
 
 func EncodeBytes_OmitEmpty(w *JsonEncoder, name string, value []byte) {
 	if len(value) != 0 {
-		w.ensure(4 + len(name) + len(value))
+		w.ensure(6 + len(name) + len(value))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
@@ -413,17 +429,20 @@ func EncodeBytes_OmitEmpty(w *JsonEncoder, name string, value []byte) {
 }
 
 func EncodeBytes_WithEmpty(w *JsonEncoder, name string, value []byte) {
-	w.ensure(4 + len(name) + len(value))
+
 	switch {
 	case value == nil:
+		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
 	case len(value) == 0:
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
 	default:
+		w.ensure(6 + len(name) + base64.StdEncoding.EncodedLen(len(value)))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
@@ -433,13 +452,15 @@ func EncodeBytes_WithEmpty(w *JsonEncoder, name string, value []byte) {
 }
 
 func EncodeBytes_ConvEmpty(w *JsonEncoder, name string, value []byte) {
-	w.ensure(4 + len(name) + len(value))
+
 	switch {
 	case value == nil || len(value) == 0:
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
 	default:
+		w.ensure(6 + len(name) + base64.StdEncoding.EncodedLen(len(value)))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
@@ -498,8 +519,8 @@ func EncodeEnum_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, va
  *************************************/
 
 func EncodeMessage[Message any](w *JsonEncoder, value *Message, f func(w *JsonEncoder, m *Message)) {
-	w.ensure(5)
 	if value != nil {
+		w.ensure(2)
 		w.buff = append(w.buff, leftBrace)
 		f(w, value)
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -508,13 +529,14 @@ func EncodeMessage[Message any](w *JsonEncoder, value *Message, f func(w *JsonEn
 			w.buff = append(w.buff, rightBrace)
 		}
 	} else {
+		w.ensure(4)
 		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
 	}
 }
 
 func EncodeMessage_OmitEmpty[Message any](w *JsonEncoder, name string, value *Message, f func(w *JsonEncoder, m *Message)) {
 	if value != nil {
-		w.ensure(5 + len(name))
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBrace)
@@ -529,8 +551,8 @@ func EncodeMessage_OmitEmpty[Message any](w *JsonEncoder, name string, value *Me
 }
 
 func EncodeMessage_WithEmpty[Message any](w *JsonEncoder, name string, value *Message, f func(w *JsonEncoder, m *Message)) {
-	w.ensure(5 + len(name))
 	if value != nil {
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBrace)
@@ -542,6 +564,7 @@ func EncodeMessage_WithEmpty[Message any](w *JsonEncoder, name string, value *Me
 			w.buff = append(w.buff, rightBrace, comma)
 		}
 	} else {
+		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
@@ -549,8 +572,8 @@ func EncodeMessage_WithEmpty[Message any](w *JsonEncoder, name string, value *Me
 }
 
 func EncodeMessage_ConvEmpty[Message any](w *JsonEncoder, name string, value *Message, f func(w *JsonEncoder, m *Message)) {
-	w.ensure(5 + len(name))
 	if value != nil {
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBrace)
@@ -562,6 +585,7 @@ func EncodeMessage_ConvEmpty[Message any](w *JsonEncoder, name string, value *Me
 			w.buff = append(w.buff, rightBrace, comma)
 		}
 	} else {
+		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBrace, rightBrace, comma)

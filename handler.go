@@ -83,7 +83,7 @@ func WebsocketHandleFunc(fun Call, upgrader *websocket.Upgrader) HandleFunc {
 			// 错误处理
 			if err != nil {
 				// 统一转换错误为StatusError
-				result := StatusErrorFrom(err, DefaultErrorStatus)
+				result := StatusErrorFrom(err, profile.DefaultErrorStatus)
 				// 国际化错误消息(延后初始化)
 				if lenResMap > 0 {
 					if resMap == nil {

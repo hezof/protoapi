@@ -1,7 +1,6 @@
 package protoapi
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -12,18 +11,6 @@ import (
 	"strings"
 	"unsafe"
 )
-
-// ToJson Json转换快捷方法
-func ToJson(v any) string {
-	if enc, ok := v.(MessageEncoder); ok {
-		out := NewJsonEncoder(nil, 1024)
-		enc.EncodeJSON(out)
-		bs, _ := out.Close()
-		return UnsafeString(bs)
-	}
-	bs, _ := json.Marshal(v)
-	return UnsafeString(bs)
-}
 
 // UnsafeBytes string到[]byte的不安全转换
 // For more details, see https://github.com/golang/go/issues/53003#issuecomment-1140276077.
