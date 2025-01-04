@@ -3,8 +3,6 @@ package protoapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hezof/protoapi/internal/websocket"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -206,17 +204,4 @@ func orderServiceAspects(v1 []ServiceAspect, v2 []ServiceAspect) []ServiceAspect
 		}
 	})
 	return vs
-}
-
-// newWebsocketUpgrader 根据配置生成websocket的upgrader
-func newWebsocketUpgrader(c *Config) *websocket.Upgrader {
-	upgrader := new(websocket.Upgrader)
-	upgrader.ReadBufferSize = c.WbskReadBuffer
-	upgrader.WriteBufferSize = c.WbskWriteBuffer
-	if c.WbskOriginDisable {
-		upgrader.CheckOrigin = func(r *http.Request) bool {
-			return true
-		}
-	}
-	return upgrader
 }
