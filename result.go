@@ -4,7 +4,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"sync"
 )
 
 /*
@@ -48,17 +47,12 @@ func (r *StatusResult) Error() string {
 
 var _ error = (*StatusResult)(nil) // 断言接口
 
-func (r *StatusResult) SetStatus(status int) {
-	r.Status = uint32(status)
-}
-
 // GRPCStatus 支持status.FromError
 func (r *StatusResult) GRPCStatus() *status.Status {
 	return status.New(codes.Code(r.Code), r.Message)
 }
 
 func StatusError(status uint32, code uint32, message string, args ...interface{}) *StatusResult {
-	code2status.Store(code, status) // 附加功能: grpc返回的error没有status.
 	if len(args) > 0 {
 		message = Sprintf(message, args...)
 	}
@@ -70,50 +64,34 @@ func StatusError(status uint32, code uint32, message string, args ...interface{}
 	}
 }
 
-// 附加功能: grpc返回的error没有status.
-var code2status sync.Map // {uint32: uint32}
-
-// Status 返回StatusError()StatusResult()定义的status
-func Status(code uint32) int {
-	if st, ok := code2status.Load(code); ok {
-		return int(st.(uint32))
-	}
-	return 0
-}
-
-// StatusErrorFrom 定义统一的error转换为*Result规则
-// - err: 错误参数, 不能为空, 否则nil panic
-func StatusErrorFrom(err error, defaultStatus uint32) *StatusResult {
+// FromError 定义统一的error转换为*Result规则
+func FromError(err error, defaultStatus uint32) *StatusResult {
 	// 分类处理错误
 	if result, ok := err.(*StatusResult); ok {
-		if result.Status == 0 {
-			if vl, ok := code2status.Load(result.Code); ok {
-				result.Status = vl.(uint32)
-			} else {
-				result.Status = defaultStatus
-			}
-		}
+		result.Status = NvlI(result.Status, defaultStatus)
 		// basic error
 		return result
-	} else if sta, ok := status.FromError(err); ok {
+	}
+	if result, ok := err.(*Error); ok {
+		return &StatusResult{
+			Status:  NvlI(result.Status, defaultStatus),
+			Code:    result.Code,
+			Name:    result.Name,
+			Message: result.Message,
+		}
+	}
+	if sta, ok := status.FromError(err); ok {
 		// grpc error
-		result = &StatusResult{
+		return &StatusResult{
+			Status:  defaultStatus,
 			Code:    uint32(sta.Code()),
 			Message: sta.Message(),
 		}
-		if vl, ok := code2status.Load(result.Code); ok {
-			result.Status = vl.(uint32)
-		} else {
-			result.Status = defaultStatus
-		}
-		return result
-	} else {
-		// unknown error
-		result = &StatusResult{
-			Status:  defaultStatus,
-			Code:    uint32(codes.Unknown),
-			Message: err.Error(),
-		}
-		return result
+	}
+	// unknown error
+	return &StatusResult{
+		Status:  defaultStatus,
+		Code:    uint32(codes.Unknown),
+		Message: err.Error(),
 	}
 }

@@ -23,14 +23,14 @@ RequestPlugin 请求插件.通过此扩展接口可以:
 type RequestPlugin func(all map[string]map[string]*RequestSetting)
 
 /*
-MessageValidatePlugin 消息校验插件. 支持protoapi.validate里面的plugin机制
+MessagePlugin 消息校验插件. 支持protoapi.validate里面的plugin机制
 */
-type MessageValidatePlugin func(ctx context.Context, packageName, messageName, fieldName string, val interface{}, errStatus, errCode int32) error
+type MessagePlugin func(ctx context.Context, packageName, messageName, fieldName string, val interface{}, errStatus, errCode int32) error
 
 /*
 MessageValidatePluginProvider 消息校验器提供者,支持plugin表达式解析, 支持在protoapi.validate的plugin里面使用EL!
 */
-type MessageValidatePluginProvider func(args []string) MessageValidatePlugin
+type MessageValidatePluginProvider func(args []string) MessagePlugin
 
 /*
 全局的HttpResultPlugin与MessageValidatorPluginProvider.
@@ -44,7 +44,7 @@ func SetMessageValidatePluginProvider(k string, p MessageValidatePluginProvider)
 	globalMessageValidatePluginProvider[k] = p
 }
 
-func EvalMessageValidatePlugin(expr string) MessageValidatePlugin {
+func EvalMessageValidatePlugin(expr string) MessagePlugin {
 	name, args := CompilePluginExpression(expr)
 	if p := globalMessageValidatePluginProvider[name]; p != nil {
 		return p(args)

@@ -2,7 +2,10 @@ package protoapi
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 	"io"
 )
 
@@ -20,72 +23,23 @@ type Call func(ctx *Context, in io.Reader) (any, error)
 // ServiceRegistry protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
 type ServiceRegistry func(impl interface{}, aspects []ServiceAspect) *ServiceSetting
 
-type Body int32
-
-const (
-	JsonBody Body = 0 // 解析body使用application/json
-	FormBody Body = 2 // 解析body使用multipart/form-data或application/x-www-form-urlencoded
-	OmitBody Body = 3 // 忽略解析body
-)
-
-type Result int32
-
-const (
-	SimpleResult Result = 0 // 结果使用Result包裹
-	UnwrapResult Result = 1 // 结果不用Result包裹
-	EventsResult Result = 2 // 结果使用Server-Send-Events包裹
-)
-
-type Style int32
-
-const (
-	SimpleStyle Style = 0
-	FormStyle   Style = 1
-	JsonStyle   Style = 2
-)
-
-// Http http配置元数据
-type Http struct {
-	Get       string // GET请求
-	Put       string // PUT请求
-	Post      string // POST请求
-	Delete    string // DELETE请求
-	Options   string // OPTIONS请求
-	Head      string // HEAD请求
-	Patch     string // PATCH请求
-	Trace     string // TRACE请求
-	Connect   string // CONNECT请求
-	Websocket string // WS请求(可能与GET冲突)
-	Body      Body   // body解析方式. 默认json!
-	Status    uint32 // 成功响应状态码
-	Result    Result // 是否"不"包裹Result! 可用WrapperFactory()指定Wrapper实例!
-}
-
-// Role role配置元数据
-type Role struct {
-	Code uint64 // 角色标识
-	Name string // 角色名称
-}
-
 // MethodSetting 对应Service.Method的元数据
 type MethodSetting struct {
-	parent         *ServiceSetting // 父节点设置
-	Package        string          // proto包名称
-	Service        string          // proto服务名称
-	Method         string          // proto方法名称
-	FullMethod     string          // proto方法全称:  /package.service/method
-	IsClientStream bool            // client stream
-	IsServerStream bool            // server stream
-	Http                           // protoapi.http设置
-	Role                           // protoapi.role设置
-	Call                           // 方法函数
+	parent     *ServiceSetting // 父节点设置
+	Package    string          // 包名
+	Service    string          // 服务名
+	Method     string          // 方法名
+	FullMethod string          // 方法全名
+	Http                       // protoapi.http元数据
+	Role                       // protoapi.role元数据
+	Call                       // 方法函数
 }
 
 // ServiceSetting 对应Service的元数据
 type ServiceSetting struct {
-	HttpOnly bool              // 是否仅用于HTTP
-	Impl     interface{}       // service实现
 	Desc     *grpc.ServiceDesc // service描述
+	Impl     any               // service实现
+	HttpOnly bool              // 是否仅用于HTTP
 	Aspects  []ServiceAspect   // aop切面列表
 	Methods  []*MethodSetting  // methods设置
 }
@@ -100,7 +54,30 @@ type ServiceAspect interface {
 	After(meta *MethodSetting, ctx context.Context, req, rsp any, err error) (context.Context, any, error)
 }
 
-// Validator 校验接口
-type Validator interface {
+// MessageValidator 校验接口
+type MessageValidator interface {
 	Validate(ctx context.Context) error
+}
+
+type MessageValidatePlugin func(ctx context.Context, req any, err *Error) error
+
+// AssertEncode 断言编码. 用于protogen传值
+func AssertEncode(msg proto.Message) string {
+	bs, err := proto.Marshal(msg)
+	if err != nil {
+		panic(fmt.Errorf("assert ecnode error: %v", err))
+	}
+	return base64.StdEncoding.EncodeToString(bs)
+}
+
+// AssertDecode 断言解码. 用于protogen传值
+func AssertDecode(b64 string, msg proto.Message) {
+	bs, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		panic(fmt.Errorf("assert decode error: %v", err))
+	}
+	err = proto.Unmarshal(bs, msg)
+	if err != nil {
+		panic(fmt.Errorf("assert decode error: %v", err))
+	}
 }
