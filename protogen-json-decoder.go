@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -10,13 +11,15 @@ import (
 )
 
 func NewJsonDecoder(in io.Reader, size int) *JsonDecoder {
+	if size < MinimumBufferLength {
+		size = MinimumBufferLength
+	}
 	r := &JsonDecoder{
 		in:   in,
 		buff: make([]byte, size),
 		mark: 0,
 		size: 0,
 	}
-	// NOTE: 务必初始首个token
 	r.next()
 	return r
 }
@@ -28,25 +31,48 @@ func NewJsonBuffer(buf []byte) *JsonDecoder {
 		mark: 0,
 		size: len(buf),
 	}
-	// NOTE: 务必初始首个token
 	r.next()
 	return r
 }
 
 type JsonDecoder struct {
-	token      JsonToken // token类型
 	in         io.Reader // 读入流
 	buff       []byte    // 缓存区
 	mark       int       // 读位置
 	size       int       // 末位置
 	base       int       // 基位置(base + pos)
-	number     []byte    // 数值缓存区
+	token      JsonToken // token类型
 	depth      int       // 嵌套深度
+	number     []byte    // 数值缓存区
 	firstError error     // 上下文错误
 }
 
-func (r *JsonDecoder) Decode(v JsonDecodc) {
-	v.DecodeJSON(r)
+func (r *JsonDecoder) Read(p []byte) (int, error) {
+	if r.mark < r.size || r.more() {
+		n := copy(p, r.buff[r.mark:r.size])
+		r.mark += n
+		return n, nil
+	}
+	return 0, io.EOF
+}
+
+var _ io.Reader = (*JsonDecoder)(nil)
+
+func (r *JsonDecoder) reset(in io.Reader) *JsonDecoder {
+	r.in = in
+	r.mark = 0
+	r.size = 0
+	r.base = 0
+	r.token = 0
+	r.depth = 0
+	r.next()
+	return r
+}
+
+func (r *JsonDecoder) clean() *JsonDecoder {
+	r.in = nil
+	r.firstError = nil
+	return r
 }
 
 // Close 关闭读流
@@ -104,13 +130,6 @@ func (r *JsonDecoder) exceedMaximumNestingDepthError() {
 	}
 }
 
-func (r *JsonDecoder) NextNull() bool {
-	if r.token != 0 {
-		return r.token == Null
-	}
-	return r.next() == Null
-}
-
 // more 从读入流读取缓存区
 func (r *JsonDecoder) more() bool {
 	if r.in == nil {
@@ -123,7 +142,13 @@ func (r *JsonDecoder) more() bool {
 		n, err := r.in.Read(r.buff[r.size:])
 		r.size += n
 		if err != nil {
-			return r.size > 0
+			if r.size > 0 {
+				return true
+			}
+			if r.firstError == nil {
+				r.firstError = err
+			}
+			return false
 		}
 	}
 	return true
@@ -705,14 +730,75 @@ func (l *ParseError) Error() string {
 
 func newParseError(ctx *JsonDecoder, mark int, reason string) error {
 	var data string
-	if ctx.size-mark <= profile.MaximumErrorLength {
+	if ctx.size-mark <= MaximumErrorLength {
 		data = string(ctx.buff[mark:ctx.size]) + "..."
 	} else {
-		data = string(ctx.buff[mark:mark+profile.MaximumErrorLength]) + "..."
+		data = string(ctx.buff[mark:mark+MaximumErrorLength]) + "..."
 	}
 	return &ParseError{
 		Reason: reason,
 		Offset: ctx.base + mark,
 		Data:   data,
+	}
+}
+
+func DecodeAny(r *JsonDecoder, value any) {
+	switch value := value.(type) {
+	case JsonCodec:
+		value.DecodeJSON(r)
+	case *bool:
+		DecodeBool(r, value)
+	case *int:
+		var tmp int64
+		DecodeInt64(r, &tmp)
+		*value = int(tmp)
+	case *int8:
+		var tmp int32
+		DecodeInt32(r, &tmp)
+		*value = int8(tmp)
+	case *int16:
+		var tmp int32
+		DecodeInt32(r, &tmp)
+		*value = int16(tmp)
+	case *int32:
+		DecodeInt32(r, value)
+	case *int64:
+		DecodeInt64(r, value)
+	case *uint:
+		var tmp uint64
+		DecodeUint64(r, &tmp)
+		*value = uint(tmp)
+	case *uint8:
+		var tmp uint32
+		DecodeUint32(r, &tmp)
+		*value = uint8(tmp)
+	case *uint16:
+		var tmp uint32
+		DecodeUint32(r, &tmp)
+		*value = uint16(tmp)
+	case *uint32:
+		DecodeUint32(r, value)
+	case *uint64:
+		DecodeUint64(r, value)
+	case *float32:
+		DecodeFloat(r, value)
+	case *float64:
+		DecodeDouble(r, value)
+	case *string:
+		DecodeString(r, value)
+	case *[]byte:
+		DecodeBytes(r, value)
+	default:
+		if r.token != 0 {
+			// 回退token. 解决NewJsonDecoder()/NewJsonBuffer()或reset()预置next()!
+			r.unreadByte()
+		}
+		err := json.NewDecoder(r).Decode(value)
+		if err != nil {
+			if r.firstError == nil {
+				r.firstError = err
+			}
+			return
+		}
 	}
 }

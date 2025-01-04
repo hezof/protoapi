@@ -1,7 +1,7 @@
 package protoapi
 
 func (e *Error) DecodeJSON(r *JsonDecoder) {
-	panic("implement me")
+	panic("unsupported operation")
 }
 
 func (e *Error) EncodeJSON(w *JsonEncoder) {

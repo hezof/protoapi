@@ -26,7 +26,7 @@ type StatusResult struct {
 }
 
 func (sr *StatusResult) DecodeJSON(r *JsonDecoder) {
-	panic("implement me")
+	panic("unsupported operation")
 }
 
 func (sr *StatusResult) EncodeJSON(w *JsonEncoder) {

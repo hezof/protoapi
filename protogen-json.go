@@ -2,6 +2,7 @@ package protoapi
 
 import (
 	"io"
+	"sync"
 )
 
 // JsonCodec JSON解码器
@@ -10,27 +11,40 @@ type JsonCodec interface {
 	EncodeJSON(w *JsonEncoder)
 }
 
-func GetDecoder(in io.Reader) *JsonDecoder {
-	// TODO: 使用pool缓存
-	return NewJsonDecoder(in, profile.DecoderBufferSize)
+var decoders = sync.Pool{
+	New: func() interface{} {
+		return NewJsonDecoder(nil, profile.DecoderBufferSize)
+	},
 }
 
-func GetEncoder(out io.Writer) *JsonEncoder {
-	// TODO: 使用pool缓存
-	return NewJsonEncoder(out, profile.EncoderBufferSize)
+var encoders = sync.Pool{
+	New: func() interface{} {
+		return NewJsonEncoder(nil, profile.EncoderBufferSize)
+	},
+}
+
+func GetDecoder(in io.Reader) *JsonDecoder {
+	return decoders.Get().(*JsonDecoder).reset(in)
 }
 
 func PutDecoder(dec *JsonDecoder) {
+	decoders.Put(dec.clean())
+}
 
+func GetEncoder(out io.Writer) *JsonEncoder {
+	return encoders.Get().(*JsonEncoder).reset(out)
 }
 
 func PutEncoder(enc *JsonEncoder) {
-
+	encoders.Put(enc.clean())
 }
 
 func DecodeJSON(in io.Reader, val any) error {
-	// 从pool里面取得JsonDecoder
+	dec := GetDecoder(in)
+	defer PutDecoder(dec)
 
+	DecodeAny(dec, val)
+	return dec.Close()
 }
 
 func EncodeJSON(out io.Writer, val any) error {
@@ -38,6 +52,5 @@ func EncodeJSON(out io.Writer, val any) error {
 	defer PutEncoder(enc)
 
 	EncodeAny(enc, val)
-	_, err := enc.Close()
-	return err
+	return enc.Close()
 }

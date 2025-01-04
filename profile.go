@@ -13,8 +13,6 @@ type Profile struct {
 	DecoderBufferSize          int           // 默认8K
 	EncoderBufferSize          int           // 默认8K
 	MaximumNestingDepth        int           // limit maximum depth of nesting, as allowed by https://tools.ietf.org/html/rfc7159#section-9
-	MinimumBufferLength        int           // limit minimum length of buffer
-	MaximumErrorLength         int           // limit maximum length of error
 	HandleChainCapacity        int           // HandleChain容许的最大长度上限
 	InsensitiveCapacity        int           // 用于忽略大小写的查找过程
 	HttpFormMaxMemory          int64         // 32 MB,同gin及多数web框架.
@@ -40,8 +38,6 @@ var profile = Profile{
 	DecoderBufferSize:          8 * 1024,
 	EncoderBufferSize:          8 * 1024,
 	MaximumNestingDepth:        128,
-	MinimumBufferLength:        1024,
-	MaximumErrorLength:         13,
 	HandleChainCapacity:        512,
 	InsensitiveCapacity:        256,
 	HttpFormMaxMemory:          32 << 20,
@@ -67,8 +63,6 @@ func InitProfile(p Profile) {
 	profile.DecoderBufferSize = NvlI(p.DecoderBufferSize, profile.DecoderBufferSize)
 	profile.EncoderBufferSize = NvlI(p.EncoderBufferSize, profile.EncoderBufferSize)
 	profile.MaximumNestingDepth = NvlI(p.MaximumNestingDepth, profile.MaximumNestingDepth)
-	profile.MinimumBufferLength = NvlI(p.MinimumBufferLength, profile.MinimumBufferLength)
-	profile.MaximumErrorLength = NvlI(p.MaximumErrorLength, profile.MaximumErrorLength)
 	profile.HandleChainCapacity = NvlI(p.HandleChainCapacity, profile.HandleChainCapacity)
 	profile.InsensitiveCapacity = NvlI(p.InsensitiveCapacity, profile.InsensitiveCapacity)
 	profile.HttpFormMaxMemory = NvlI(p.HttpFormMaxMemory, profile.HttpFormMaxMemory)

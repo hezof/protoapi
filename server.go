@@ -45,7 +45,7 @@ type Server struct {
 }
 
 // 整理不再使用的内存变量
-func (s *Server) cleanup() {
+func (s *Server) clean() {
 	s.routerGroup = nil
 	s._serviceSetting = nil
 	s._methodSetting = nil
@@ -452,7 +452,7 @@ func (s *Server) ListenAndServe() (err error) {
 	}
 
 	// 整理不再使用的内存变量
-	s.cleanup()
+	s.clean()
 
 	// 正常启动回调机制
 	if len(s.onReady) > 0 {

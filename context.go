@@ -14,7 +14,7 @@ type HandleFunc func(ctx *Context)
 
 // Context 处理上下文.必须注意:Context IS NON-THREAD-SAFE!!!
 type Context struct {
-	streaming                                  // 支持grpc.ServerStream的基类,内部包含对Context的引用. 必须nested struct!
+	stream                                     // (不用清理)支持grpc.ServerStream的基类,内部包含对Context的引用. 必须nested struct!
 	mux            *mux                        // (不用清理)创建Context的mux实例(不能重置)
 	params         Params                      // (不用清理)Params, 每次调用node.getValue()都必须重置
 	skippedNodes   []skippedNode               // (不用清理)配合gin-tree使用
@@ -27,18 +27,24 @@ type Context struct {
 	ResponseWriter *proxyResponseWriter        // 响应ResponseWriter. 不建议nested struct!
 	Request        *http.Request               // 请求Request
 	Handler        *Handler                    // 处理Handler
+	streamEncoder  *JsonEncoder                // 流式解码器
+	streamDecoder  *JsonDecoder                // 流式编码器
 }
 
 var _ context.Context = (*Context)(nil)
 
 // clean 负责清理外部引用. 确保pool安全!
 func (c *Context) clean() *Context {
-	c.ResponseWriter.ResponseWriter = nil
-	c.Request = nil
-	c.Handler = nil
 	c.query = nil
 	c.attrs = nil
 	c.panic = nil
+	c.ResponseWriter.ResponseWriter = nil
+	c.Request = nil
+	c.Handler = nil
+	if c.streamEncoder != nil {
+		PutEncoder(c.streamEncoder.Close())
+		c.streamEncoder = nil
+	}
 	return c
 }
 
@@ -138,7 +144,7 @@ var (
 	jsonContentType     = []string{"application/json; charset=utf-8"}
 	htmlContentType     = []string{"text/html; charset=utf-8"}
 	plainContentType    = []string{"text/plain; charset=utf-8"}
-	streamContentType   = []string{"application/octet-streaming"}
+	streamContentType   = []string{"application/octet-stream"}
 	eventsContentType   = []string{"text/event-stream"}
 	eventsCacheControl  = []string{"no-cache"}
 	keepAliveConnection = []string{"keep-alive"}

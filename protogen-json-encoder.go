@@ -6,9 +6,12 @@ import (
 	"unicode/utf8"
 )
 
+const MinimumBufferLength = 1024 // limit minimum length of buffer
+const MaximumErrorLength = 13    // limit maximum length of error
+
 func NewJsonEncoder(out io.Writer, size int) *JsonEncoder {
-	if size < profile.MinimumBufferLength {
-		size = profile.MinimumBufferLength
+	if size < MinimumBufferLength {
+		size = MinimumBufferLength
 	}
 	return &JsonEncoder{
 		out:  out,
@@ -23,8 +26,16 @@ type JsonEncoder struct {
 	firstError error    // 上下文错误
 }
 
-func (w *JsonEncoder) Encode(v MessageEncoder) {
-	v.EncodeJSON(w)
+func (w *JsonEncoder) reset(out io.Writer) *JsonEncoder {
+	w.out = out
+	w.buff = w.buff[0:0]
+	return w
+}
+
+func (w *JsonEncoder) clean() *JsonEncoder {
+	w.out = nil
+	w.firstError = nil
+	return w
 }
 
 func (w *JsonEncoder) ensure(n int) {
@@ -41,15 +52,15 @@ func (w *JsonEncoder) ensure(n int) {
 }
 
 // Close 关闭写流, 并返回剩余buff
-func (w *JsonEncoder) Close() ([]byte, error) {
+func (w *JsonEncoder) Close() error {
 	if w.firstError != nil {
-		return nil, w.firstError
+		return w.firstError
 	}
 	if w.out != nil && len(w.buff) > 0 {
 		_, err := w.out.Write(w.buff)
-		return nil, err
+		return err
 	}
-	return w.buff, nil
+	return nil
 }
 
 func (w *JsonEncoder) escape(s string, escapeTable *[128]bool) {
@@ -181,7 +192,7 @@ var (
 
 func EncodeAny(w *JsonEncoder, value any) {
 	switch value := value.(type) {
-	case MessageEncoder:
+	case JsonCodec:
 		value.EncodeJSON(w)
 	case bool:
 		EncodeBool(w, value)
@@ -214,15 +225,15 @@ func EncodeAny(w *JsonEncoder, value any) {
 	case []byte:
 		EncodeBytes(w, value)
 	default:
-		bs, err := json.Marshal(value)
+		if len(w.buff) > 0 {
+			w.ensure(0) // 清理buffer区
+		}
+		err := json.NewEncoder(w.out).Encode(value)
 		if err != nil {
 			if w.firstError == nil {
 				w.firstError = err
 			}
 			return
-		} else {
-			w.ensure(len(bs))
-			w.buff = append(w.buff, bs...)
 		}
 	}
 }
@@ -256,7 +267,7 @@ func EncodeAny_WithEmpty(w *JsonEncoder, name string, value any) {
 
 // ToJson Json转换快捷方法
 func ToJson(v any) string {
-	if enc, ok := v.(MessageEncoder); ok {
+	if enc, ok := v.(JsonCodec); ok {
 		out := NewJsonEncoder(nil, 1024)
 		enc.EncodeJSON(out)
 		bs, _ := out.Close()

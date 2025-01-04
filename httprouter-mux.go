@@ -130,7 +130,7 @@ func (m *mux) initServeHTTP() {
 			cibuff:         [4]byte{},
 			ResponseWriter: new(proxyResponseWriter),
 		}
-		c.streaming.c = c //相互引用
+		c.stream.c = c //相互引用
 		return c
 	}
 }
