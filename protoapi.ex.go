@@ -1,5 +1,9 @@
 package protoapi
 
+func (e *Error) DecodeJSON(r *JsonDecoder) {
+	panic("implement me")
+}
+
 func (e *Error) EncodeJSON(w *JsonEncoder) {
 	EncodeMessage(w, e, func(w *JsonEncoder, m *Error) {
 		EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
@@ -16,4 +20,4 @@ func (e *Error) Error() string {
 }
 
 var _ error = (*Error)(nil)
-var _ MessageEncoder = (*Error)(nil)
+var _ JsonCodec = (*Error)(nil)
