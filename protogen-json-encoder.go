@@ -63,6 +63,10 @@ func (w *JsonEncoder) Close() error {
 	return nil
 }
 
+func (w *JsonEncoder) Buffer() []byte {
+	return w.buff
+}
+
 func (w *JsonEncoder) escape(s string, escapeTable *[128]bool) {
 
 	// Portions of the string that contain no escapes are appended as
@@ -270,8 +274,8 @@ func ToJson(v any) string {
 	if enc, ok := v.(JsonCodec); ok {
 		out := NewJsonEncoder(nil, 1024)
 		enc.EncodeJSON(out)
-		bs, _ := out.Close()
-		return UnsafeString(bs)
+		_ = out.Close()
+		return UnsafeString(out.buff)
 	}
 	bs, _ := json.Marshal(v)
 	return UnsafeString(bs)
