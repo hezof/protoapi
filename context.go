@@ -41,9 +41,14 @@ func (c *Context) clean() *Context {
 	c.ResponseWriter.ResponseWriter = nil
 	c.Request = nil
 	c.Handler = nil
+	// encoder/decoder归还pool
 	if c.streamEncoder != nil {
-		PutEncoder(c.streamEncoder.Close())
+		PutEncoder(c.streamEncoder.clean())
 		c.streamEncoder = nil
+	}
+	if c.streamDecoder != nil {
+		PutDecoder(c.streamDecoder.clean())
+		c.streamDecoder = nil
 	}
 	return c
 }

@@ -31,11 +31,14 @@ func (s *stream) SetTrailer(md metadata.MD) {
 }
 
 func (s *stream) SendMsg(m interface{}) (err error) {
-	if s.c.mux.closed != 0 {
-		s.c.ResponseWriter.Header()["Connection"] = closeConnection
+	if s.c.streamEncoder == nil {
+		if s.c.mux.closed != 0 {
+			s.c.ResponseWriter.Header()["Connection"] = closeConnection
+		}
+		s.c.ResponseWriter.Header()["Content-Type"] = jsonContentType
+		s.c.ResponseWriter.WriteHeader(int(s.c.Handler.Meta.Status))
+		s.c.streamEncoder = GetEncoder(s.c.ResponseWriter.ResponseWriter)
 	}
-	s.c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-	s.c.ResponseWriter.WriteHeader(int(s.c.Handler.Meta.Status))
 	
 }
 
