@@ -4,7 +4,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"net/http"
 	"sync"
 )
 
@@ -18,24 +17,14 @@ import (
 */
 
 // 对于protoapi.required的全局默认设置,调用者可在server启动前修改设置!
-var (
-	DefaultApplyStatus         = uint32(http.StatusOK)
-	DefaultErrorStatus         = uint32(http.StatusForbidden)
-	DefaultDecodeErrorCode     = uint32(http.StatusBadRequest)
-	DefaultDecodeErrorStatus   = uint32(http.StatusBadRequest)
-	DefaultRequiredErrorStatus = uint32(http.StatusBadRequest)
-	DefaultRequiredErrorCode   = uint32(http.StatusBadRequest)
-	DefaultValidateErrorStatus = uint32(http.StatusBadRequest)
-	DefaultValidateErrorCode   = uint32(http.StatusBadRequest)
-)
 
 type StatusResult struct {
-	Status  uint32         `json:"-"`                 // 状态代码(http).
-	Code    uint32         `json:"code"`              // 错误代码. 0表示成功
-	Name    string         `json:"name,omitempty"`    // 错误名称. OK表示成功
-	Message string         `json:"message,omitempty"` // 错误消息.
-	Details []interface{}  `json:"-"`                 // 错误参数.
-	Data    MessageEncoder `json:"data,omitempty"`    // 结果数据
+	Status  uint32        `json:"-"`                 // 状态代码(http).
+	Code    uint32        `json:"code"`              // 错误代码. 0表示成功
+	Name    string        `json:"name,omitempty"`    // 错误名称. OK表示成功
+	Message string        `json:"message,omitempty"` // 错误消息.
+	Details []interface{} `json:"-"`                 // 错误参数.
+	Data    interface{}   `json:"data,omitempty"`    // 结果数据
 }
 
 func (r *StatusResult) ProtoReflect() protoreflect.Message {
@@ -47,7 +36,11 @@ func (r *StatusResult) EncodeJSON(w *JsonEncoder) error {
 		EncodeUint32_WithEmpty(w, profile.ResultCodeField, r.Code)
 		EncodeString_OmitEmpty(w, profile.ResultNameField, r.Name)
 		EncodeString_OmitEmpty(w, profile.ResultMessageField, r.Message)
-		EncodeMessageEncoder(w, profile.ResultDataField, r.Data)
+		if me, ok := r.Data.(MessageEncoder); ok {
+			EncodeMessageEncoder(w, profile.ResultDataField, me)
+		} else {
+			EncodeMessageMarshal(w, profile.ResultDataField, r.Data)
+		}
 	})
 	_, err := w.Close()
 	return err

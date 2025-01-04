@@ -146,7 +146,7 @@ var (
 )
 
 // WriteApplyResult 写出请求结果
-func (c *Context) WriteApplyResult(rsp MessageEncoder) error {
+func (c *Context) WriteApplyResult(data interface{}) error {
 	if c.mux.closed != 0 {
 		c.ResponseWriter.Header()["Connection"] = closeConnection
 	}

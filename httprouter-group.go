@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+type RequestSetting struct {
+	Filters []HandleFunc // 过滤规则, 通过server api注册的间接HandleFunc
+	Plugins []HandleFunc // 插件规则, 通过Config注册的HandleFunc
+	Handler *Handler     // 处理句柄
+}
+
 type routerGroup struct {
 	path     string
 	filters  []HandleFunc

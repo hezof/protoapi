@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"encoding/json"
 	"io"
 	"unicode/utf8"
 )
@@ -191,5 +192,25 @@ func EncodeMessageEncoder(w *JsonEncoder, name string, encoder MessageEncoder) {
 		} else {
 			w.buff = append(w.buff, rightBrace, comma)
 		}
+	}
+}
+
+func EncodeMessageMarshal(w *JsonEncoder, name string, data interface{}) {
+	if data != nil {
+		w.ensure(5 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon, leftBrace)
+		bs, err := json.Marshal(data)
+		if err != nil {
+			if w.firstError != nil {
+				w.firstError = err
+			}
+			return
+		} else {
+			w.ensure(len(bs))
+			w.buff = append(w.buff, bs...)
+		}
+		w.buff = append(w.buff, rightBrace, comma)
 	}
 }

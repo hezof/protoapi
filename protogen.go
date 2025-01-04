@@ -3,7 +3,6 @@ package protoapi
 import (
 	"context"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 	"io"
 )
 
@@ -16,7 +15,7 @@ protogen.api.go定义下述plugins的API承诺.
 */
 
 // Call 每个service的method生成一个相应的HttpFunc闭包, 用于适配restful/websocket/sse等
-type Call func(ctx *Context, in io.Reader) (MessageEncoder, error)
+type Call func(ctx *Context, in io.Reader) (any, error)
 
 // ServiceRegistry protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
 type ServiceRegistry func(impl interface{}, aspects []ServiceAspect) *ServiceSetting
@@ -58,7 +57,7 @@ type Http struct {
 	Connect   string // CONNECT请求
 	Websocket string // WS请求(可能与GET冲突)
 	Body      Body   // body解析方式. 默认json!
-	Status    int32  // 成功响应状态码
+	Status    uint32 // 成功响应状态码
 	Result    Result // 是否"不"包裹Result! 可用WrapperFactory()指定Wrapper实例!
 }
 
@@ -70,15 +69,16 @@ type Role struct {
 
 // MethodSetting 对应Service.Method的元数据
 type MethodSetting struct {
-	Package      string // proto包名称
-	Service      string // proto服务名称
-	Method       string // proto方法名称
-	FullMethod   string // proto方法全称:  /package.service/method
-	ClientStream bool   // client stream
-	ServerStream bool   // server stream
-	Http                // protoapi.http设置
-	Role                // protoapi.role设置
-	Call                // 方法函数
+	parent         *ServiceSetting // 父节点设置
+	Package        string          // proto包名称
+	Service        string          // proto服务名称
+	Method         string          // proto方法名称
+	FullMethod     string          // proto方法全称:  /package.service/method
+	IsClientStream bool            // client stream
+	IsServerStream bool            // server stream
+	Http                           // protoapi.http设置
+	Role                           // protoapi.role设置
+	Call                           // 方法函数
 }
 
 // ServiceSetting 对应Service的元数据
@@ -95,9 +95,9 @@ type ServiceAspect interface {
 	// Order 切面执行顺序[主,次]. Before Advice按[major,minor]的升序执行. After Advice按[major,minor]的降序执行.
 	Order() [2]int
 	// Before Advice执行前置处理, 返回ctx, req作为后面节点入参. 返回err会将执行流程跳至After Advice()
-	Before(meta *MethodSetting, ctx context.Context, req proto.Message) (context.Context, error)
+	Before(meta *MethodSetting, ctx context.Context, req any) (context.Context, error)
 	// After 事后内容. 返回ctx, rsp, err覆盖后面的传递内容.
-	After(meta *MethodSetting, ctx context.Context, req, rsp proto.Message, err error) (context.Context, proto.Message, error)
+	After(meta *MethodSetting, ctx context.Context, req, rsp any, err error) (context.Context, any, error)
 }
 
 // Validator 校验接口

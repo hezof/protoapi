@@ -16,18 +16,12 @@ type Handler struct {
 	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
 }
 
-// RestfulHandleFunc 可以error做为response返回!
+// RestfulHandleFunc 使用call生成restful的HandleFunc
 func RestfulHandleFunc(fun Call) HandleFunc {
 	return func(ctx *Context) {
 
 		// 业务处理(前置校验).
 		rsp, err := fun(ctx, ctx.Request.Body)
-
-		// 后置处理(结果覆盖).
-		// 优化: 后置处理根据processor定义先后逆序执行
-		for i := len(processor) - 1; i >= 0; i-- {
-			rsp, err = processor[i].PostProcessHTTP(ctx, rsp, err)
-		}
 
 		// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
 		if err != nil {
@@ -43,7 +37,7 @@ func RestfulHandleFunc(fun Call) HandleFunc {
 }
 
 /*
-WebsocketHandleFunc 根据HttpFunc生成HandleFunc. 如果plugins为空自动从代码忽略!
+WebsocketHandleFunc 使用call生成websocket的HandleFunc
 */
 func WebsocketHandleFunc(fun Call, upgrader *websocket.Upgrader) HandleFunc {
 

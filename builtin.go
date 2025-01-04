@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -107,25 +108,46 @@ func StackTrace(skip int, sep string) string {
 	}
 }
 
-func NvlI[I int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64](v1, v2 I) I {
-	if v1 != 0 {
-		return v1
+func NvlI[I int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64](vs ...I) I {
+	for _, v := range vs {
+		if v != 0 {
+			return v
+		}
 	}
-	return v2
+	return 0
 }
 
-func NvlS(v1, v2 string) string {
-	if v1 != `` {
-		return v1
+func NvlS(vs ...string) string {
+	for _, v := range vs {
+		if v != `` {
+			return v
+		}
 	}
-	return v2
+	return ``
 }
 
-func NvlB(v1, v2 bool) bool {
-	if v1 {
-		return v1
+func NvlB(vs ...bool) bool {
+	for _, v := range vs {
+		if v {
+			return v
+		}
 	}
-	return v2
+	return false
+}
+
+func Join(cs ...[]HandleFunc) []HandleFunc {
+	sum := 0
+	for _, c := range cs {
+		sum += len(c)
+	}
+	if sum == 0 {
+		return nil
+	}
+	ct := make([]HandleFunc, 0, sum)
+	for _, c := range cs {
+		ct = append(ct, c...)
+	}
+	return ct
 }
 
 // LookPath 查找路径资源, 规则如下:
@@ -158,17 +180,32 @@ func fullMethod(packageName, serviceName, methodName string) string {
 	return "/" + packageName + "." + serviceName + "/" + methodName
 }
 
-func concatServiceAspects(v1 []ServiceAspect, v2 []ServiceAspect) []ServiceAspect {
+func orderServiceAspects(v1 []ServiceAspect, v2 []ServiceAspect) []ServiceAspect {
 	n1, n2 := len(v1), len(v2)
 	if n1 == 0 && n2 == 0 {
 		return nil
 	}
 
-	rt := make([]ServiceAspect, n1+n2)
-	copy(rt, v1)
-	copy(rt[n1:], v2)
-
-	return rt
+	vs := make([]ServiceAspect, n1+n2)
+	copy(vs, v1)
+	copy(vs[n1:], v2)
+	// 根据Order[0]与Order[1]排序
+	sort.SliceStable(vs, func(i, j int) bool {
+		ai := vs[i]
+		aj := vs[j]
+		if ai.Order()[0] > aj.Order()[0] {
+			return false
+		} else if ai.Order()[0] < aj.Order()[0] {
+			return true
+		} else {
+			if ai.Order()[1] > aj.Order()[1] {
+				return false
+			} else {
+				return true
+			}
+		}
+	})
+	return vs
 }
 
 // newWebsocketUpgrader 根据配置生成websocket的upgrader

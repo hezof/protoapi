@@ -20,12 +20,6 @@ import (
 - http-grpc网关
 */
 
-type RequestSetting struct {
-	Filters []HandleFunc // 过滤规则, 通过server api注册的间接HandleFunc
-	Plugins []HandleFunc // 插件规则, 通过Config注册的HandleFunc
-	Handler *Handler     // 处理句柄
-}
-
 type Server struct {
 	mux                                                      // 多路
 	config                *Config                            // 配置
@@ -71,7 +65,7 @@ func NewServer(c *Config) *Server {
 			httpPanic:    defaultHttpPanicHandler,
 			httpNotFound: defaultHttpNotFoundHandler,
 		},
-		config:         c,
+		config:         mergeConfig(c),
 		routerGroup:    newRouterGroup(""),
 		_grpcPanicFunc: defaultGrpcPanicFunc,
 	}
@@ -154,8 +148,12 @@ func (s *Server) GrpcPanicFunc(f GrpcPanicFunc) {
  **********************************************/
 
 func (s *Server) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) *Server {
-	aspects = concatServiceAspects(s._serviceAspect, aspects)
+	aspects = orderServiceAspects(s._serviceAspect, aspects)
 	serviceSetting := registry(implement, aspects)
+	// 设置parent指向. 后续处理依赖parent.
+	for _, methodSetting := range serviceSetting.Methods {
+		methodSetting.parent = serviceSetting
+	}
 	serviceSetting.Aspects = aspects
 	s._serviceSetting = append(s._serviceSetting, serviceSetting)
 	return s
@@ -264,37 +262,68 @@ func (s *Server) ListenAndServe() (err error) {
 					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
 				})
 			}
-			if ms.GetFunc != nil {
+			if ms.Get != "" {
 				s.routerGroup.Handler(http.MethodGet, &Handler{
-					Meta:        mi,
-					Kind:        KindRestful | ms.Stream,
-					Path:        ms.GetPath,
-					Status:      ms.GetStatus,
-					Unwrap:      ms.GetUnwrap,
-					NewEncoder:  GetNewEncoder(ms.GetIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.GetFunc, ss.Processor)},
+					Meta:        ms,
+					Method:      http.MethodGet,
+					Path:        ms.Get,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
 				})
 			}
-			if ms.PutFunc != nil {
+			if ms.Put != "" {
 				s.routerGroup.Handler(http.MethodPut, &Handler{
-					Meta:        mi,
-					Kind:        KindRestful | ms.Stream,
-					Path:        ms.PutPath,
-					Status:      ms.PutStatus,
-					Unwrap:      ms.PutUnwrap,
-					NewEncoder:  GetNewEncoder(ms.PutIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.PutFunc, ss.Processor)},
+					Meta:        ms,
+					Method:      http.MethodPut,
+					Path:        ms.Put,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
 				})
 			}
-			if ms.DeleteFunc != nil {
+			if ms.Delete != "" {
 				s.routerGroup.Handler(http.MethodDelete, &Handler{
-					Meta:        mi,
-					Kind:        KindRestful | ms.Stream,
-					Path:        ms.DeletePath,
-					Status:      ms.DeleteStatus,
-					Unwrap:      ms.DeleteUnwrap,
-					NewEncoder:  GetNewEncoder(ms.DeleteIgnoreOmitempty),
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.DeleteFunc, ss.Processor)},
+					Meta:        ms,
+					Method:      http.MethodDelete,
+					Path:        ms.Delete,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+				})
+			}
+			if ms.Options != "" {
+				s.routerGroup.Handler(http.MethodOptions, &Handler{
+					Meta:        ms,
+					Method:      http.MethodOptions,
+					Path:        ms.Options,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+				})
+			}
+			if ms.Head != "" {
+				s.routerGroup.Handler(http.MethodHead, &Handler{
+					Meta:        ms,
+					Method:      http.MethodHead,
+					Path:        ms.Head,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+				})
+			}
+			if ms.Patch != "" {
+				s.routerGroup.Handler(http.MethodPatch, &Handler{
+					Meta:        ms,
+					Method:      http.MethodPatch,
+					Path:        ms.Patch,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+				})
+			}
+			if ms.Trace != "" {
+				s.routerGroup.Handler(http.MethodTrace, &Handler{
+					Meta:        ms,
+					Method:      http.MethodTrace,
+					Path:        ms.Trace,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+				})
+			}
+			if ms.Connect != "" {
+				s.routerGroup.Handler(http.MethodConnect, &Handler{
+					Meta:        ms,
+					Method:      http.MethodConnect,
+					Path:        ms.Connect,
+					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
 				})
 			}
 		}
@@ -322,18 +351,16 @@ func (s *Server) ListenAndServe() (err error) {
 	*	4. handles
 	* 同时设置所有handler的默认值
 	 ********************************************************/
-	for httpMethod, pathSetting := range s._requestSetting {
+	for method, pathSetting := range s._requestSetting {
 		for path, setting := range pathSetting {
 			handler := setting.Handler
-			handler.Path = path
-			handler.Status = nvi(handler.Status, DefaultApplyStatus, http.StatusOK)
-			handler.BodyMaxBytes = nvl(setting.Handler.BodyMaxBytes, s.config.HttpBodyMaxBytes, DefaultBodyMaxBytes)
-			handler.FormMaxMemory = nvl(setting.Handler.FormMaxMemory, s.config.HttpFormMaxMemory, DefaultFormMaxMemory)
-			handler.HandleChain = add(s._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
-			if handler.NewEncoder == nil {
-				handler.NewEncoder = iterator.NewEncoder
-			}
-			s.mux.route(httpMethod, path, handler)
+			handler.Method = method
+			handler.Path = path // NOTE: 通过martin-like注册的Handler可能没有path
+			handler.Meta.Status = NvlI(handler.Meta.Status, profile.DefaultApplyStatus)
+			handler.BodyMaxBytes = NvlI(setting.Handler.BodyMaxBytes, s.config.HttpBodyMaxBytes)
+			handler.FormMaxMemory = NvlI(setting.Handler.FormMaxMemory, s.config.HttpFormMaxMemory)
+			handler.HandleChain = Join(s._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
+			s.mux.route(method, path, handler) // 正式注册到mux
 		}
 	}
 	/********************************************************
@@ -350,8 +377,8 @@ func (s *Server) ListenAndServe() (err error) {
 		if s.config.GrpcKeepAlive > 0 {
 			opts = append(opts, grpc.KeepaliveParams(keepalive.ServerParameters{Time: s.config.GrpcKeepAlive}))
 		}
-		if s.config.GrpcMinRecvPingInterval > 0 {
-			opts = append(opts, grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{MinTime: s.config.GrpcMinRecvPingInterval}))
+		if s.config.GrpcKeepAlivePolicy > 0 {
+			opts = append(opts, grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{MinTime: s.config.GrpcKeepAlivePolicy, PermitWithoutStream: true}))
 		}
 		// 很关键: 必须确保"boostrap interceptor"位于最后位置, 即必须是grpc server最后添加的ServerOption
 		grpcServer = grpc.NewServer(append(opts,
@@ -444,30 +471,26 @@ func (s *Server) ListenAndServe() (err error) {
  **********************************************/
 
 var defaultHttpPanicHandler = &Handler{
-	Status: http.StatusInternalServerError,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
 			ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
 		},
 	},
-	NewEncoder: NewEncoder,
 }
 
 var defaultHttpNotFoundHandler = &Handler{
-	Status: http.StatusNotFound,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
 		},
 	},
-	NewEncoder: NewEncoder,
 }
 
 // GrpcPanicFunc grpc panic处理函数
-type GrpcPanicFunc func(ctx context.Context, fullMethod string, p interface{}) error
+type GrpcPanicFunc func(meta *MethodSetting, ctx context.Context, p interface{}) error
 
-func defaultGrpcPanicFunc(ctx context.Context, fullMethod string, p interface{}) error {
+func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
 	log.Error("panic: %+v\n%v", p, StackTrace(2, "\n"))
 	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
 }
@@ -476,51 +499,37 @@ func defaultGrpcPanicFunc(ctx context.Context, fullMethod string, p interface{})
 * 流式拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
-func generateBootstrapStreamInterceptor(processorGrpcMetaInfo map[string]*GrpcMeta, panicFunc GrpcPanicFunc, grpcI18nError bool) grpc.ServerOption {
+func generateBootstrapStreamInterceptor(metas map[string]*MethodSetting, grpcPanicFunc GrpcPanicFunc, grpcI18nError bool) grpc.ServerOption {
 	return grpc.ChainStreamInterceptor(func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
-
 		var ctx = ss.Context()
-
-		// panic捕获
-		defer func() {
+		var meta = metas[info.FullMethod]
+		if meta == nil {
+			return StatusError(http.StatusNotFound, uint32(codes.NotFound), "meta not found: %v", info.FullMethod)
+		}
+		defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 			if p := recover(); p != nil {
-				err = panicFunc(ctx, info.FullMethod, p)
+				err = grpcPanicFunc(meta, ctx, p)
 			}
-		}()
+		}(meta, ctx, grpcPanicFunc)
+		var aspects = meta.parent.Aspects
 
-		/*
-			NOTE: ValidateHTTP更准确描述为PreProcessHTTP(前置处理器).
-			在此阶段可能会设置context的某些数据, 例如session之类.
-			后面自定义的MessageValidatePlugin依赖此类信息!
-			所以原来的"语义校验"与"语法校验"被调换了顺序!
-		*/
-
-		// 框架只保障有processor的service拥有grpcMetaInfo
-		var meta, exists = processorGrpcMetaInfo[info.FullMethod]
-
-		// 前置校验(语义校验)
-		if exists {
-			for _, p := range meta.Processor {
-				// 如果新的context非空则替换旧的context
-				if err = p.ValidateGRPC(&ctx, meta.Meta, nil); err != nil {
-					goto ____END____
-				}
+		var idx = -1
+		for _, s := range aspects {
+			idx++
+			if ctx, err = s.Before(meta, ctx, nil); err != nil {
+				goto __AFTER__
 			}
 		}
-		// 流式调用的req无法解析,不执行MessageValidator逻辑
 
 		// 业务调用
 		err = handler(srv, ss)
 
-		// 后置处理(结果覆盖)
-		if exists {
-			// 优化: 后置处理根据processor定义先后逆序执行
-			for i := len(meta.Processor) - 1; i >= 0; i-- {
-				_, err = meta.Processor[i].PostProcessGRPC(&ctx, meta.Meta, nil, err)
-			}
+	__AFTER__:
+		for idx >= 0 {
+			ctx, _, err = aspects[idx].After(meta, ctx, nil, nil, err)
+			idx--
 		}
 
-	____END____:
 		// 错误转换(grpc默认关闭i18n追求更快性能)
 		if grpcI18nError && lenResMap > 0 && err != nil {
 			err = i18nGrpcError(ctx, err)
@@ -535,57 +544,45 @@ func generateBootstrapStreamInterceptor(processorGrpcMetaInfo map[string]*GrpcMe
 * 一元拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 一元拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainUnaryInterceptor设置).
  **********************************************/
-func generateBootstrapUnaryInterceptor(processorGrpcMetaInfo map[string]*GrpcMeta, panicFunc GrpcPanicFunc, grpcI18nError bool) grpc.ServerOption {
+func generateBootstrapUnaryInterceptor(metas map[string]*MethodSetting, grpcPanicFunc GrpcPanicFunc, grpcI18nError bool) grpc.ServerOption {
 
 	// 实现采用goto确保控制流程清晰!
 	return grpc.ChainUnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
-		// panic捕获
-		defer func() {
+		var meta = metas[info.FullMethod]
+		if meta == nil {
+			return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "meta not found: %v", info.FullMethod)
+		}
+		defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 			if p := recover(); p != nil {
-				err = panicFunc(ctx, info.FullMethod, p)
+				err = grpcPanicFunc(meta, ctx, p)
 			}
-		}()
+		}(meta, ctx, grpcPanicFunc)
+		var aspects = meta.parent.Aspects
 
-		/*
-			NOTE: ValidateHTTP更准确描述为PreProcessHTTP(前置处理器).
-			在此阶段可能会设置context的某些数据, 例如session之类.
-			后面自定义的MessageValidatePlugin依赖此类信息!
-			所以原来的"语义校验"与"语法校验"被调换了顺序!
-		*/
-
-		// 框架只保障有processor的service拥有grpcMetaInfo
-		var meta, exists = processorGrpcMetaInfo[info.FullMethod]
-
-		// 前置校验(语义校验)
-		if exists {
-			for _, p := range meta.Processor {
-				// 如果新的context非空则替换旧的context
-				if err = p.ValidateGRPC(&ctx, meta.Meta, req); err != nil {
-					goto ____END____
-				}
+		var idx = -1
+		for _, s := range aspects {
+			idx++
+			if ctx, err = s.Before(meta, ctx, req); err != nil {
+				goto __AFTER__
 			}
 		}
 
 		// 语法校验
-		if vd, ok := req.(MessageValidator); ok {
+		if vd, ok := req.(Validator); ok {
 			if err = vd.Validate(ctx); err != nil {
-				goto ____END____
+				goto __AFTER__
 			}
 		}
-
 		// 业务调用
 		rsp, err = handler(ctx, req)
 
-		// 后置处理(结果覆盖)
-		if exists {
-			// 优化: 后置处理根据processor定义先后逆序执行
-			for i := len(meta.Processor) - 1; i >= 0; i-- {
-				rsp, err = meta.Processor[i].PostProcessGRPC(&ctx, meta.Meta, rsp, err)
-			}
+	__AFTER__:
+		for idx >= 0 {
+			ctx, rsp, err = aspects[idx].After(meta, ctx, req, rsp, err)
+			idx--
 		}
 
-	____END____:
 		// 错误转换(grpc默认关闭i18n追求更快性能)
 		if grpcI18nError && lenResMap > 0 && err != nil {
 			err = i18nGrpcError(ctx, err)
@@ -598,7 +595,7 @@ func generateBootstrapUnaryInterceptor(processorGrpcMetaInfo map[string]*GrpcMet
 
 func i18nGrpcError(c context.Context, err error) error {
 
-	if result, ok := err.(*Result); ok {
+	if result, ok := err.(*StatusResult); ok {
 		if md, ok := metadata.FromIncomingContext(c); ok {
 			if vs, ok := md["accept-language"]; ok {
 				if resMap := fastGetResMapByAcceptLanguage(vs[0]); resMap != nil {
