@@ -160,7 +160,7 @@ func LookPath(path string) (string, bool) {
 	return res, true
 }
 
-// fullMethod is the full RPC method string, i.e., /package.service/method.
+// fullMethod is the full RPC method string, i.e., /package.component/method.
 func fullMethod(packageName, serviceName, methodName string) string {
 	return "/" + packageName + "." + serviceName + "/" + methodName
 }
