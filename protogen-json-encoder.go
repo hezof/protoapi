@@ -181,6 +181,8 @@ var (
 
 func EncodeAny(w *JsonEncoder, value any) {
 	switch value := value.(type) {
+	case MessageEncoder:
+		value.EncodeJSON(w)
 	case bool:
 		EncodeBool(w, value)
 	case int:
@@ -211,8 +213,6 @@ func EncodeAny(w *JsonEncoder, value any) {
 		EncodeString(w, value)
 	case []byte:
 		EncodeBytes(w, value)
-	case MessageEncoder:
-		value.EncodeJSON(w)
 	default:
 		bs, err := json.Marshal(value)
 		if err != nil {
@@ -247,7 +247,7 @@ func EncodeAny_WithEmpty(w *JsonEncoder, name string, value any) {
 		EncodeAny(w, value)
 		w.buff = append(w.buff, comma)
 	} else {
-		w.ensure(9 + len(name))
+		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)

@@ -91,16 +91,9 @@ func WebsocketHandleFunc(fun Call, upgrader *websocket.Upgrader) HandleFunc {
 					}
 					ctx.i18nErrorResult(result, resMap)
 				}
-				err = enc.Encode(result)
+				err = EncodeJSON(out, result)
 			} else {
-				if ctx.Handler.Unwrap {
-					err = enc.Encode(rsp)
-				} else {
-					// 重用wrapper输出,减少临时对象GC!
-					ctx.wrapper.Data = rsp
-					err = enc.Encode(&ctx.wrapper)
-					ctx.wrapper.Data = nil // 及时清理
-				}
+				err = EncodeJSON(out, rsp)
 			}
 			if err != nil {
 				if _, ok := err.(*websocket.CloseError); !ok {

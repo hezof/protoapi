@@ -44,9 +44,7 @@ func EncodeJSON(out io.Writer, val any) error {
 	enc := GetEncoder(out)
 	defer PutEncoder(enc)
 
-	if me, ok := val.(MessageEncoder); ok {
-		me.EncodeJSON(enc)
-	}
+	EncodeAny(enc, val)
 	_, err := enc.Close()
 	return err
 }
