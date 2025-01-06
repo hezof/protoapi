@@ -466,18 +466,20 @@ func (s *Server) ListenAndServe() (err error) {
  **********************************************/
 
 var defaultHttpPanicHandler = &Handler{
+	Meta: Meta(http.StatusInternalServerError, Http_simple),
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
-			ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
+			_ = WriteErrorResult(ctx, ctx.ResponseWriter, StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
 		},
 	},
 }
 
 var defaultHttpNotFoundHandler = &Handler{
+	Meta: Meta(http.StatusNotFound, Http_simple),
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
+			_ = WriteErrorResult(ctx, ctx.ResponseWriter, StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
 		},
 	},
 }
@@ -499,7 +501,7 @@ func generateBootstrapStreamInterceptor(metas map[string]*MethodSetting, grpcPan
 		var ctx = ss.Context()
 		var meta = metas[info.FullMethod]
 		if meta == nil {
-			return StatusError(http.StatusNotFound, uint32(codes.NotFound), "meta not found: %v", info.FullMethod)
+			return StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 		}
 		defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 			if p := recover(); p != nil {
@@ -546,7 +548,7 @@ func generateBootstrapUnaryInterceptor(metas map[string]*MethodSetting, grpcPani
 
 		var meta = metas[info.FullMethod]
 		if meta == nil {
-			return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "meta not found: %v", info.FullMethod)
+			return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 		}
 		defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 			if p := recover(); p != nil {

@@ -143,6 +143,7 @@ func (m *mux) initServeHTTP() {
 
 func (m *mux) HttpPanicFunc(f HandleFunc) {
 	m.HttpPanic(&Handler{
+		Meta:        Meta(http.StatusInternalServerError, Http_simple),
 		HandleChain: []HandleFunc{f},
 	})
 }
@@ -156,6 +157,7 @@ func (m *mux) HttpPanic(h *Handler) {
 
 func (m *mux) HttpNotFoundFunc(f HandleFunc) {
 	m.HttpNotFound(&Handler{
+		Meta:        Meta(http.StatusNotFound, Http_simple),
 		HandleChain: []HandleFunc{f},
 	})
 }

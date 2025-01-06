@@ -38,25 +38,21 @@ func (rc *routerGroup) Use(filters ...HandleFunc) *routerGroup {
 	return rc
 }
 
-// Deprecated: 请改用HandleFunc()!
-func (rc *routerGroup) Handle(method string, path string, hs ...HandleFunc) *routerGroup {
-	return rc.HandleFunc(method, path, hs...)
-}
-
 func (rc *routerGroup) HandleFunc(method string, path string, hs ...HandleFunc) *routerGroup {
-	return rc.Handler(method, &Handler{
+	return rc.Handle(&Handler{
+		Method:      method,
 		Path:        path,
 		HandleChain: hs,
 	})
 }
 
-func (rc *routerGroup) Handler(method string, hd *Handler) *routerGroup {
-	nodes, ok := rc.settings[method]
+func (rc *routerGroup) Handle(hd *Handler) *routerGroup {
+	nodes, ok := rc.settings[hd.Method]
 	if !ok {
 		nodes = make(map[string]*RequestSetting)
-		rc.settings[method] = nodes
+		rc.settings[hd.Method] = nodes
 	} else if v, ok := nodes[hd.Path]; ok {
-		panic(fmt.Sprintf("handle duplicate path: %v %+v, new: %+v, old: %+v", method, hd.Path, hd, v))
+		panic(fmt.Sprintf("handle duplicate path: %v %+v, new: %+v, old: %+v", hd.Method, hd.Path, hd, v))
 	}
 	nodes[hd.Path] = &RequestSetting{
 		Handler: hd,
@@ -109,17 +105,11 @@ func (rc *routerGroup) StaticFile(path string, file string) *routerGroup {
 	if strings.Contains(path, ":") || strings.Contains(path, "*") {
 		panic("URL parameters can not be used when serving a static file")
 	}
-	handler := &Handler{
-		Path: path,
-		HandleChain: []HandleFunc{
-			func(c *Context) {
-				// 底层直接使用http api适配
-				http.ServeFile(c.ResponseWriter, c.Request, file)
-			},
-		},
+	call := func(c *Context) {
+		http.ServeFile(c.ResponseWriter, c.Request, file)
 	}
-	rc.Handler(http.MethodGet, handler)
-	rc.Handler(http.MethodHead, handler)
+	rc.HandleFunc(http.MethodGet, path, call)
+	rc.HandleFunc(http.MethodHead, path, call)
 	return rc
 }
 
@@ -138,30 +128,24 @@ func (rc *routerGroup) StaticFS(prefix string, fs http.FileSystem) *routerGroup 
 		prefix = prefix[:last]
 		plen--
 	}
-
-	staticFs := http.FileServer(fs)
-	handler := &Handler{
-		Path: prefix + "/*file",
-		HandleChain: []HandleFunc{
-			func(c *Context) {
-				// 必须是path前缀，否则404
-				ulen := len(c.Request.URL.Path)
-				if ulen == plen {
-					// 重定向到带"/"结尾的路径
-					c.ResponseWriter.Header().Set("Location", prefix+"/")
-					c.ResponseWriter.WriteHeader(http.StatusMovedPermanently)
-				} else if ulen > plen && c.Request.URL.Path[plen] == '/' {
-					c.Request.URL.Path = c.Request.URL.Path[plen:]
-					staticFs.ServeHTTP(c.ResponseWriter, c.Request)
-				} else {
-					http.NotFound(c.ResponseWriter, c.Request)
-				}
-			},
-		},
+	serv := http.FileServer(fs)
+	path := prefix + "/*file"
+	call := func(c *Context) {
+		// 必须是path前缀，否则404
+		ulen := len(c.Request.URL.Path)
+		if ulen == plen {
+			// 重定向到带"/"结尾的路径
+			c.ResponseWriter.Header().Set("Location", prefix+"/")
+			c.ResponseWriter.WriteHeader(http.StatusMovedPermanently)
+		} else if ulen > plen && c.Request.URL.Path[plen] == '/' {
+			c.Request.URL.Path = c.Request.URL.Path[plen:]
+			serv.ServeHTTP(c.ResponseWriter, c.Request)
+		} else {
+			http.NotFound(c.ResponseWriter, c.Request)
+		}
 	}
-
-	rc.Handler(http.MethodGet, handler)
-	rc.Handler(http.MethodHead, handler)
+	rc.HandleFunc(http.MethodGet, path, call)
+	rc.HandleFunc(http.MethodHead, path, call)
 
 	return rc
 }

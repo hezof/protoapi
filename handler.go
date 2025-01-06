@@ -98,3 +98,10 @@ func WebsocketHandleFunc(ctx *Context) {
 		}
 	}
 }
+
+func Meta(status uint32, result Http_Result) *MethodSetting {
+	r := new(MethodSetting)
+	r.Http.Status = status
+	r.Http.Result = result
+	return r
+}

@@ -192,30 +192,6 @@ func (c *Context) WriteHtmlBytes(status int, data []byte) error {
 	return err
 }
 
-func (c *Context) getAcceptLanguage() string {
-	if vs, ok := c.Request.Header["Accept-Language"]; ok {
-		return vs[0]
-	}
-	return ""
-}
-
-func (c *Context) i18nErrorResult(result *StatusResult, resMap map[uint32]*resource) bool {
-	// 有资源才进行!
-	if rs, ok := resMap[result.Code]; ok {
-		// 支持参数格式化
-		if len(result.Details) == 0 {
-			result.Message = rs.Message
-		} else {
-			result.Message = Sprintf(rs.Message, result.Details...)
-		}
-		if rs.StatusCode > 0 {
-			result.Status = rs.StatusCode
-		}
-		return true
-	}
-	return false
-}
-
 /*************************************
  辅助数据结构
 *************************************/

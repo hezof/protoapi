@@ -64,8 +64,8 @@ func StatusError(status uint32, code uint32, message string, args ...interface{}
 	}
 }
 
-// FromError 定义统一的error转换为*Result规则
-func FromError(err error, defaultStatus uint32) *StatusResult {
+// StatusErrorFrom 定义统一的error转换为*Result规则
+func StatusErrorFrom(err error, defaultStatus uint32) *StatusResult {
 	// 分类处理错误
 	if result, ok := err.(*StatusResult); ok {
 		result.Status = NvlI(result.Status, defaultStatus)
@@ -96,10 +96,35 @@ func FromError(err error, defaultStatus uint32) *StatusResult {
 	}
 }
 
-func WriteErrorResult(ctx *Context, out io.Writer, err error) error {
-	
+func WriteErrorResult(ctx *Context, out io.Writer, err *StatusResult) error {
+
+	// 国际化错误消息(延后初始化)
+	if lenResMap > 0 {
+		var lang string
+		if vs, ok := ctx.Request.Header["Accept-Language"]; ok {
+			lang = vs[0]
+		}
+		var resMap = fastGetResMapByAcceptLanguage(lang)
+		// 有资源才进行!
+		if rs, ok := resMap[err.Code]; ok {
+			// 支持参数格式化
+			if len(err.Details) == 0 {
+				err.Message = rs.Message
+			} else {
+				err.Message = Sprintf(rs.Message, err.Details...)
+			}
+			if rs.StatusCode > 0 {
+				err.Status = rs.StatusCode
+			}
+		}
+	}
+
+	return EncodeJSON(out, err)
 }
 
 func WriteApplyResult(ctx *Context, out io.Writer, val any) error {
-
+	switch {
+	case ctx.Handler.Meta == nil:
+	case ctx.Handler.Meta.Result
+	}
 }
