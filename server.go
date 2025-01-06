@@ -147,13 +147,13 @@ func (s *Server) GrpcPanicFunc(f GrpcPanicFunc) {
  **********************************************/
 
 func (s *Server) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) *Server {
-	aspects = orderServiceAspects(s._serviceAspect, aspects)
-	serviceSetting := registry(implement, aspects)
-	// 设置parent指向. 后续处理依赖parent.
+	serviceSetting := registry()
+	serviceSetting.Impl = implement
+	serviceSetting.Aspects = orderServiceAspects(s._serviceAspect, aspects)
 	for _, methodSetting := range serviceSetting.Methods {
 		methodSetting.parent = serviceSetting
+		methodSetting.fullMethod = fullMethod(methodSetting.Package, methodSetting.Service, methodSetting.Method)
 	}
-	serviceSetting.Aspects = aspects
 	s._serviceSetting = append(s._serviceSetting, serviceSetting)
 	return s
 }
@@ -234,10 +234,7 @@ func (s *Server) ListenAndServe() (err error) {
 	s._methodSetting = make(map[string]*MethodSetting)
 	for _, ss := range s._serviceSetting {
 		for _, ms := range ss.Methods {
-			// 计算全方法
-			ms.FullMethod = fullMethod(ms.Package, ms.Service, ms.Method)
-			// 添加方法设置
-			s._methodSetting[ms.FullMethod] = ms
+			s._methodSetting[ms.fullMethod] = ms
 
 			// 添加method相应的RequestSetting
 			if ms.Websocket != "" {
@@ -248,7 +245,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:         ms,
 					Method:       http.MethodGet,
 					Path:         ms.Websocket,
-					HandleChain:  []HandleFunc{WebsocketHandleFunc(ms.Call, upgrader)},
+					HandleChain:  []HandleFunc{WebsocketHandleFunc},
 					BodyMaxBytes: -1, // 如果是Websocket长链接则自动忽略BodyMaxBytes参数
 				})
 			}
@@ -257,7 +254,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodPost,
 					Path:        ms.Post,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Get != "" {
@@ -265,7 +262,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodGet,
 					Path:        ms.Get,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Put != "" {
@@ -273,7 +270,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodPut,
 					Path:        ms.Put,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Delete != "" {
@@ -281,7 +278,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodDelete,
 					Path:        ms.Delete,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Options != "" {
@@ -289,7 +286,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodOptions,
 					Path:        ms.Options,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Head != "" {
@@ -297,7 +294,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodHead,
 					Path:        ms.Head,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Patch != "" {
@@ -305,7 +302,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodPatch,
 					Path:        ms.Patch,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Trace != "" {
@@ -313,7 +310,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodTrace,
 					Path:        ms.Trace,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 			if ms.Connect != "" {
@@ -321,7 +318,7 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodConnect,
 					Path:        ms.Connect,
-					HandleChain: []HandleFunc{RestfulHandleFunc(ms.Call)},
+					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
 		}

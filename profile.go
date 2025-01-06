@@ -13,8 +13,6 @@ type Profile struct {
 	DecoderBufferSize          int           // 默认8K
 	EncoderBufferSize          int           // 默认8K
 	MaximumNestingDepth        int           // limit maximum depth of nesting, as allowed by https://tools.ietf.org/html/rfc7159#section-9
-	HandleChainCapacity        int           // HandleChain容许的最大长度上限
-	InsensitiveCapacity        int           // 用于忽略大小写的查找过程
 	HttpFormMaxMemory          int64         // 32 MB,同gin及多数web框架.
 	HttpBodyMaxBytes           int64         // 32 MB,默认请求体的字节数. 注意: 请求体不是响应体, 后者没有限制!
 	HttpKeepAlive              time.Duration // 3分钟

@@ -18,15 +18,15 @@ import (
 type Call func(ctx *Context, in io.Reader) (any, error)
 
 // ServiceRegistry protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
-type ServiceRegistry func(impl interface{}, aspects []ServiceAspect) *ServiceSetting
+type ServiceRegistry func() *ServiceSetting
 
 // MethodSetting 对应Service.Method的元数据
 type MethodSetting struct {
 	parent     *ServiceSetting // 父节点设置
+	fullMethod string          // 方法全名
 	Package    string          // 包名
 	Service    string          // 服务名
 	Method     string          // 方法名
-	FullMethod string          // 方法全名
 	Http                       // protoapi.http元数据
 	Role                       // protoapi.role元数据
 	Call                       // 方法函数

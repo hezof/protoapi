@@ -6,6 +6,11 @@ import (
 	"sync"
 )
 
+const (
+	HandleChainCapacity = 128 // HandleChain容许的最大长度上限
+	InsensitiveCapacity = 256 // 用于忽略大小写的查找过程
+)
+
 /*
 请在调用route()完毕后务必调用done()对pool进行初始化
 */
@@ -108,8 +113,8 @@ func (m *mux) must(method string) *node {
 // 除panic与notfound外, 其他必须通过RouterConfig的相关方法添加, 实现conf配置化预处理
 func (m *mux) route(method string, path string, node *Handler) {
 	// !关键: 保证Context.Next()可以正常执行的必要条件!
-	if len(node.HandleChain) >= profile.HandleChainCapacity {
-		panic("handle chain exceed maximum length: " + strconv.Itoa(profile.HandleChainCapacity))
+	if len(node.HandleChain) >= HandleChainCapacity {
+		panic("handle chain exceed maximum length: " + strconv.Itoa(HandleChainCapacity))
 	}
 	m.must(method).addRoute(path, node)
 	if maxParams := countParams(path); maxParams > m.maxParams {
@@ -127,7 +132,7 @@ func (m *mux) initServeHTTP() {
 			mux:            m,
 			params:         make([]Param, 0, m.maxParams),
 			skippedNodes:   make([]skippedNode, 0, m.maxSections),
-			cipath:         make([]byte, 0, profile.InsensitiveCapacity),
+			cipath:         make([]byte, 0, InsensitiveCapacity),
 			cibuff:         [4]byte{},
 			ResponseWriter: new(proxyResponseWriter),
 		}
@@ -157,13 +162,6 @@ func (m *mux) HttpNotFoundFunc(f HandleFunc) {
 
 func (m *mux) HttpNotFound(h *Handler) {
 	if h != nil {
-		// 避免空指针
-		if h.Status == 0 {
-			h.Status = http.StatusNotFound
-		}
-		if h.NewEncoder == nil {
-			h.NewEncoder = NewEncoder
-		}
 		m.httpNotFound = h
 	}
 }
@@ -198,17 +196,15 @@ func (m *mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				c.cipath = make([]byte, 0, mx+1)
 			}
 			// 尝试忽略大小写等情况
-			if fixedPath := BytesToString(t.findCaseInsensitivePathRec(
+			if fixedPath := UnsafeString(t.findCaseInsensitivePathRec(
 				cleanPath(path),
 				c.cipath,
 				c.cibuff,
 				true,
 			)); len(fixedPath) > 0 && fixedPath != path {
-				if len(fixedPath) > 0 && fixedPath != path {
-					c.params = c.params[0:0]
-					c.skippedNodes = c.skippedNodes[0:0]
-					_ = t.getValue(fixedPath, c) // 此处可以使用非安全字串
-				}
+				c.params = c.params[0:0]
+				c.skippedNodes = c.skippedNodes[0:0]
+				_ = t.getValue(fixedPath, c) // 此处可以使用非安全字串
 			}
 		}
 	}
