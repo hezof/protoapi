@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"encoding/json"
 	"io"
 	"sync"
 )
@@ -40,17 +41,91 @@ func PutEncoder(enc *JsonEncoder) {
 }
 
 func DecodeJSON(in io.Reader, val any) error {
-	dec := GetDecoder(in)
-	defer PutDecoder(dec)
+	if jc, ok := val.(JsonCodec); ok {
+		dec := GetDecoder(in)
+		defer PutDecoder(dec)
 
-	DecodeAny(dec, val)
-	return dec.Close()
+		jc.DecodeJSON(dec)
+		return dec.Close()
+	} else {
+		return json.NewDecoder(in).Decode(val)
+	}
 }
 
 func EncodeJSON(out io.Writer, val any) error {
-	enc := GetEncoder(out)
-	defer PutEncoder(enc)
+	if jc, ok := val.(JsonCodec); ok {
+		enc := GetEncoder(out)
+		defer PutEncoder(enc)
 
-	EncodeAny(enc, val)
-	return enc.Close()
+		jc.EncodeJSON(enc)
+		return enc.Close()
+	} else {
+		enc := json.NewEncoder(out)
+		enc.SetEscapeHTML(false)
+		return enc.Encode(val)
+	}
+}
+
+func EncodeJSON_OmitEmpty(w *JsonEncoder, name string, val any) {
+	if val != nil {
+		w.ensure(5 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon)
+		if jc, ok := val.(JsonCodec); ok {
+			jc.EncodeJSON(w)
+		} else {
+			enc := json.NewEncoder(w)
+			enc.SetEscapeHTML(false)
+			err := enc.Encode(val)
+			if err != nil {
+				if w.firstError == nil {
+					w.firstError = err
+				}
+				return
+			}
+		}
+		w.buff = append(w.buff, comma)
+	}
+}
+
+func EncodeJSON_WithEmpty(w *JsonEncoder, name string, val any) {
+	if val != nil {
+		w.ensure(5 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon)
+		if jc, ok := val.(JsonCodec); ok {
+			jc.EncodeJSON(w)
+		} else {
+			enc := json.NewEncoder(w)
+			enc.SetEscapeHTML(false)
+			err := enc.Encode(val)
+			if err != nil {
+				if w.firstError == nil {
+					w.firstError = err
+				}
+				return
+			}
+		}
+		w.buff = append(w.buff, comma)
+	} else {
+		w.ensure(8 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
+	}
+}
+
+// ToJson Json转换快捷方法
+func ToJson(v any) string {
+	if enc, ok := v.(JsonCodec); ok {
+		out := NewJsonEncoder(nil, 1024)
+		enc.EncodeJSON(out)
+		_ = out.Close()
+		return UnsafeString(out.buff)
+	} else {
+		bs, _ := json.Marshal(v)
+		return UnsafeString(bs)
+	}
 }

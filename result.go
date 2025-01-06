@@ -35,7 +35,7 @@ func (sr *StatusResult) EncodeJSON(w *JsonEncoder) {
 		EncodeUint32_WithEmpty(w, profile.ResultCodeField, r.Code)
 		EncodeString_OmitEmpty(w, profile.ResultNameField, r.Name)
 		EncodeString_OmitEmpty(w, profile.ResultMessageField, r.Message)
-		EncodeAny_OmitEmpty(w, profile.ResultDataField, r.Data)
+		EncodeJSON_OmitEmpty(w, profile.ResultDataField, r.Data)
 	})
 }
 
@@ -97,7 +97,7 @@ func FromError(err error, defaultStatus uint32) *StatusResult {
 }
 
 func WriteErrorResult(ctx *Context, out io.Writer, err error) error {
-
+	
 }
 
 func WriteApplyResult(ctx *Context, out io.Writer, val any) error {

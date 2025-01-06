@@ -1,7 +1,6 @@
 package protoapi
 
 import (
-	"encoding/json"
 	"io"
 	"unicode/utf8"
 )
@@ -25,6 +24,15 @@ type JsonEncoder struct {
 	number     [32]byte // 数值缓存区
 	firstError error    // 上下文错误
 }
+
+func (w *JsonEncoder) Write(p []byte) (int, error) {
+	n := len(p)
+	w.ensure(n)
+	w.buff = append(w.buff, p...)
+	return n, nil
+}
+
+var _ io.Writer = (*JsonEncoder)(nil)
 
 func (w *JsonEncoder) reset(out io.Writer) *JsonEncoder {
 	w.out = out
@@ -193,90 +201,3 @@ var (
 	escapeHtmlTable   = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '&', '<', '>', '\\')
 	noEscapeHtmlTable = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '\\')
 )
-
-func EncodeAny(w *JsonEncoder, value any) {
-	switch value := value.(type) {
-	case JsonCodec:
-		value.EncodeJSON(w)
-	case bool:
-		EncodeBool(w, value)
-	case int:
-		EncodeInt64(w, int64(value))
-	case int8:
-		EncodeInt32(w, int32(value))
-	case int16:
-		EncodeInt32(w, int32(value))
-	case int32:
-		EncodeInt32(w, value)
-	case int64:
-		EncodeInt64(w, value)
-	case uint:
-		EncodeUint64(w, uint64(value))
-	case uint8:
-		EncodeUint32(w, uint32(value))
-	case uint16:
-		EncodeUint32(w, uint32(value))
-	case uint32:
-		EncodeUint32(w, value)
-	case uint64:
-		EncodeUint64(w, value)
-	case float32:
-		EncodeFloat(w, value)
-	case float64:
-		EncodeDouble(w, value)
-	case string:
-		EncodeString(w, value)
-	case []byte:
-		EncodeBytes(w, value)
-	default:
-		if len(w.buff) > 0 {
-			w.ensure(0) // 清理buffer区
-		}
-		err := json.NewEncoder(w.out).Encode(value)
-		if err != nil {
-			if w.firstError == nil {
-				w.firstError = err
-			}
-			return
-		}
-	}
-}
-
-func EncodeAny_OmitEmpty(w *JsonEncoder, name string, value any) {
-	if value != nil {
-		w.ensure(5 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon)
-		EncodeAny(w, value)
-		w.buff = append(w.buff, comma)
-	}
-}
-
-func EncodeAny_WithEmpty(w *JsonEncoder, name string, value any) {
-	if value != nil {
-		w.ensure(5 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon)
-		EncodeAny(w, value)
-		w.buff = append(w.buff, comma)
-	} else {
-		w.ensure(8 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
-	}
-}
-
-// ToJson Json转换快捷方法
-func ToJson(v any) string {
-	if enc, ok := v.(JsonCodec); ok {
-		out := NewJsonEncoder(nil, 1024)
-		enc.EncodeJSON(out)
-		_ = out.Close()
-		return UnsafeString(out.buff)
-	}
-	bs, _ := json.Marshal(v)
-	return UnsafeString(bs)
-}

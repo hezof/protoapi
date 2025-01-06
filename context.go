@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
@@ -156,41 +155,13 @@ var (
 	closeConnection     = []string{"close"}
 )
 
-// WriteApplyResult 写出请求结果
-func (c *Context) WriteApplyResult(data interface{}) error {
-	if c.mux.closed != 0 {
-		c.ResponseWriter.Header()["Connection"] = closeConnection
-	}
-	c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-	c.ResponseWriter.WriteHeader(int(c.Handler.Meta.Http.Status))
-	if c.Handler.Meta.Http.Result == SimpleResult {
-
-	} else {
-
-	}
-
-	return nil
-}
-
-// WriteErrorResult 写出错误结果
-func (c *Context) WriteErrorResult(err error) error {
-
-}
-
-func (c *Context) WriteJson(status int, obj interface{}) error {
+func (c *Context) WriteJson(status int, val any) error {
 	if c.mux.closed != 0 {
 		c.ResponseWriter.Header()["Connection"] = closeConnection
 	}
 	c.ResponseWriter.Header()["Content-Type"] = jsonContentType
 	c.ResponseWriter.WriteHeader(status)
-	if me, ok := obj.(MessageEncoder); ok {
-		enc := GetEncoder(c.ResponseWriter.ResponseWriter)
-		defer PutEncoder(enc)
-		return me.EncodeJSON(enc)
-	}
-	enc := json.NewEncoder(c.ResponseWriter.ResponseWriter)
-	enc.SetEscapeHTML(false)
-	return enc.Encode(obj)
+	return EncodeJSON(c.ResponseWriter.ResponseWriter, val)
 }
 
 func (c *Context) WritePlain(status int, data string) error {
