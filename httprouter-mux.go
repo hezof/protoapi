@@ -21,6 +21,7 @@ type mux struct {
 	nodeTrace    *node
 	httpPanic    *Handler
 	httpNotFound *Handler
+	upgrader     *Upgrader
 	contexts     sync.Pool
 	maxParams    uint16
 	maxSections  uint16

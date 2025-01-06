@@ -17,21 +17,19 @@ type Handler struct {
 }
 
 // RestfulHandleFunc 使用call生成restful的HandleFunc
-func RestfulHandleFunc(fun Call) HandleFunc {
-	return func(ctx *Context) {
+func RestfulHandleFunc(ctx *Context) {
 
-		// 业务处理(前置校验).
-		rsp, err := fun(ctx, ctx.Request.Body)
+	// 业务处理(前置校验).
+	rsp, err := ctx.Handler.Meta.Call(ctx, ctx.Request.Body)
 
-		// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
-		if err != nil {
-			if cer := ctx.WriteErrorResult(err); cer != nil {
-				log.Error("write error result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, cer)
-			}
-		} else if ctx.ResponseWriter.statusCode == 0 {
-			if cer := ctx.WriteApplyResult(rsp); cer != nil {
-				log.Error("write apply result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, cer)
-			}
+	// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
+	if err != nil {
+		if xrr := WriteErrorResult(ctx, ctx.ResponseWriter, err); xrr != nil {
+			log.Error("write error result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, xrr)
+		}
+	} else if ctx.ResponseWriter.statusCode == 0 {
+		if xrr := WriteApplyResult(ctx, ctx.ResponseWriter, rsp); xrr != nil {
+			log.Error("write apply result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, xrr)
 		}
 	}
 }
@@ -39,75 +37,64 @@ func RestfulHandleFunc(fun Call) HandleFunc {
 /*
 WebsocketHandleFunc 使用call生成websocket的HandleFunc
 */
-func WebsocketHandleFunc(fun Call, upgrader *websocket.Upgrader) HandleFunc {
+func WebsocketHandleFunc(ctx *Context) {
 
-	return func(ctx *Context) {
+	// websocket必须用回原生的ResponseWriter, 因为它实现的http.Hijack接口
+	conn, err := ctx.mux.upgrader.Upgrade(ctx.ResponseWriter.ResponseWriter, ctx.Request, nil)
+	if err != nil {
+		log.Error("websocket upgrade request error: %v", err)
+		return // 马上结束当前ws链接
+	}
+	defer conn.Close()
 
-		if ctx.mux.closed != 0 {
-			ctx.ResponseWriter.Header()["Connection"] = closeConnection
-		}
-
-		// websocket必须用回原生的ResponseWriter, 因为它实现的http.Hijack接口
-		conn, err := upgrader.Upgrade(ctx.ResponseWriter.ResponseWriter, ctx.Request, nil)
+	var (
+		in  io.Reader
+		out io.WriteCloser
+		rsp interface{}
+	)
+	for {
+		// 获取读入流
+		_, in, err = conn.NextReader()
 		if err != nil {
-			log.Error("websocket upgrade request error: %v", err)
-			return // 马上结束当前ws链接
+			if _, ok := err.(*websocket.CloseError); !ok {
+				log.Error("websocket next reader error: %v", err)
+			}
+			return // 结束当前ws链接
 		}
-		defer conn.Close()
+		// 获取写出流
+		out, err = conn.NextWriter(websocket.TextMessage)
+		if err != nil {
+			if cer, ok := err.(*websocket.CloseError); !ok {
+				log.Error("websocket next writer error: %v", cer)
+			}
+			return // 结束当前ws链接
+		}
+		// 业务逻辑(前置校验)
+		rsp, err = ctx.Handler.Meta.Call(ctx, in)
 
-		var (
-			in     io.Reader
-			out    io.WriteCloser
-			rsp    interface{}
-			resMap map[uint32]*resource
-		)
-		for {
-			// 获取读入流
-			_, in, err = conn.NextReader()
-			if err != nil {
-				if _, ok := err.(*websocket.CloseError); !ok {
-					log.Error("websocket next reader error: %v", err)
+		// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
+		if err != nil {
+			if xrr := WriteErrorResult(ctx, out, err); xrr != nil {
+				if _, ok := xrr.(*websocket.CloseError); !ok {
+					log.Error("websocket write result error: %v", xrr)
 				}
 				return // 结束当前ws链接
 			}
-			// 获取写出流
-			out, err = conn.NextWriter(websocket.TextMessage)
-			if err != nil {
-				if cer, ok := err.(*websocket.CloseError); !ok {
-					log.Error("websocket next writer error: %v", cer)
+		} else if ctx.ResponseWriter.statusCode == 0 {
+			if xrr := WriteApplyResult(ctx, out, rsp); xrr != nil {
+				if _, ok := xrr.(*websocket.CloseError); !ok {
+					log.Error("websocket write result error: %v", xrr)
 				}
 				return // 结束当前ws链接
 			}
-			// 业务逻辑(前置校验)
-			rsp, err = fun(ctx, in)
-			// 错误处理
-			if err != nil {
-				// 统一转换错误为StatusError
-				result := StatusErrorFrom(err, profile.DefaultErrorStatus)
-				// 国际化错误消息(延后初始化)
-				if lenResMap > 0 {
-					if resMap == nil {
-						resMap = fastGetResMapByAcceptLanguage(ctx.getAcceptLanguage())
-					}
-					ctx.i18nErrorResult(result, resMap)
-				}
-				err = EncodeJSON(out, result)
-			} else {
-				err = EncodeJSON(out, rsp)
+		}
+
+		// 务必关闭输出刷新缓存
+		if err = out.Close(); err != nil {
+			if xrr, ok := err.(*websocket.CloseError); !ok {
+				log.Error("websocket write result error: %v", xrr)
 			}
-			if err != nil {
-				if _, ok := err.(*websocket.CloseError); !ok {
-					log.Error("websocket write result error: %v", err)
-				}
-				return // 结束当前ws链接
-			}
-			// 务必关闭输出刷新缓存
-			if err = out.Close(); err != nil {
-				if cer, ok := err.(*websocket.CloseError); !ok {
-					log.Error("websocket write result error: %v", cer)
-				}
-				return // 结束当前ws链接
-			}
+			return // 结束当前ws链接
 		}
 	}
 }

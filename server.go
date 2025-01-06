@@ -3,7 +3,6 @@ package protoapi
 import (
 	"context"
 	"fmt"
-	"github.com/hezof/protoapi/internal/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
@@ -206,7 +205,6 @@ func (s *Server) ListenAndServe() (err error) {
 		grpcListener net.Listener
 		httpServer   *http.Server
 		httpListener net.Listener
-		upgrader     *websocket.Upgrader
 	)
 	defer func() {
 		if grpcListener != nil {
@@ -243,8 +241,8 @@ func (s *Server) ListenAndServe() (err error) {
 
 			// 添加method相应的RequestSetting
 			if ms.Websocket != "" {
-				if upgrader == nil {
-					upgrader = newWebsocketUpgrader(s.config)
+				if s.mux.upgrader == nil {
+					s.mux.upgrader = newWebsocketUpgrader(s.config)
 				}
 				s.routerGroup.Handler(http.MethodGet, &Handler{
 					Meta:         ms,

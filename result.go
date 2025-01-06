@@ -3,6 +3,7 @@ package protoapi
 import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"io"
 )
 
 /*
@@ -93,4 +94,12 @@ func FromError(err error, defaultStatus uint32) *StatusResult {
 		Code:    uint32(codes.Unknown),
 		Message: err.Error(),
 	}
+}
+
+func WriteErrorResult(ctx *Context, out io.Writer, err error) error {
+
+}
+
+func WriteApplyResult(ctx *Context, out io.Writer, val any) error {
+
 }
