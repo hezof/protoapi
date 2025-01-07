@@ -12,7 +12,6 @@ type Profile struct {
 	ResultMessageField         string        // message前缀, 默认: `"message":`
 	DecoderBufferSize          int           // 默认8K
 	EncoderBufferSize          int           // 默认8K
-	MaximumNestingDepth        int           // limit maximum depth of nesting, as allowed by https://tools.ietf.org/html/rfc7159#section-9
 	HttpFormMaxMemory          int64         // 32 MB,同gin及多数web框架.
 	HttpBodyMaxBytes           int64         // 32 MB,默认请求体的字节数. 注意: 请求体不是响应体, 后者没有限制!
 	HttpKeepAlive              time.Duration // 3分钟
@@ -35,9 +34,6 @@ var profile = Profile{
 	ResultMessageField:         `message`,
 	DecoderBufferSize:          8 * 1024,
 	EncoderBufferSize:          8 * 1024,
-	MaximumNestingDepth:        128,
-	HandleChainCapacity:        512,
-	InsensitiveCapacity:        256,
 	HttpFormMaxMemory:          32 << 20,
 	HttpBodyMaxBytes:           32 << 20,
 	HttpKeepAlive:              3 * time.Minute,
@@ -53,16 +49,8 @@ var profile = Profile{
 	DefaultValidateErrorCode:   uint32(http.StatusBadRequest),
 }
 
-func InitProfile(p Profile) {
-	profile.ResultCodeField = NvlS(p.ResultCodeField, profile.ResultCodeField)
-	profile.ResultNameField = NvlS(p.ResultNameField, profile.ResultNameField)
-	profile.ResultDataField = NvlS(p.ResultDataField, profile.ResultDataField)
-	profile.ResultMessageField = NvlS(p.ResultMessageField, profile.ResultMessageField)
-	profile.DecoderBufferSize = NvlI(p.DecoderBufferSize, profile.DecoderBufferSize)
-	profile.EncoderBufferSize = NvlI(p.EncoderBufferSize, profile.EncoderBufferSize)
-	profile.MaximumNestingDepth = NvlI(p.MaximumNestingDepth, profile.MaximumNestingDepth)
-	profile.HandleChainCapacity = NvlI(p.HandleChainCapacity, profile.HandleChainCapacity)
-	profile.InsensitiveCapacity = NvlI(p.InsensitiveCapacity, profile.InsensitiveCapacity)
-	profile.HttpFormMaxMemory = NvlI(p.HttpFormMaxMemory, profile.HttpFormMaxMemory)
-	profile.HttpBodyMaxBytes = NvlI(p.HttpBodyMaxBytes, profile.HttpBodyMaxBytes)
+func InitProfile(ops ...func(p *Profile)) {
+	for _, op := range ops {
+		op(&profile)
+	}
 }

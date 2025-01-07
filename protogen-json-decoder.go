@@ -10,6 +10,8 @@ import (
 	"unicode/utf8"
 )
 
+const MaximumNestingDepth = 256 // limit maximum depth of nesting, as allowed by https://tools.ietf.org/html/rfc7159#section-9
+
 func NewJsonDecoder(in io.Reader, size int) *JsonDecoder {
 	if size < MinimumBufferLength {
 		size = MinimumBufferLength
@@ -179,7 +181,7 @@ func (r *JsonDecoder) next() JsonToken {
 			switch c {
 			case '\u0020', '\u000A', '\u000D', '\u0009':
 			case '{':
-				if r.depth++; r.depth > profile.MaximumNestingDepth {
+				if r.depth++; r.depth > MaximumNestingDepth {
 					r.exceedMaximumNestingDepthError()
 					r.depth--
 					return 0
@@ -193,7 +195,7 @@ func (r *JsonDecoder) next() JsonToken {
 				r.token = ObjectEnd
 				return ObjectEnd
 			case '[':
-				if r.depth++; r.depth > profile.MaximumNestingDepth {
+				if r.depth++; r.depth > MaximumNestingDepth {
 					r.exceedMaximumNestingDepthError()
 					r.depth--
 					return 0
