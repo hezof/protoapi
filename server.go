@@ -241,7 +241,7 @@ func (s *Server) ListenAndServe() (err error) {
 				if s.mux.upgrader == nil {
 					s.mux.upgrader = newWebsocketUpgrader(s.config)
 				}
-				s.routerGroup.Handler(http.MethodGet, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:         ms,
 					Method:       http.MethodGet,
 					Path:         ms.Websocket,
@@ -250,7 +250,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Post != "" {
-				s.routerGroup.Handler(http.MethodPost, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodPost,
 					Path:        ms.Post,
@@ -258,7 +258,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Get != "" {
-				s.routerGroup.Handler(http.MethodGet, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodGet,
 					Path:        ms.Get,
@@ -266,7 +266,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Put != "" {
-				s.routerGroup.Handler(http.MethodPut, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodPut,
 					Path:        ms.Put,
@@ -274,7 +274,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Delete != "" {
-				s.routerGroup.Handler(http.MethodDelete, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodDelete,
 					Path:        ms.Delete,
@@ -282,7 +282,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Options != "" {
-				s.routerGroup.Handler(http.MethodOptions, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodOptions,
 					Path:        ms.Options,
@@ -290,7 +290,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Head != "" {
-				s.routerGroup.Handler(http.MethodHead, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodHead,
 					Path:        ms.Head,
@@ -298,7 +298,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Patch != "" {
-				s.routerGroup.Handler(http.MethodPatch, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodPatch,
 					Path:        ms.Patch,
@@ -306,7 +306,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Trace != "" {
-				s.routerGroup.Handler(http.MethodTrace, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodTrace,
 					Path:        ms.Trace,
@@ -314,7 +314,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Connect != "" {
-				s.routerGroup.Handler(http.MethodConnect, &Handler{
+				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodConnect,
 					Path:        ms.Connect,
@@ -349,9 +349,6 @@ func (s *Server) ListenAndServe() (err error) {
 	for method, pathSetting := range s._requestSetting {
 		for path, setting := range pathSetting {
 			handler := setting.Handler
-			handler.Method = method
-			handler.Path = path // NOTE: 通过martin-like注册的Handler可能没有path
-			handler.Meta.Status = NvlI(handler.Meta.Status, profile.DefaultApplyStatus)
 			handler.BodyMaxBytes = NvlI(setting.Handler.BodyMaxBytes, s.config.HttpBodyMaxBytes)
 			handler.FormMaxMemory = NvlI(setting.Handler.FormMaxMemory, s.config.HttpFormMaxMemory)
 			handler.HandleChain = Join(s._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)

@@ -47,14 +47,18 @@ func (rc *routerGroup) HandleFunc(method string, path string, hs ...HandleFunc) 
 }
 
 func (rc *routerGroup) Handle(hd *Handler) *routerGroup {
-	nodes, ok := rc.settings[hd.Method]
-	if !ok {
-		nodes = make(map[string]*RequestSetting)
-		rc.settings[hd.Method] = nodes
-	} else if v, ok := nodes[hd.Path]; ok {
-		panic(fmt.Sprintf("handle duplicate path: %v %+v, new: %+v, old: %+v", hd.Method, hd.Path, hd, v))
+	// 注意: 每个Handler必须保证Meta/Method/Path非空!!!
+	if hd.Meta == nil {
+		hd.Meta = Meta(profile.DefaultApplyStatus, Http_simple)
 	}
-	nodes[hd.Path] = &RequestSetting{
+	setting, ok := rc.settings[hd.Method]
+	if !ok {
+		setting = make(map[string]*RequestSetting)
+		rc.settings[hd.Method] = setting
+	} else if set, ok := setting[hd.Path]; ok {
+		panic(fmt.Sprintf("handle duplicate path: %v %+v, new: %+v, old: %+v", hd.Method, hd.Path, hd, set))
+	}
+	setting[hd.Path] = &RequestSetting{
 		Handler: hd,
 	}
 	return rc

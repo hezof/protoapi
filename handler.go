@@ -7,12 +7,19 @@ import (
 
 // Handler 处理句柄. 注意事项: handler存储在前缀树(httprouter), 必须保证所有属性在运行时只读!
 type Handler struct {
-	Meta          MethodSetting // 自动创建的handler才有meta-info. 手动创建的handler无meta-info
-	Method        string        // http请求方法
-	Path          string        // http请求路径
-	BodyMaxBytes  int64         // http请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
-	FormMaxMemory int64         // 文件内部部分最大字节数. 默认 32 << 20
-	HandleChain   []HandleFunc  // 处理链表, 最长不超过HandleChainCapacity设置
+	Meta          *MethodSetting // 自动创建的handler才有meta-info. 手动创建的handler无meta-info
+	Method        string         // http请求方法
+	Path          string         // http请求路径
+	BodyMaxBytes  int64          // http请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
+	FormMaxMemory int64          // 文件内部部分最大字节数. 默认 32 << 20
+	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
+}
+
+func Meta(status uint32, result Http_Result) *MethodSetting {
+	ms := new(MethodSetting)
+	ms.Status = status
+	ms.Result = result
+	return ms
 }
 
 // RestfulHandleFunc 使用call生成restful的HandleFunc
