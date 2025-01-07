@@ -37,10 +37,10 @@ func (ln keepAliveTCPListener) Accept() (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	if ln.KeepAlivePeriod == 0 {
+	if ln.KeepAlivePeriod < 0 {
 		_ = tc.SetKeepAlive(false)
 		_ = tc.SetKeepAlivePeriod(3 * time.Minute)
-	} else {
+	} else if ln.KeepAlivePeriod > 0 {
 		_ = tc.SetKeepAlive(true)
 		_ = tc.SetKeepAlivePeriod(ln.KeepAlivePeriod)
 	}
@@ -147,7 +147,7 @@ func graceShutdownOrRestart(grpcServer *grpc.Server, grpcListener net.Listener, 
 			cmd.Stdout = os.Stdout
 			cmd.ExtraFiles = files
 			if err := cmd.Start(); err != nil {
-				fmt.Fprintf(os.Stdout, "graceful restart server error: %v", err)
+				_, _ = fmt.Fprintf(os.Stdout, "graceful restart server error: %v", err)
 			}
 			fallthrough // 启动子进程后进入grace shutdown
 		case syscall.SIGINT, syscall.SIGTERM:
@@ -156,7 +156,7 @@ func graceShutdownOrRestart(grpcServer *grpc.Server, grpcListener net.Listener, 
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
-					httpServer.Shutdown(context.Background())
+					_ = httpServer.Shutdown(context.Background())
 				}()
 			}
 			if grpcServer != nil {

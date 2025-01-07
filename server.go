@@ -22,40 +22,37 @@ import (
 type Server struct {
 	mux                                                      // 多路
 	config                *Config                            // 配置
+	metas                 map[string]*MethodSetting          // 方法设置(过程数据)
 	onInit                []func()                           // 初始前回调
 	onReady               []func()                           // 启动前回调
 	onExit                []func()                           // 退出前回调
 	onRegisterGrpcService func(name, addr string, undo bool) // grpc服务注册回调
 	onRegisterHttpService func(name, addr string, undo bool) // http服务注册回调
+	grpcPanicFunc         GrpcPanicFunc                      // Grpc panic函数
 	/*
-		下述过程数据在服务最终启动前应该清除释放内存!
+		下述过程数据在服务最终启动前会被清除释放内存!
 	*/
-	*routerGroup                                            // 分组路由(过程数据)
-	_serviceSetting   []*ServiceSetting                     // 服务设置(过程数据)
-	_methodSetting    map[string]*MethodSetting             // 方法设置(过程数据)
-	_requestSetting   map[string]map[string]*RequestSetting // 平面后的规则(过程数据)
-	_serviceAspect    []ServiceAspect                       // 服务校验器(过程参数)
-	_servicePlugin    []ServicePlugin                       // 服务插件(过程数据)
-	_requestPlugin    []RequestPlugin                       // 请求插件(过程数据)
-	_grpcServerOption []grpc.ServerOption                   // grpc拦截器(过程数据)
-	_httpServerOption []HandleFunc                          // http拦截器(过程数据)
-	_grpcServerInvoke []func(server *grpc.Server)           // grpc服务器回调(过程数据)
-	_grpcPanicFunc    GrpcPanicFunc                         // Grpc panic函数
+	*_group                                       // 分组路由(过程数据)
+	_serviceSetting   []*ServiceSetting           // 服务设置(过程数据)
+	_serviceAspect    []ServiceAspect             // 服务校验器(过程参数)
+	_servicePlugin    []ServicePlugin             // 服务插件(过程数据)
+	_requestPlugin    []RequestPlugin             // 请求插件(过程数据)
+	_grpcServerOption []grpc.ServerOption         // grpc拦截器(过程数据)
+	_httpServerOption []HandleFunc                // http拦截器(过程数据)
+	_grpcServerInvoke []func(server *grpc.Server) // grpc服务器回调(过程数据)
 }
 
-// 整理不再使用的内存变量
+// 清理运行过程不再需要的中间变量
 func (s *Server) clean() {
-	s.routerGroup = nil
+	s._group = nil
 	s._serviceSetting = nil
-	s._methodSetting = nil
-	s._requestSetting = nil
 	s._serviceAspect = nil
 	s._servicePlugin = nil
 	s._requestPlugin = nil
 	s._grpcServerOption = nil
 	s._httpServerOption = nil
 	s._grpcServerInvoke = nil
-	s._grpcPanicFunc = nil
+	_globalRegister = nil
 }
 
 func NewServer(c *Config) *Server {
@@ -64,9 +61,10 @@ func NewServer(c *Config) *Server {
 			httpPanic:    defaultHttpPanicHandler,
 			httpNotFound: defaultHttpNotFoundHandler,
 		},
-		config:         mergeConfig(c),
-		routerGroup:    newRouterGroup(""),
-		_grpcPanicFunc: defaultGrpcPanicFunc,
+		config:        mergeConfig(c),
+		metas:         make(map[string]*MethodSetting),
+		_group:        newGroup(""),
+		grpcPanicFunc: defaultGrpcPanicFunc,
 	}
 }
 
@@ -138,7 +136,7 @@ func (s *Server) GrpcServerInvoke(vs ...func(server *grpc.Server)) {
 func (s *Server) GrpcPanicFunc(f GrpcPanicFunc) {
 	// 不能为空
 	if f != nil {
-		s._grpcPanicFunc = f
+		s.grpcPanicFunc = f
 	}
 }
 
@@ -162,15 +160,6 @@ func (s *Server) RegisterService(registry ServiceRegistry, implement interface{}
 	启动监听
  **********************************************/
 
-func (s *Server) protect(f func()) {
-	defer func() {
-		if per := recover(); per != nil {
-			log.Error("panic: %+v\n%v", per, StackTrace(1, "\n"))
-		}
-	}()
-	f()
-}
-
 func (s *Server) ListenAndServe() (err error) {
 
 	/********************************************************
@@ -180,46 +169,13 @@ func (s *Server) ListenAndServe() (err error) {
 		return
 	}
 
-	/********************************************************
-	* 初始与退出钩子机制.
-	 ********************************************************/
-	if len(s.onInit) > 0 {
-		for _, f := range s.onInit {
-			s.protect(f)
-		}
-	}
-	if len(s.onExit) > 0 {
-		// 此处defer没用闭包
-		defer func(exit []func()) {
-			for _, f := range exit {
-				s.protect(f)
-			}
-		}(s.onExit)
-	}
-
-	/********************************************************
-	* 声明grpc,http,websocket所需的控件并确保退出关闭
-	 ********************************************************/
-	var (
-		grpcServer   *grpc.Server
-		grpcListener net.Listener
-		httpServer   *http.Server
-		httpListener net.Listener
-	)
-	defer func() {
-		if grpcListener != nil {
-			grpcListener.Close()
-		}
-		if httpListener != nil {
-			httpListener.Close()
-		}
-	}()
-
 	/*******************************************************
-	* 全局服务组件Visitor
+	* 全局组件注册
 	* 该步骤主要用于分离服务层与访问层,从而支持更灵活的组件部署模式
 	 *******************************************************/
-	globalServiceVisitor(s)
+	for _, c := range _globalRegister {
+		s.RegisterService(c.Registry, c.Implement, c.Aspects...)
+	}
 
 	/********************************************************
 	* 处理ServiceSetting的插件(统计/修改/添加/删除)等
@@ -231,14 +187,13 @@ func (s *Server) ListenAndServe() (err error) {
 	/********************************************************
 	* 添加MethodSetting相应的AccessSetting以及MethodGroup
 	 ********************************************************/
-	s._methodSetting = make(map[string]*MethodSetting)
 	for _, ss := range s._serviceSetting {
 		for _, ms := range ss.Methods {
-			s._methodSetting[ms.fullMethod] = ms
+			s.metas[ms.fullMethod] = ms
 
 			// 添加method相应的RequestSetting
 			if ms.Get != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodGet,
 					Path:        ms.Get,
@@ -246,7 +201,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Put != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodPut,
 					Path:        ms.Put,
@@ -254,7 +209,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Post != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodPost,
 					Path:        ms.Post,
@@ -262,7 +217,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Delete != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodDelete,
 					Path:        ms.Delete,
@@ -270,7 +225,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Options != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodOptions,
 					Path:        ms.Options,
@@ -278,7 +233,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Head != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodHead,
 					Path:        ms.Head,
@@ -286,7 +241,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Patch != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodPatch,
 					Path:        ms.Patch,
@@ -294,7 +249,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Trace != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodTrace,
 					Path:        ms.Trace,
@@ -302,7 +257,7 @@ func (s *Server) ListenAndServe() (err error) {
 				})
 			}
 			if ms.Connect != "" {
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:        ms,
 					Method:      http.MethodConnect,
 					Path:        ms.Connect,
@@ -313,7 +268,7 @@ func (s *Server) ListenAndServe() (err error) {
 				if s.mux.upgrader == nil {
 					s.mux.upgrader = newWebsocketUpgrader(s.config)
 				}
-				s.routerGroup.Handle(&Handler{
+				s._group.Handle(&Handler{
 					Meta:         ms,
 					Method:       http.MethodGet,
 					Path:         ms.Websocket,
@@ -328,13 +283,13 @@ func (s *Server) ListenAndServe() (err error) {
 	* 扁平化router的AccessSetting: map{httpMethod: map{httpPath:requestSetting}}
 	* 后面应用AccessOption时实现proxy, access, cache等的拦截逻辑
 	 ********************************************************/
-	s._requestSetting = s.routerGroup.Flatten()
+	_requestSetting := s._group.Flatten()
 
 	/********************************************************
 	* 处理RequestSetting的插件(缓存,日志,代理)等
 	 ********************************************************/
 	for _, p := range s._requestPlugin {
-		p(s._requestSetting)
+		p(_requestSetting)
 	}
 
 	/********************************************************
@@ -346,7 +301,7 @@ func (s *Server) ListenAndServe() (err error) {
 	*	4. handles
 	* 同时设置所有handler的默认值
 	 ********************************************************/
-	for method, pathSetting := range s._requestSetting {
+	for method, pathSetting := range _requestSetting {
 		for path, setting := range pathSetting {
 			handler := setting.Handler
 			handler.BodyMaxBytes = NvlI(setting.Handler.BodyMaxBytes, s.config.HttpBodyMaxBytes)
@@ -355,10 +310,42 @@ func (s *Server) ListenAndServe() (err error) {
 			s.mux.route(method, path, handler) // 正式注册到mux
 		}
 	}
-	/********************************************************
-	* 注意: 启用mux.ServeHTTP()之前必须调用mux.initServeHTTP()初始化
-	 ********************************************************/
 	s.mux.initServeHTTP()
+
+	/********************************************************
+	* 初始与退出钩子机制.
+	 ********************************************************/
+	if len(s.onInit) > 0 {
+		for _, f := range s.onInit {
+			protect(f)
+		}
+	}
+	if len(s.onExit) > 0 {
+		// 此处defer没用闭包
+		defer func(exit []func()) {
+			for _, f := range exit {
+				protect(f)
+			}
+		}(s.onExit)
+	}
+
+	/********************************************************
+	* 声明grpc,http,websocket所需的控件并确保退出关闭
+	 ********************************************************/
+	var (
+		grpcServer   *grpc.Server
+		grpcListener net.Listener
+		httpServer   *http.Server
+		httpListener net.Listener
+	)
+	defer func(grpcListener, httpListener net.Listener) {
+		if grpcListener != nil {
+			_ = grpcListener.Close()
+		}
+		if httpListener != nil {
+			_ = httpListener.Close()
+		}
+	}(grpcListener, httpListener)
 
 	// 启动grpc服务器
 	if s.config.GrpcAddr != "" {
@@ -374,8 +361,8 @@ func (s *Server) ListenAndServe() (err error) {
 		}
 		// 很关键: 必须确保"boostrap interceptor"位于最后位置, 即必须是grpc server最后添加的ServerOption
 		grpcServer = grpc.NewServer(append(opts,
-			generateBootstrapUnaryInterceptor(s._methodSetting, s._grpcPanicFunc, s.config.GrpcI18nError),
-			generateBootstrapStreamInterceptor(s._methodSetting, s._grpcPanicFunc, s.config.GrpcI18nError),
+			grpc.ChainUnaryInterceptor(s.generateBootstrapUnaryInterceptor),
+			grpc.ChainStreamInterceptor(s.generateBootstrapStreamInterceptor),
 		)...)
 		for _, ps := range s._serviceSetting {
 			// v0.9.9+支持service仅用于http
@@ -402,9 +389,12 @@ func (s *Server) ListenAndServe() (err error) {
 			WriteTimeout: s.config.HttpWriteTimeout,
 			IdleTimeout:  s.config.HttpIdleTimeout,
 		}
-		if s.config.HttpKeepAlive == 0 {
+		if s.config.HttpKeepAlive > 0 {
+			httpServer.SetKeepAlivesEnabled(true)
+		} else if s.config.HttpKeepAlive < 0 {
 			httpServer.SetKeepAlivesEnabled(false)
 		}
+
 		// 注册http服务.暂时没有保护机制,由回调函数确保panic安全.
 		if s.onRegisterHttpService != nil && s.config.Name != "" {
 			s.onRegisterHttpService(s.config.Name, s.config.HttpAddr, false)
@@ -420,12 +410,11 @@ func (s *Server) ListenAndServe() (err error) {
 			return
 		}
 		// 异步避免阻塞
-		go func() {
-			var err error
-			if err = grpcServer.Serve(grpcListener); err != nil {
-				log.Error("grace grpc server error: %v", err)
+		go func(grpcServer *grpc.Server, grpcListener net.Listener) {
+			if xrr := grpcServer.Serve(grpcListener); err != nil {
+				log.Error("grpc serve error: %v", xrr)
 			}
-		}()
+		}(grpcServer, grpcListener)
 	}
 
 	// 启动HTTP服务器
@@ -436,17 +425,17 @@ func (s *Server) ListenAndServe() (err error) {
 			return
 		}
 		// 异步避免阻塞
-		go func() {
-			var err error
+		go func(httpServer *http.Server, httpListener net.Listener) {
 			if s.config.HttpCertFile != "" {
-				err = httpServer.ServeTLS(httpListener, s.config.HttpCertFile, s.config.HttpKeyFile)
+				if xrr := httpServer.ServeTLS(httpListener, s.config.HttpCertFile, s.config.HttpKeyFile); xrr != nil {
+					log.Error("http serve tls error: %v", xrr)
+				}
 			} else {
-				err = httpServer.Serve(httpListener)
+				if xrr := httpServer.Serve(httpListener); xrr != nil {
+					log.Error("http serve error: %v", xrr)
+				}
 			}
-			if err != nil {
-				log.Error("grace http server error: %v", err)
-			}
-		}()
+		}(httpServer, httpListener)
 	}
 
 	// 整理不再使用的内存变量
@@ -455,7 +444,7 @@ func (s *Server) ListenAndServe() (err error) {
 	// 正常启动回调机制
 	if len(s.onReady) > 0 {
 		for _, f := range s.onReady {
-			s.protect(f)
+			protect(f)
 		}
 	}
 	// 等待信号,优雅关闭或重启服务. 明确关闭HTTP服务器,返回response添加Connection:closed
@@ -465,130 +454,95 @@ func (s *Server) ListenAndServe() (err error) {
 }
 
 /**********************************************
-	默认实现
- **********************************************/
-
-var defaultHttpPanicHandler = &Handler{
-	HandleChain: []HandleFunc{
-		func(ctx *Context) {
-			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
-			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
-		},
-	},
-}
-
-var defaultHttpNotFoundHandler = &Handler{
-	HandleChain: []HandleFunc{
-		func(ctx *Context) {
-			_ = ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
-		},
-	},
-}
-
-// GrpcPanicFunc grpc panic处理函数
-type GrpcPanicFunc func(meta *MethodSetting, ctx context.Context, p interface{}) error
-
-func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
-	log.Error("panic: %+v\n%v", p, StackTrace(2, "\n"))
-	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
-}
-
-/**********************************************
 * 流式拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
-func generateBootstrapStreamInterceptor(metas map[string]*MethodSetting, grpcPanicFunc GrpcPanicFunc, grpcI18nError bool) grpc.ServerOption {
-	return grpc.ChainStreamInterceptor(func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
-		var ctx = ss.Context()
-		var meta = metas[info.FullMethod]
-		if meta == nil {
-			return StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+func (s *Server) generateBootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
+	var ctx = ss.Context()
+	var meta = s.metas[info.FullMethod]
+	if meta == nil {
+		return StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+	}
+	defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
+		if p := recover(); p != nil {
+			err = grpcPanicFunc(meta, ctx, p)
 		}
-		defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
-			if p := recover(); p != nil {
-				err = grpcPanicFunc(meta, ctx, p)
-			}
-		}(meta, ctx, grpcPanicFunc)
-		var aspects = meta.parent.Aspects
+	}(meta, ctx, s.grpcPanicFunc)
+	var aspects = meta.parent.Aspects
 
-		var idx = -1
-		for _, s := range aspects {
-			idx++
-			if ctx, err = s.Before(meta, ctx, nil); err != nil {
-				goto __AFTER__
-			}
+	var idx = -1
+	for _, s := range aspects {
+		idx++
+		if ctx, err = s.Before(meta, ctx, nil); err != nil {
+			goto __AFTER__
 		}
+	}
 
-		// 业务调用
-		err = handler(srv, ss)
+	// 业务调用
+	err = handler(srv, ss)
 
-	__AFTER__:
-		for idx >= 0 {
-			ctx, _, err = aspects[idx].After(meta, ctx, nil, nil, err)
-			idx--
-		}
+__AFTER__:
+	for idx >= 0 {
+		ctx, _, err = aspects[idx].After(meta, ctx, nil, nil, err)
+		idx--
+	}
 
-		// 错误转换(grpc默认关闭i18n追求更快性能)
-		if grpcI18nError && err != nil {
-			err = i18nGrpcError(ctx, err)
-		}
+	// 错误转换(grpc默认关闭i18n追求更快性能)
+	if err != nil && s.config.GrpcI18nError {
+		err = i18nGrpcError(ctx, err)
+	}
 
-		// 结果返回
-		return
-	})
+	// 结果返回
+	return
 }
 
 /**********************************************
 * 一元拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 一元拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainUnaryInterceptor设置).
  **********************************************/
-func generateBootstrapUnaryInterceptor(metas map[string]*MethodSetting, grpcPanicFunc GrpcPanicFunc, grpcI18nError bool) grpc.ServerOption {
+func (s *Server) generateBootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
-	// 实现采用goto确保控制流程清晰!
-	return grpc.ChainUnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
-
-		var meta = metas[info.FullMethod]
-		if meta == nil {
-			return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+	var meta = s.metas[info.FullMethod]
+	if meta == nil {
+		return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+	}
+	defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
+		if p := recover(); p != nil {
+			err = grpcPanicFunc(meta, ctx, p)
 		}
-		defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
-			if p := recover(); p != nil {
-				err = grpcPanicFunc(meta, ctx, p)
-			}
-		}(meta, ctx, grpcPanicFunc)
-		var aspects = meta.parent.Aspects
+	}(meta, ctx, s.grpcPanicFunc)
+	var aspects = meta.parent.Aspects
 
-		var idx = -1
-		for _, s := range aspects {
-			idx++
-			if ctx, err = s.Before(meta, ctx, req); err != nil {
-				goto __AFTER__
-			}
+	var idx = -1
+	for _, s := range aspects {
+		idx++
+		if ctx, err = s.Before(meta, ctx, req); err != nil {
+			goto __AFTER__
 		}
+	}
 
-		// 语法校验
-		if vd, ok := req.(MessageValidator); ok {
-			if err = vd.Validate(ctx); err != nil {
-				goto __AFTER__
-			}
+	// 语法校验
+	if vd, ok := req.(MessageValidator); ok {
+		if err = vd.Validate(ctx); err != nil {
+			goto __AFTER__
 		}
-		// 业务调用
-		rsp, err = handler(ctx, req)
+	}
+	// 业务调用
+	rsp, err = handler(ctx, req)
 
-	__AFTER__:
-		for idx >= 0 {
-			ctx, rsp, err = aspects[idx].After(meta, ctx, req, rsp, err)
-			idx--
-		}
+__AFTER__:
+	for idx >= 0 {
+		ctx, rsp, err = aspects[idx].After(meta, ctx, req, rsp, err)
+		idx--
+	}
 
-		// 错误转换(grpc默认关闭i18n追求更快性能)
-		if grpcI18nError && err != nil {
-			err = i18nGrpcError(ctx, err)
-		}
+	// 错误转换(grpc默认关闭i18n追求更快性能)
+	if err != nil && s.config.GrpcI18nError {
+		err = i18nGrpcError(ctx, err)
+	}
 
-		// 结果返回
-		return
-	})
+	// 结果返回
+	return
 }
 
 func i18nGrpcError(c context.Context, err error) error {
@@ -624,4 +578,42 @@ func i18nGrpcError(c context.Context, err error) error {
 	}
 
 	return err
+}
+
+/**********************************************
+	默认实现
+ **********************************************/
+
+var defaultHttpPanicHandler = &Handler{
+	HandleChain: []HandleFunc{
+		func(ctx *Context) {
+			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
+			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
+		},
+	},
+}
+
+var defaultHttpNotFoundHandler = &Handler{
+	HandleChain: []HandleFunc{
+		func(ctx *Context) {
+			_ = ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
+		},
+	},
+}
+
+// GrpcPanicFunc grpc panic处理函数
+type GrpcPanicFunc func(meta *MethodSetting, ctx context.Context, p interface{}) error
+
+func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
+	log.Error("panic: %+v\n%v", p, StackTrace(2, "\n"))
+	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
+}
+
+func protect(f func()) {
+	defer func() {
+		if per := recover(); per != nil {
+			log.Error("panic: %+v\n%v", per, StackTrace(1, "\n"))
+		}
+	}()
+	f()
 }

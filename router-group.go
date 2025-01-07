@@ -12,33 +12,33 @@ type RequestSetting struct {
 	Handler *Handler     // 处理句柄
 }
 
-type routerGroup struct {
+type _group struct {
 	path     string
 	filters  []HandleFunc
 	settings map[string]map[string]*RequestSetting
-	children []*routerGroup
+	children []*_group
 }
 
-func newRouterGroup(path string, filters ...HandleFunc) *routerGroup {
-	return &routerGroup{
+func newGroup(path string, filters ...HandleFunc) *_group {
+	return &_group{
 		path:     path,
 		filters:  filters,
 		settings: make(map[string]map[string]*RequestSetting),
 	}
 }
 
-func (rc *routerGroup) Group(path string, hs ...HandleFunc) *routerGroup {
-	child := newRouterGroup(path, hs...)
+func (rc *_group) Group(path string, hs ...HandleFunc) *_group {
+	child := newGroup(path, hs...)
 	rc.children = append(rc.children, child)
 	return child
 }
 
-func (rc *routerGroup) Use(filters ...HandleFunc) *routerGroup {
+func (rc *_group) Use(filters ...HandleFunc) *_group {
 	rc.filters = append(rc.filters, filters...)
 	return rc
 }
 
-func (rc *routerGroup) HandleFunc(method string, path string, hs ...HandleFunc) *routerGroup {
+func (rc *_group) HandleFunc(method string, path string, hs ...HandleFunc) *_group {
 	return rc.Handle(&Handler{
 		Method:      method,
 		Path:        path,
@@ -46,7 +46,7 @@ func (rc *routerGroup) HandleFunc(method string, path string, hs ...HandleFunc) 
 	})
 }
 
-func (rc *routerGroup) Handle(hd *Handler) *routerGroup {
+func (rc *_group) Handle(hd *Handler) *_group {
 	// 注意: 每个Handler必须保证Meta/Method/Path非空!!!
 	if hd.Meta == nil {
 		hd.Meta = Meta(profile.DefaultApplyStatus, Http_simple)
@@ -65,7 +65,7 @@ func (rc *routerGroup) Handle(hd *Handler) *routerGroup {
 
 }
 
-func (rc *routerGroup) Any(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) Any(path string, f ...HandleFunc) *_group {
 	rc.HandleFunc(http.MethodGet, path, f...)
 	rc.HandleFunc(http.MethodPost, path, f...)
 	rc.HandleFunc(http.MethodPut, path, f...)
@@ -77,35 +77,35 @@ func (rc *routerGroup) Any(path string, f ...HandleFunc) *routerGroup {
 	rc.HandleFunc(http.MethodTrace, path, f...)
 	return rc
 }
-func (rc *routerGroup) GET(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) GET(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodGet, path, f...)
 }
-func (rc *routerGroup) POST(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) POST(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodPost, path, f...)
 }
-func (rc *routerGroup) PUT(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) PUT(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodPut, path, f...)
 }
-func (rc *routerGroup) DELETE(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) DELETE(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodDelete, path, f...)
 }
-func (rc *routerGroup) HEAD(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) HEAD(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodHead, path, f...)
 }
-func (rc *routerGroup) PATCH(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) PATCH(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodPatch, path, f...)
 }
-func (rc *routerGroup) OPTIONS(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) OPTIONS(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodOptions, path, f...)
 }
-func (rc *routerGroup) CONNECT(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) CONNECT(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodConnect, path, f...)
 }
-func (rc *routerGroup) TRACE(path string, f ...HandleFunc) *routerGroup {
+func (rc *_group) TRACE(path string, f ...HandleFunc) *_group {
 	return rc.HandleFunc(http.MethodTrace, path, f...)
 }
 
-func (rc *routerGroup) StaticFile(path string, file string) *routerGroup {
+func (rc *_group) StaticFile(path string, file string) *_group {
 	if strings.Contains(path, ":") || strings.Contains(path, "*") {
 		panic("URL parameters can not be used when serving a static file")
 	}
@@ -117,11 +117,11 @@ func (rc *routerGroup) StaticFile(path string, file string) *routerGroup {
 	return rc
 }
 
-func (rc *routerGroup) StaticDir(prefix string, dir string) *routerGroup {
+func (rc *_group) StaticDir(prefix string, dir string) *_group {
 	return rc.StaticFS(prefix, http.Dir(dir))
 }
 
-func (rc *routerGroup) StaticFS(prefix string, fs http.FileSystem) *routerGroup {
+func (rc *_group) StaticFS(prefix string, fs http.FileSystem) *_group {
 	if strings.Contains(prefix, ":") || strings.Contains(prefix, "*") {
 		panic("URL parameters can not be used when serving a static folder")
 	}
@@ -155,14 +155,14 @@ func (rc *routerGroup) StaticFS(prefix string, fs http.FileSystem) *routerGroup 
 }
 
 // Flatten 返回{httpMethod:{path:setting}}
-func (rc *routerGroup) Flatten() (ret map[string]map[string]*RequestSetting) {
+func (rc *_group) Flatten() (ret map[string]map[string]*RequestSetting) {
 	ret = make(map[string]map[string]*RequestSetting)
 	flatten(ret, rc, "", nil)
 	return
 }
 
 // flatten 递归展开gro
-func flatten(ret map[string]map[string]*RequestSetting, group *routerGroup, prefix string, filters []HandleFunc) {
+func flatten(ret map[string]map[string]*RequestSetting, group *_group, prefix string, filters []HandleFunc) {
 	if group.path != "" {
 		prefix = prefix + group.path
 	}

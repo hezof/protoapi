@@ -125,22 +125,6 @@ func (m *mux) route(method string, path string, node *Handler) {
 	}
 }
 
-// 执行ServeHTTP()前必须调用serveINIT()初始化context pool!
-func (m *mux) initServeHTTP() {
-	m.contexts.New = func() interface{} {
-		c := &Context{
-			mux:            m,
-			params:         make([]Param, 0, m.maxParams),
-			skippedNodes:   make([]skippedNode, 0, m.maxSections),
-			cipath:         make([]byte, 0, InsensitiveCapacity),
-			cibuff:         [4]byte{},
-			ResponseWriter: new(proxyResponseWriter),
-		}
-		c.stream.c = c //相互引用
-		return c
-	}
-}
-
 func (m *mux) HttpPanicFunc(f HandleFunc) {
 	m.HttpPanic(&Handler{
 		HandleChain: []HandleFunc{f},
@@ -163,6 +147,22 @@ func (m *mux) HttpNotFoundFunc(f HandleFunc) {
 func (m *mux) HttpNotFound(h *Handler) {
 	if h != nil {
 		m.httpNotFound = h
+	}
+}
+
+// 执行ServeHTTP()前必须调用serveINIT()初始化context pool!
+func (m *mux) initServeHTTP() {
+	m.contexts.New = func() interface{} {
+		c := &Context{
+			mux:            m,
+			params:         make([]Param, 0, m.maxParams),
+			skippedNodes:   make([]skippedNode, 0, m.maxSections),
+			cipath:         make([]byte, 0, InsensitiveCapacity),
+			cibuff:         [4]byte{},
+			ResponseWriter: new(proxyResponseWriter),
+		}
+		c.stream.c = c //相互引用
+		return c
 	}
 }
 
