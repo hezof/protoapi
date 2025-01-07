@@ -466,20 +466,18 @@ func (s *Server) ListenAndServe() (err error) {
  **********************************************/
 
 var defaultHttpPanicHandler = &Handler{
-	Meta: Meta(http.StatusInternalServerError, Http_simple),
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
-			_ = WriteErrorResult(ctx, ctx.ResponseWriter, StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
+			_ = ctx.WriteErrorResult(ctx.ResponseWriter, StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
 		},
 	},
 }
 
 var defaultHttpNotFoundHandler = &Handler{
-	Meta: Meta(http.StatusNotFound, Http_simple),
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			_ = WriteErrorResult(ctx, ctx.ResponseWriter, StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
+			_ = ctx.WriteErrorResult(ctx.ResponseWriter, StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
 		},
 	},
 }

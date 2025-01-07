@@ -51,20 +51,24 @@ func parseValues(c *Context) (*values, error) {
 
 /*
 Scheme
+
 	支持将Request的json/form/path/query等参数绑定到Struct结构.
+
 处理规则:
-	- 基础类型(bool/intN/unitN/floatN/complexN/string/[]byte/duration/time)从string适配转换
-	- 分片类型(slice)适配多参数
-	- 特殊类型(array, struct, map, slice, ptr)当作json内容处理
-	- 其他类型转换错误
+  - 基础类型(bool/intN/unitN/floatN/complexN/string/[]byte/duration/time)从string适配转换
+  - 分片类型(slice)适配多参数
+  - 特殊类型(array, struct, map, slice, ptr)当作json内容处理
+  - 其他类型转换错误
+
 覆盖顺序(从高到低):
-	- json (application/json)
-	- form (application/x-www-form-urlencoded或multipart/form-data)
-	- path (params)
-	- query
+  - json (application/json)
+  - form (application/x-www-form-urlencoded或multipart/form-data)
+  - path (params)
+  - query
+
 需要注意: json字符串赋值不做类型适配处理(例如从string转为int)
 */
-func (c *Context) Scheme(dst interface{}, tag string) error {
+func (ctx *Context) Scheme(dst interface{}, tag string) error {
 
 	/*************************************
 	 * 检查与分析参数合法性
@@ -94,7 +98,7 @@ func (c *Context) Scheme(dst interface{}, tag string) error {
 	/*************************************
 	 * 解析上下文数值
 	 *************************************/
-	vals, err := parseValues(c)
+	vals, err := parseValues(ctx)
 	if err != nil {
 		return err
 	}

@@ -35,59 +35,59 @@ type Context struct {
 var _ context.Context = (*Context)(nil)
 
 // clean 负责清理外部引用. 确保pool安全!
-func (c *Context) clean() *Context {
-	c.resources = nil
-	c.attribute = nil
-	c.query = nil
-	c.panic = nil
-	c.ResponseWriter.ResponseWriter = nil
-	c.Request = nil
-	c.Handler = nil
+func (ctx *Context) clean() *Context {
+	ctx.resources = nil
+	ctx.attribute = nil
+	ctx.query = nil
+	ctx.panic = nil
+	ctx.ResponseWriter.ResponseWriter = nil
+	ctx.Request = nil
+	ctx.Handler = nil
 
-	return c
+	return ctx
 }
 
 // 使用前重置上下文
-func (c *Context) serveNext(w http.ResponseWriter, r *http.Request, h *Handler) {
-	c.ResponseWriter.ResponseWriter = w
-	c.ResponseWriter.statusCode = 0
-	c.Request = r
-	c.Handler = h
-	c.handle = -1 // 初始值为-1!
-	c.Next()
+func (ctx *Context) serveNext(w http.ResponseWriter, r *http.Request, h *Handler) {
+	ctx.ResponseWriter.ResponseWriter = w
+	ctx.ResponseWriter.statusCode = 0
+	ctx.Request = r
+	ctx.Handler = h
+	ctx.handle = -1 // 初始值为-1!
+	ctx.Next()
 }
 
-func (c *Context) panicNext(p interface{}, h *Handler) {
+func (ctx *Context) panicNext(p interface{}, h *Handler) {
 	// 保留上下文信息,重置handler为panic handler继续处理.
-	c.panic = p
-	c.Handler = h
-	c.handle = -1 // 初始值为-1!
-	c.Next()
+	ctx.panic = p
+	ctx.Handler = h
+	ctx.handle = -1 // 初始值为-1!
+	ctx.Next()
 }
 
-func (c *Context) Next() {
-	c.handle++
-	for c.handle < len(c.Handler.HandleChain) {
-		c.Handler.HandleChain[c.handle](c)
-		c.handle++
+func (ctx *Context) Next() {
+	ctx.handle++
+	for ctx.handle < len(ctx.Handler.HandleChain) {
+		ctx.Handler.HandleChain[ctx.handle](ctx)
+		ctx.handle++
 	}
 }
 
-func (c *Context) Aborted() bool {
-	return c.handle >= HandleChainCapacity
+func (ctx *Context) Aborted() bool {
+	return ctx.handle >= HandleChainCapacity
 }
 
-func (c *Context) Abort() {
-	c.handle = HandleChainCapacity
+func (ctx *Context) Abort() {
+	ctx.handle = HandleChainCapacity
 }
 
-func (c *Context) AbortWithStatus(statusCode int) {
-	c.handle = HandleChainCapacity
-	c.ResponseWriter.WriteHeader(statusCode)
+func (ctx *Context) AbortWithStatus(statusCode int) {
+	ctx.handle = HandleChainCapacity
+	ctx.ResponseWriter.WriteHeader(statusCode)
 }
 
-func (c *Context) ParamValue(key string) string {
-	v, _ := c.params.Get(key)
+func (ctx *Context) ParamValue(key string) string {
+	v, _ := ctx.params.Get(key)
 	return v
 }
 
@@ -95,49 +95,28 @@ func (c *Context) ParamValue(key string) string {
  实现context.Context
 *************************************/
 
-func (c *Context) Deadline() (deadline time.Time, ok bool) {
-	return c.Request.Context().Deadline()
+func (ctx *Context) Deadline() (deadline time.Time, ok bool) {
+	return ctx.Request.Context().Deadline()
 }
 
-func (c *Context) Done() <-chan struct{} {
-	return c.Request.Context().Done()
+func (ctx *Context) Done() <-chan struct{} {
+	return ctx.Request.Context().Done()
 }
 
-func (c *Context) Err() error {
-	return c.Request.Context().Err()
+func (ctx *Context) Err() error {
+	return ctx.Request.Context().Err()
 }
 
-func (c *Context) Value(key any) any {
-	if ret, ok := c.attribute[key]; ok {
+func (ctx *Context) Value(key any) any {
+	if ret, ok := ctx.attribute[key]; ok {
 		return ret
 	}
-	return c.Request.Context().Value(key)
+	return ctx.Request.Context().Value(key)
 }
 
 /*************************************
- 自定义工具方法
+ 输出结果
 *************************************/
-
-// ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
-func (c *Context) ReadBody() ([]byte, error) {
-	if buff, ok := c.Request.Body.(*BuffBody); ok {
-		return buff.data, nil
-	} else {
-		return io.ReadAll(c.Request.Body) // Transfer-Encoding: chunked的情况!
-	}
-}
-
-func (c *Context) CopyBody() ([]byte, error) {
-	if buff, ok := c.Request.Body.(*BuffBody); ok {
-		return buff.data, nil
-	} else {
-		data, err := io.ReadAll(c.Request.Body)
-		if err == nil {
-			c.Request.Body = &BuffBody{data: data}
-		}
-		return data, err
-	}
-}
 
 var (
 	jsonContentType     = []string{"application/json; charset=utf-8"}
@@ -150,118 +129,152 @@ var (
 	closeConnection     = []string{"close"}
 )
 
-func (c *Context) resource(code uint32) *resource {
-	if c.resources == nil {
+func (ctx *Context) resource(code uint32) *resource {
+	if ctx.resources == nil {
 		var lang string
-		if vs, ok := c.Request.Header["Accept-Language"]; ok {
+		if vs, ok := ctx.Request.Header["Accept-Language"]; ok {
 			lang = vs[0]
 		}
-		c.resources = fastGetResMapByAcceptLanguage(lang)
+		ctx.resources = fastGetResMapByAcceptLanguage(lang)
 	}
-	return c.resources[code]
+	return ctx.resources[code]
 }
 
-func (c *Context) WriteErrorResult(out io.Writer, err *StatusResult) error {
-
-	if c.mux.closed != 0 {
-		c.ResponseWriter.Header()["Connection"] = closeConnection
+func (ctx *Context) WriteErrorResult(result *StatusResult) error {
+	// graceful关闭期间断开keepalive连接
+	if ctx.mux.closed != 0 {
+		ctx.ResponseWriter.Header()["Connection"] = closeConnection
 	}
+	// 设置内容类型
+	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
+	// 写出状态与结果
+	ctx.ResponseWriter.WriteStatus(result.Status)
+	return ctx.writeErrorResult(ctx.ResponseWriter.ResponseWriter, result)
+}
 
-	c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-	c.ResponseWriter.WriteHeader(int(err.Status))
-
+func (ctx *Context) writeErrorResult(out io.Writer, result *StatusResult) error {
 	// 国际化错误消息(延后初始化)
-	if rs := c.resource(err.Code); rs != nil {
+	if rs := ctx.resource(result.Code); rs != nil {
 		// 覆盖status
 		if rs.Status > 0 {
-			err.Status = rs.Status
+			result.Status = rs.Status
 		}
 		// 支持参数格式化
-		if len(err.Details) == 0 {
-			err.Message = rs.Message
+		if len(result.Details) == 0 {
+			result.Message = rs.Message
 		} else {
-			err.Message = Sprintf(rs.Message, err.Details...)
+			result.Message = Sprintf(rs.Message, result.Details...)
 		}
 	}
 
-	enc := GetEncoder(out)
-	defer PutEncoder(enc)
+	w := GetEncoder(out)
+	defer PutEncoder(w)
 
-	err.EncodeJSON(enc)
-	return enc.Close()
+	result.EncodeJSON(w)
+	return w.Close()
 }
 
-func (c *Context) WriteApplyResult(out io.Writer, val any) error {
-	if c.mux.closed != 0 {
-		c.ResponseWriter.Header()["Connection"] = closeConnection
+func (ctx *Context) WriteApplyResult(val any) error {
+	// graceful关闭期间断开keepalive连接
+	if ctx.mux.closed != 0 {
+		ctx.ResponseWriter.Header()["Connection"] = closeConnection
 	}
-	switch c.Handler.Meta.Result {
+	// 设置内容类型
+	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
+	// 写出状态与结果
+	ctx.ResponseWriter.WriteStatus(ctx.Handler.Meta.Status)
+	return ctx.writeApplyResult(ctx.ResponseWriter.ResponseWriter, val)
+}
+
+func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
+	switch ctx.Handler.Meta.Result {
 	case Http_simple:
-		c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-		c.ResponseWriter.WriteHeader(int(c.Handler.Meta.Status))
 
-		enc := GetEncoder(out)
-		defer PutEncoder(enc)
+		w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
+		defer PutEncoder(w)
 
-		c.result.Code = c.Handler.Meta.Status
-		c.result.Data = val
-		c.result.EncodeJSON(enc)
+		ctx.result.Code = ctx.Handler.Meta.Status
+		ctx.result.Data = val
+		ctx.result.EncodeJSON(w)
 
-		return enc.Close()
+		return w.Close()
 
 	case Http_unwrap:
-		c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-		c.ResponseWriter.WriteHeader(int(c.Handler.Meta.Status))
 
 		if jc, ok := val.(JsonCodec); ok {
-			enc := GetEncoder(out)
-			defer PutEncoder(enc)
+			w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
+			defer PutEncoder(w)
 
-			jc.EncodeJSON(enc)
-			return enc.Close()
+			jc.EncodeJSON(w)
+			return w.Close()
 		} else {
-			enc := json.NewEncoder(out)
-			enc.SetEscapeHTML(false)
-			return enc.Encode(val)
+			w := json.NewEncoder(ctx.ResponseWriter.ResponseWriter)
+			w.SetEscapeHTML(false)
+			return w.Encode(val)
 		}
 
-	case Http_events:
-		// TODO:
 	}
-	return fmt.Errorf("unsupport http result: %v", c.Handler.Meta.Result)
+	return fmt.Errorf("unsupport result catalog: %v", ctx.Handler.Meta.Result)
 }
 
-func (c *Context) WritePlain(status int, data string) error {
-	return c.WritePlainBytes(status, UnsafeBytes(data))
+func (ctx *Context) WritePlain(status int, data string) error {
+	return ctx.WritePlainBytes(status, UnsafeBytes(data))
 }
 
-func (c *Context) WritePlainBytes(status int, data []byte) error {
-	if c.mux.closed != 0 {
-		c.ResponseWriter.Header()["Connection"] = closeConnection
+func (ctx *Context) WritePlainBytes(status int, data []byte) error {
+	// graceful关闭期间断开keepalive连接
+	if ctx.mux.closed != 0 {
+		ctx.ResponseWriter.Header()["Connection"] = closeConnection
 	}
-	c.ResponseWriter.Header()["Content-Type"] = plainContentType
-	c.ResponseWriter.WriteHeader(status)
-	_, err := c.ResponseWriter.Write(data)
+	// 设置内容类型
+	ctx.ResponseWriter.Header()["Content-Type"] = plainContentType
+	// 写出状态与结果
+	ctx.ResponseWriter.WriteHeader(status)
+	_, err := ctx.ResponseWriter.Write(data)
 	return err
 }
 
-func (c *Context) WriteHtml(status int, data string) error {
-	return c.WriteHtmlBytes(status, UnsafeBytes(data))
+func (ctx *Context) WriteHtml(status int, data string) error {
+	return ctx.WriteHtmlBytes(status, UnsafeBytes(data))
 }
 
-func (c *Context) WriteHtmlBytes(status int, data []byte) error {
-	if c.mux.closed != 0 {
-		c.ResponseWriter.Header()["Connection"] = closeConnection
+func (ctx *Context) WriteHtmlBytes(status int, data []byte) error {
+	// graceful关闭期间断开keepalive连接
+	if ctx.mux.closed != 0 {
+		ctx.ResponseWriter.Header()["Connection"] = closeConnection
 	}
-	c.ResponseWriter.Header()["Content-Type"] = htmlContentType
-	c.ResponseWriter.WriteHeader(status)
-	_, err := c.ResponseWriter.Write(data)
+	// 设置内容类型
+	ctx.ResponseWriter.Header()["Content-Type"] = htmlContentType
+	// 写出状态与结果
+	ctx.ResponseWriter.WriteHeader(status)
+	_, err := ctx.ResponseWriter.Write(data)
 	return err
 }
 
 /*************************************
- 辅助数据结构
+ 请求内容
 *************************************/
+
+// ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
+func (ctx *Context) ReadBody() ([]byte, error) {
+	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
+		return buff.data, nil
+	} else {
+		return io.ReadAll(ctx.Request.Body) // Transfer-Encoding: chunked的情况!
+	}
+}
+
+func (ctx *Context) CopyBody() ([]byte, error) {
+	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
+		return buff.data, nil
+	} else {
+		data, err := io.ReadAll(ctx.Request.Body)
+		if err == nil {
+			ctx.Request.Body = &BuffBody{data: data}
+		}
+		return data, err
+	}
+}
 
 // BuffBody 一次性读写Body, 配合ReadBody()一块使用
 type BuffBody struct {
@@ -293,7 +306,11 @@ type proxyResponseWriter struct {
 
 func (rw *proxyResponseWriter) WriteHeader(statusCode int) {
 	rw.statusCode = statusCode
-	rw.ResponseWriter.WriteHeader(statusCode)
+	rw.ResponseWriter.WriteHeader(rw.statusCode)
+}
+
+func (rw *proxyResponseWriter) WriteStatus(status uint32) {
+	rw.WriteHeader(int(status))
 }
 
 /*************************************

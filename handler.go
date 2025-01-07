@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"github.com/hezof/protoapi/internal/websocket"
-	"io"
 	"ksogit.kingsoft.net/kgo/log"
 )
 
@@ -24,11 +23,11 @@ func RestfulHandleFunc(ctx *Context) {
 
 	// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
 	if err != nil {
-		if xrr := WriteErrorResult(ctx, ctx.ResponseWriter, err); xrr != nil {
+		if xrr := ctx.WriteErrorResult(StatusErrorFrom(err, profile.DefaultErrorStatus)); xrr != nil {
 			log.Error("write error result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, xrr)
 		}
 	} else if ctx.ResponseWriter.statusCode == 0 {
-		if xrr := WriteApplyResult(ctx, ctx.ResponseWriter, rsp); xrr != nil {
+		if xrr := ctx.WriteApplyResult(rsp); xrr != nil {
 			log.Error("write apply result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, xrr)
 		}
 	}
@@ -39,6 +38,11 @@ WebsocketHandleFunc 使用call生成websocket的HandleFunc
 */
 func WebsocketHandleFunc(ctx *Context) {
 
+	// graceful关闭期间断开keepalive连接
+	if ctx.mux.closed != 0 {
+		ctx.ResponseWriter.Header()["Connection"] = closeConnection
+	}
+
 	// websocket必须用回原生的ResponseWriter, 因为它实现的http.Hijack接口
 	conn, err := ctx.mux.upgrader.Upgrade(ctx.ResponseWriter.ResponseWriter, ctx.Request, nil)
 	if err != nil {
@@ -47,14 +51,9 @@ func WebsocketHandleFunc(ctx *Context) {
 	}
 	defer conn.Close()
 
-	var (
-		in  io.Reader
-		out io.WriteCloser
-		rsp interface{}
-	)
 	for {
 		// 获取读入流
-		_, in, err = conn.NextReader()
+		_, in, err := conn.NextReader()
 		if err != nil {
 			if _, ok := err.(*websocket.CloseError); !ok {
 				log.Error("websocket next reader error: %v", err)
@@ -62,7 +61,7 @@ func WebsocketHandleFunc(ctx *Context) {
 			return // 结束当前ws链接
 		}
 		// 获取写出流
-		out, err = conn.NextWriter(websocket.TextMessage)
+		out, err := conn.NextWriter(websocket.TextMessage)
 		if err != nil {
 			if cer, ok := err.(*websocket.CloseError); !ok {
 				log.Error("websocket next writer error: %v", cer)
@@ -70,18 +69,18 @@ func WebsocketHandleFunc(ctx *Context) {
 			return // 结束当前ws链接
 		}
 		// 业务逻辑(前置校验)
-		rsp, err = ctx.Handler.Meta.Call(ctx, in)
+		rsp, err := ctx.Handler.Meta.Call(ctx, in)
 
-		// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
+		// 结果处理
 		if err != nil {
-			if xrr := WriteErrorResult(ctx, out, err); xrr != nil {
+			if xrr := ctx.writeErrorResult(out, StatusErrorFrom(err, profile.DefaultErrorStatus)); xrr != nil {
 				if _, ok := xrr.(*websocket.CloseError); !ok {
 					log.Error("websocket write result error: %v", xrr)
 				}
 				return // 结束当前ws链接
 			}
 		} else if ctx.ResponseWriter.statusCode == 0 {
-			if xrr := WriteApplyResult(ctx, out, rsp); xrr != nil {
+			if xrr := ctx.writeApplyResult(out, rsp); xrr != nil {
 				if _, ok := xrr.(*websocket.CloseError); !ok {
 					log.Error("websocket write result error: %v", xrr)
 				}
@@ -97,11 +96,4 @@ func WebsocketHandleFunc(ctx *Context) {
 			return // 结束当前ws链接
 		}
 	}
-}
-
-func Meta(status uint32, result Http_Result) *MethodSetting {
-	r := new(MethodSetting)
-	r.Http.Status = status
-	r.Http.Result = result
-	return r
 }
