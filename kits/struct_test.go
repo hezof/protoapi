@@ -47,7 +47,7 @@ var mdata = map[string]interface{}{
 
 func TestMapStruct(t *testing.T) {
 	var stu *Student
-	err := MapStruct(mdata, &stu, "json")
+	err := Map2Struct(mdata, &stu, "json")
 	if err != nil {
 		panic(err)
 	}

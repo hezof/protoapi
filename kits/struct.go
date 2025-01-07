@@ -53,12 +53,12 @@ type StructBinder struct {
 }
 
 /*
-MapStructSlice 将map分片转换成struct分片
+MapSlice2StructSlice 将map分片转换成struct分片
 - org: map[string]interface{}分片, []map[string]interface{}
 - dst: struct分片, []T
 - tag: 用于关联的tag名字
 */
-func (sb StructBinder) MapStructSlice(org []interface{}, dst interface{}, tag string) error {
+func (sb StructBinder) MapSlice2StructSlice(org []interface{}, dst interface{}, tag string) error {
 	// 忽略空参数
 	var orgLen = len(org)
 	if orgLen == 0 {
@@ -133,12 +133,12 @@ func (sb StructBinder) MapStructSlice(org []interface{}, dst interface{}, tag st
 }
 
 /*
-MapStructTable 将map键值表转换成struct键值表
+MapTable2StructTable 将map键值表转换成struct键值表
 - org: map[string]interface{}键值表, map[string]map[string]interface{}
 - dst: struct键值表, map[string]T
 - tag: 用于关联的tag名字
 */
-func (sb StructBinder) MapStructTable(org map[string]interface{}, dst interface{}, tag string) error {
+func (sb StructBinder) MapTable2StructTable(org map[string]interface{}, dst interface{}, tag string) error {
 	// 忽略空参数
 	var orgLen = len(org)
 	if orgLen == 0 {
@@ -205,12 +205,12 @@ func (sb StructBinder) MapStructTable(org map[string]interface{}, dst interface{
 }
 
 /*
-MapStruct 将map转换成struct
+Map2Struct 将map转换成struct
 - org: map[string]interface{}
 - dst: struct
 - tag: 用于关联的tag名字
 */
-func (sb StructBinder) MapStruct(org map[string]interface{}, dst interface{}, tag string) error {
+func (sb StructBinder) Map2Struct(org map[string]interface{}, dst interface{}, tag string) error {
 
 	if org == nil {
 		return nil
@@ -556,16 +556,16 @@ func (sb StructBinder) AdaptValue(org interface{}, dstTyp reflect.Type, dstVal *
  * 全局默认采用带缓存Binder
  ************************************************/
 
-func MapStructSlice(org []interface{}, dst interface{}, tag string) error {
-	return CachedBinder.MapStructSlice(org, dst, tag)
+func MapSlice2StructSlice(org []interface{}, dst interface{}, tag string) error {
+	return CachedBinder.MapSlice2StructSlice(org, dst, tag)
 }
 
-func MapStructTable(org map[string]interface{}, dst interface{}, tag string) error {
-	return CachedBinder.MapStructTable(org, dst, tag)
+func MapTable2StructTable(org map[string]interface{}, dst interface{}, tag string) error {
+	return CachedBinder.MapTable2StructTable(org, dst, tag)
 }
 
-func MapStruct(org map[string]interface{}, dst interface{}, tag string) error {
-	return CachedBinder.MapStruct(org, dst, tag)
+func Map2Struct(org map[string]interface{}, dst interface{}, tag string) error {
+	return CachedBinder.Map2Struct(org, dst, tag)
 }
 
 /************************************************
