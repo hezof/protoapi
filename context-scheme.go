@@ -4,54 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hezof/protoapi/kits"
-
 	"io"
 	"net/url"
-	"reflect"
 	"strings"
+
+	"reflect"
 )
-
-type values struct {
-	json  map[string]json.RawMessage
-	form  map[string][]string
-	path  *Params
-	query map[string][]string
-}
-
-func parseValues(c *Context) (*values, error) {
-	var ret = new(values)
-	var contentType string
-	if vs := c.Request.Header["Content-Type"]; len(vs) > 0 {
-		contentType = vs[0]
-	}
-	if c.Request.ContentLength > 0 {
-		if strings.HasPrefix(contentType, "application/x-www-form-urlencoded") || strings.HasPrefix(contentType, "multipart/form-data") {
-			// form
-			if c.Request.PostForm == nil {
-				err := c.Request.ParseMultipartForm(c.Handler.FormMaxMemory)
-				if err != nil {
-					return nil, err
-				}
-			}
-			ret.form = c.Request.PostForm
-		} else {
-			// json
-			err := json.NewDecoder(c.Request.Body).Decode(&ret.json)
-			if err != nil && err != io.EOF {
-				return nil, err
-			}
-		}
-	}
-	ret.path = &c.params
-	if c.query == nil {
-		if c.Request.URL.RawQuery != "" {
-			c.query, _ = url.ParseQuery(c.Request.URL.RawQuery)
-		}
-	}
-	ret.query = c.query
-
-	return ret, nil
-}
 
 /*
 Scheme
@@ -318,4 +276,46 @@ func adaptValue(org string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 	}
 
 	return fmt.Errorf("convert type error: %T -> %v", org, dstTyp)
+}
+
+type values struct {
+	json  map[string]json.RawMessage
+	form  map[string][]string
+	path  *Params
+	query map[string][]string
+}
+
+func parseValues(c *Context) (*values, error) {
+	var ret = new(values)
+	var contentType string
+	if vs := c.Request.Header["Content-Type"]; len(vs) > 0 {
+		contentType = vs[0]
+	}
+	if c.Request.ContentLength > 0 {
+		if strings.HasPrefix(contentType, "application/x-www-form-urlencoded") || strings.HasPrefix(contentType, "multipart/form-data") {
+			// form
+			if c.Request.PostForm == nil {
+				err := c.Request.ParseMultipartForm(c.Handler.FormMaxMemory)
+				if err != nil {
+					return nil, err
+				}
+			}
+			ret.form = c.Request.PostForm
+		} else {
+			// json
+			err := json.NewDecoder(c.Request.Body).Decode(&ret.json)
+			if err != nil && err != io.EOF {
+				return nil, err
+			}
+		}
+	}
+	ret.path = &c.params
+	if c.query == nil {
+		if c.Request.URL.RawQuery != "" {
+			c.query, _ = url.ParseQuery(c.Request.URL.RawQuery)
+		}
+	}
+	ret.query = c.query
+
+	return ret, nil
 }
