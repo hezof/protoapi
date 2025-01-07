@@ -159,11 +159,11 @@ func (r *JsonDecoder) next() JsonToken {
 	if r.token != 0 {
 		switch r.token {
 		case ObjectBegin:
-			r.skipObject()
+			r.token = 0
 		case ObjectEnd:
 			r.token = 0
 		case ArrayBegin:
-			r.skipArray()
+			r.token = 0
 		case ArrayEnd:
 			r.token = 0
 		case Comma:
