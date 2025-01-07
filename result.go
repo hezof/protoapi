@@ -38,10 +38,7 @@ func (sr *StatusResult) DecodeJSON(r *JsonDecoder) {
 			// 如果不是JsonCodec则忽略,无法混用encoding/json库
 			if jc, ok := sr.Data.(JsonCodec); ok {
 				jc.DecodeJSON(r)
-			} else {
-				r.skip
 			}
-
 		}
 	})
 }
