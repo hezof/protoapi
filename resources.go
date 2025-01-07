@@ -36,9 +36,9 @@ import (
 )
 
 type resource struct {
-	Code       uint32 `xml:"code"`
-	Message    string `xml:"message"`
-	StatusCode uint32 `xml:"status-code"`
+	Status  uint32 `xml:"status"`
+	Code    uint32 `xml:"code"`
+	Message string `xml:"message"`
 }
 
 type resources struct {
@@ -53,7 +53,6 @@ type resources struct {
 var (
 	allResMap = make(map[string]map[uint32]*resource)
 	defResMap = make(map[uint32]*resource)
-	lenResMap int
 )
 
 func InitResourceBundle(resDir, defLang string) error {
@@ -92,8 +91,6 @@ func InitResourceBundle(resDir, defLang string) error {
 	if err == nil {
 		defResMap = allResMap[defLang]
 	}
-	lenResMap = len(allResMap) // 用于快速判断
-
 	return err
 }
 
@@ -115,20 +112,18 @@ func ReadResourceConfig(path string) (langs []string, bundle map[uint32]*resourc
 	return
 }
 
-func LoadResourceBundle(code uint32, languages ...string) (string, uint32, bool) {
-	if lenResMap > 0 {
-		for _, l := range languages {
-			if bds := allResMap[l]; bds != nil {
-				if bd := bds[code]; bd != nil {
-					return bd.Message, bd.StatusCode, true
-				}
+func LoadResourceBundle(code uint32, languages ...string) (uint32, string, bool) {
+	for _, l := range languages {
+		if bds := allResMap[l]; bds != nil {
+			if bd := bds[code]; bd != nil {
+				return bd.Status, bd.Message, true
 			}
 		}
-		if bd := defResMap[code]; bd != nil {
-			return bd.Message, bd.StatusCode, true
-		}
 	}
-	return "", 0, false
+	if bd := defResMap[code]; bd != nil {
+		return bd.Status, bd.Message, true
+	}
+	return 0, "", false
 }
 
 // 根据Accept-Language快速获取(从左到右,不按q排序). 该方法性能优于parseAcceptLanguage!

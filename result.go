@@ -3,7 +3,6 @@ package protoapi
 import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"io"
 )
 
 /*
@@ -35,7 +34,7 @@ func (sr *StatusResult) EncodeJSON(w *JsonEncoder) {
 		EncodeUint32_WithEmpty(w, profile.ResultCodeField, r.Code)
 		EncodeString_OmitEmpty(w, profile.ResultNameField, r.Name)
 		EncodeString_OmitEmpty(w, profile.ResultMessageField, r.Message)
-		EncodeJSON_OmitEmpty(w, profile.ResultDataField, r.Data)
+		EncodeAny_OmitEmpty(w, profile.ResultDataField, r.Data)
 	})
 }
 
@@ -93,38 +92,5 @@ func StatusErrorFrom(err error, defaultStatus uint32) *StatusResult {
 		Status:  defaultStatus,
 		Code:    uint32(codes.Unknown),
 		Message: err.Error(),
-	}
-}
-
-func WriteErrorResult(ctx *Context, out io.Writer, err *StatusResult) error {
-
-	// 国际化错误消息(延后初始化)
-	if lenResMap > 0 {
-		var lang string
-		if vs, ok := ctx.Request.Header["Accept-Language"]; ok {
-			lang = vs[0]
-		}
-		var resMap = fastGetResMapByAcceptLanguage(lang)
-		// 有资源才进行!
-		if rs, ok := resMap[err.Code]; ok {
-			// 支持参数格式化
-			if len(err.Details) == 0 {
-				err.Message = rs.Message
-			} else {
-				err.Message = Sprintf(rs.Message, err.Details...)
-			}
-			if rs.StatusCode > 0 {
-				err.Status = rs.StatusCode
-			}
-		}
-	}
-
-	return EncodeJSON(out, err)
-}
-
-func WriteApplyResult(ctx *Context, out io.Writer, val any) error {
-	switch {
-	case ctx.Handler.Meta == nil:
-	case ctx.Handler.Meta.Result
 	}
 }
