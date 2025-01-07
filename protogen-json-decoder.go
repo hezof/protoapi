@@ -1,7 +1,6 @@
 package protoapi
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -741,66 +740,5 @@ func newParseError(ctx *JsonDecoder, mark int, reason string) error {
 		Reason: reason,
 		Offset: ctx.base + mark,
 		Data:   data,
-	}
-}
-
-func DecodeAny(r *JsonDecoder, value any) {
-	switch value := value.(type) {
-	case JsonCodec:
-		value.DecodeJSON(r)
-	case *bool:
-		DecodeBool(r, value)
-	case *int:
-		var tmp int64
-		DecodeInt64(r, &tmp)
-		*value = int(tmp)
-	case *int8:
-		var tmp int32
-		DecodeInt32(r, &tmp)
-		*value = int8(tmp)
-	case *int16:
-		var tmp int32
-		DecodeInt32(r, &tmp)
-		*value = int16(tmp)
-	case *int32:
-		DecodeInt32(r, value)
-	case *int64:
-		DecodeInt64(r, value)
-	case *uint:
-		var tmp uint64
-		DecodeUint64(r, &tmp)
-		*value = uint(tmp)
-	case *uint8:
-		var tmp uint32
-		DecodeUint32(r, &tmp)
-		*value = uint8(tmp)
-	case *uint16:
-		var tmp uint32
-		DecodeUint32(r, &tmp)
-		*value = uint16(tmp)
-	case *uint32:
-		DecodeUint32(r, value)
-	case *uint64:
-		DecodeUint64(r, value)
-	case *float32:
-		DecodeFloat(r, value)
-	case *float64:
-		DecodeDouble(r, value)
-	case *string:
-		DecodeString(r, value)
-	case *[]byte:
-		DecodeBytes(r, value)
-	default:
-		if r.token != 0 {
-			// 回退token. 解决NewJsonDecoder()/NewJsonBuffer()或reset()预置next()!
-			r.unreadByte()
-		}
-		err := json.NewDecoder(r).Decode(value)
-		if err != nil {
-			if r.firstError == nil {
-				r.firstError = err
-			}
-			return
-		}
 	}
 }

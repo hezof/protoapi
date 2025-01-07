@@ -1,6 +1,7 @@
 package protoapi
 
-type ProtoDemo struct {
-	Name string `protobuf:"name" json:"name,omitempty"`
-	Age  int    `protobuf:"age" json:"age,omitempty"`
+import "testing"
+
+func TestServer_ListenAndServe(t *testing.T) {
+	
 }

@@ -3,8 +3,9 @@ package protoapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/hezof/protoapi/kits"
+
 	"io"
-	"ksogit.kingsoft.net/kgo/protoapi/kits"
 	"net/url"
 	"reflect"
 	"strings"
@@ -27,12 +28,15 @@ func parseValues(c *Context) (*values, error) {
 		if strings.HasPrefix(contentType, "application/x-www-form-urlencoded") || strings.HasPrefix(contentType, "multipart/form-data") {
 			// form
 			if c.Request.PostForm == nil {
-				c.Request.ParseMultipartForm(DefaultFormMaxMemory)
+				err := c.Request.ParseMultipartForm(c.Handler.FormMaxMemory)
+				if err != nil {
+					return nil, err
+				}
 			}
 			ret.form = c.Request.PostForm
 		} else {
 			// json
-			err := NewDecoder(c.Request.Body).Decode(&ret.json)
+			err := json.NewDecoder(c.Request.Body).Decode(&ret.json)
 			if err != nil && err != io.EOF {
 				return nil, err
 			}
@@ -151,7 +155,7 @@ __NEXT__:
 		}
 		// 取值顺序: json/form/path/query
 		if js, ok := vs.json[fldKey]; ok {
-			if err = Unmarshal(js, fldVal.Addr().Interface()); err != nil {
+			if err = json.Unmarshal(js, fldVal.Addr().Interface()); err != nil {
 				return
 			} else {
 				set = true
@@ -306,7 +310,7 @@ func adaptValue(org string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 		}
 	case reflect.Array, reflect.Struct, reflect.Map, reflect.Slice, reflect.Ptr:
 		// 其他当成json处理
-		if err := Unmarshal([]byte(org), dstVal.Addr().Interface()); err != nil {
+		if err := json.Unmarshal([]byte(org), dstVal.Addr().Interface()); err != nil {
 			return err
 		} else {
 			return nil
