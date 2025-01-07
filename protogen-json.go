@@ -40,6 +40,32 @@ func PutEncoder(enc *JsonEncoder) {
 	encoders.Put(enc.clean())
 }
 
+func DecodeJSON(in io.Reader, val any) error {
+	if jc, ok := val.(JsonCodec); ok {
+		dec := GetDecoder(in)
+		defer PutDecoder(dec)
+
+		jc.DecodeJSON(dec)
+		return dec.Close()
+	} else {
+		return json.NewDecoder(in).Decode(val)
+	}
+}
+
+func EncodeJSON(out io.Writer, val any) error {
+	if jc, ok := val.(JsonCodec); ok {
+		enc := GetEncoder(out)
+		defer PutEncoder(enc)
+
+		jc.EncodeJSON(enc)
+		return enc.Close()
+	} else {
+		enc := json.NewEncoder(out)
+		enc.SetEscapeHTML(false)
+		return enc.Encode(val)
+	}
+}
+
 func EncodeAny_OmitEmpty(w *JsonEncoder, name string, val any) {
 	if val != nil {
 		w.ensure(5 + len(name))
@@ -49,15 +75,14 @@ func EncodeAny_OmitEmpty(w *JsonEncoder, name string, val any) {
 		if jc, ok := val.(JsonCodec); ok {
 			jc.EncodeJSON(w)
 		} else {
-			enc := json.NewEncoder(w)
-			enc.SetEscapeHTML(false)
-			err := enc.Encode(val)
+			bs, err := json.Marshal(val)
 			if err != nil {
 				if w.firstError == nil {
 					w.firstError = err
 				}
 				return
 			}
+			_, _ = w.Write(bs)
 		}
 		w.buff = append(w.buff, comma)
 	}

@@ -31,22 +31,24 @@ func (s *stream) SetTrailer(md metadata.MD) {
 }
 
 func (s *stream) SendMsg(m interface{}) (err error) {
-	if s.c.streamEncoder == nil {
-		if s.c.mux.closed != 0 {
-			s.c.ResponseWriter.Header()["Connection"] = closeConnection
-		}
-		s.c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-		s.c.ResponseWriter.WriteHeader(int(s.c.Handler.Meta.Status))
-		s.c.streamEncoder = GetEncoder(s.c.ResponseWriter.ResponseWriter)
-	}
-	
+	//if s.c.streamEncoder == nil {
+	//	if s.c.mux.closed != 0 {
+	//		s.c.ResponseWriter.Header()["Connection"] = closeConnection
+	//	}
+	//	s.c.ResponseWriter.Header()["Content-Type"] = jsonContentType
+	//	s.c.ResponseWriter.WriteHeader(int(s.c.Handler.Meta.Status))
+	//	s.c.streamEncoder = GetEncoder(s.c.ResponseWriter.ResponseWriter)
+	//}
+	//
+	return nil
 }
 
 func (s *stream) RecvMsg(m interface{}) error {
-	if s.c.streamDecoder == nil {
-		s.c.streamDecoder = NewDecoder(s.c.Request.Body)
-	}
-	return s.c.streamDecoder.Decode(m)
+	//if s.c.streamDecoder == nil {
+	//	s.c.streamDecoder = NewDecoder(s.c.Request.Body)
+	//}
+	//return s.c.streamDecoder.Decode(m)
+	return nil
 }
 
 func (s *stream) Context() context.Context {

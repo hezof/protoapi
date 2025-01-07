@@ -26,7 +26,24 @@ type StatusResult struct {
 }
 
 func (sr *StatusResult) DecodeJSON(r *JsonDecoder) {
-	panic("unsupported operation")
+	DecodeMessage(r, &sr, func(r *JsonDecoder, sr *StatusResult, k string) {
+		switch k {
+		case profile.ResultCodeField:
+			DecodeUint32(r, &sr.Code)
+		case profile.ResultNameField:
+			DecodeString(r, &sr.Name)
+		case profile.ResultMessageField:
+			DecodeString(r, &sr.Message)
+		case profile.ResultDataField:
+			// 如果不是JsonCodec则忽略,无法混用encoding/json库
+			if jc, ok := sr.Data.(JsonCodec); ok {
+				jc.DecodeJSON(r)
+			} else {
+				r.skip
+			}
+
+		}
+	})
 }
 
 func (sr *StatusResult) EncodeJSON(w *JsonEncoder) {

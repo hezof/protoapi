@@ -1,15 +1,15 @@
 package protoapi
 
 func CookieBool(ctx *Context, key string, ptr *bool, style Prop_Style) error {
-
+	return nil
 }
 
 func CookieBoolOptional(ctx *Context, key string, ptr **bool, style Prop_Style) error {
-
+	return nil
 }
 
 func CookieBoolRepeated(ctx *Context, key string, ptr *[]bool, style Prop_Style) error {
-
+	return nil
 }
 
 func CookieBoolMap(ctx *Context, key string, ptr *map[string]bool, style Prop_Style) error {

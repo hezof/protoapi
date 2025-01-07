@@ -146,7 +146,7 @@ func (r *JsonDecoder) more() bool {
 			if r.size > 0 {
 				return true
 			}
-			if r.firstError == nil {
+			if r.firstError == nil && err != io.EOF {
 				r.firstError = err
 			}
 			return false
@@ -158,7 +158,17 @@ func (r *JsonDecoder) more() bool {
 func (r *JsonDecoder) next() JsonToken {
 	if r.token != 0 {
 		switch r.token {
-		case ObjectBegin, ObjectEnd, ArrayBegin, ArrayEnd, Comma, Colon:
+		case ObjectBegin:
+			r.skipObject()
+		case ObjectEnd:
+			r.token = 0
+		case ArrayBegin:
+			r.skipArray()
+		case ArrayEnd:
+			r.token = 0
+		case Comma:
+			r.token = 0
+		case Colon:
 			r.token = 0
 		case String:
 			r.skipString()
@@ -726,10 +736,15 @@ type ParseError struct {
 }
 
 func (l *ParseError) Error() string {
-	return fmt.Sprintf("%s near offset %d of '%s'", l.Reason, l.Offset, l.Data)
+	return fmt.Sprintf("%s: '%s'", l.Reason, l.Data)
 }
 
 func newParseError(ctx *JsonDecoder, mark int, reason string) error {
+
+	if mark < 0 {
+		mark = 0
+	}
+
 	var data string
 	if ctx.size-mark <= MaximumErrorLength {
 		data = string(ctx.buff[mark:ctx.size]) + "..."

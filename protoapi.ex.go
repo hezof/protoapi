@@ -13,10 +13,10 @@ func (e *Error) EncodeJSON(w *JsonEncoder) {
 }
 
 func (e *Error) Error() string {
-	out := NewJsonEncoder(nil, 1024)
-	e.EncodeJSON(out)
-	bs, _ := out.Close()
-	return UnsafeString(bs)
+	w := NewJsonEncoder(nil, 1024)
+	e.EncodeJSON(w)
+	_ = w.Close()
+	return UnsafeString(w.buff)
 }
 
 var _ error = (*Error)(nil)
