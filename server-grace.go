@@ -37,11 +37,12 @@ func (ln keepAliveTCPListener) Accept() (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	tc.SetKeepAlive(true)
 	if ln.KeepAlivePeriod == 0 {
-		tc.SetKeepAlivePeriod(3 * time.Minute)
+		_ = tc.SetKeepAlive(false)
+		_ = tc.SetKeepAlivePeriod(3 * time.Minute)
 	} else {
-		tc.SetKeepAlivePeriod(ln.KeepAlivePeriod)
+		_ = tc.SetKeepAlive(true)
+		_ = tc.SetKeepAlivePeriod(ln.KeepAlivePeriod)
 	}
 	return tc, nil
 }

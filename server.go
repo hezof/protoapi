@@ -237,26 +237,6 @@ func (s *Server) ListenAndServe() (err error) {
 			s._methodSetting[ms.fullMethod] = ms
 
 			// 添加method相应的RequestSetting
-			if ms.Websocket != "" {
-				if s.mux.upgrader == nil {
-					s.mux.upgrader = newWebsocketUpgrader(s.config)
-				}
-				s.routerGroup.Handle(&Handler{
-					Meta:         ms,
-					Method:       http.MethodGet,
-					Path:         ms.Websocket,
-					HandleChain:  []HandleFunc{WebsocketHandleFunc},
-					BodyMaxBytes: -1, // 如果是Websocket长链接则自动忽略BodyMaxBytes参数
-				})
-			}
-			if ms.Post != "" {
-				s.routerGroup.Handle(&Handler{
-					Meta:        ms,
-					Method:      http.MethodPost,
-					Path:        ms.Post,
-					HandleChain: []HandleFunc{RestfulHandleFunc},
-				})
-			}
 			if ms.Get != "" {
 				s.routerGroup.Handle(&Handler{
 					Meta:        ms,
@@ -270,6 +250,14 @@ func (s *Server) ListenAndServe() (err error) {
 					Meta:        ms,
 					Method:      http.MethodPut,
 					Path:        ms.Put,
+					HandleChain: []HandleFunc{RestfulHandleFunc},
+				})
+			}
+			if ms.Post != "" {
+				s.routerGroup.Handle(&Handler{
+					Meta:        ms,
+					Method:      http.MethodPost,
+					Path:        ms.Post,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -319,6 +307,18 @@ func (s *Server) ListenAndServe() (err error) {
 					Method:      http.MethodConnect,
 					Path:        ms.Connect,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
+				})
+			}
+			if ms.Websocket != "" {
+				if s.mux.upgrader == nil {
+					s.mux.upgrader = newWebsocketUpgrader(s.config)
+				}
+				s.routerGroup.Handle(&Handler{
+					Meta:         ms,
+					Method:       http.MethodGet,
+					Path:         ms.Websocket,
+					HandleChain:  []HandleFunc{WebsocketHandleFunc},
+					BodyMaxBytes: -1, // 如果是Websocket长链接则自动忽略BodyMaxBytes参数
 				})
 			}
 		}
@@ -396,8 +396,14 @@ func (s *Server) ListenAndServe() (err error) {
 	if s.config.HttpAddr != "" {
 		// 如果还要其他http server配置,请在Config添加
 		httpServer = &http.Server{
-			Addr:    s.config.HttpAddr,
-			Handler: &s.mux,
+			Addr:         s.config.HttpAddr,
+			Handler:      &s.mux,
+			ReadTimeout:  s.config.HttpReadTimeout,
+			WriteTimeout: s.config.HttpWriteTimeout,
+			IdleTimeout:  s.config.HttpIdleTimeout,
+		}
+		if s.config.HttpKeepAlive == 0 {
+			httpServer.SetKeepAlivesEnabled(false)
 		}
 		// 注册http服务.暂时没有保护机制,由回调函数确保panic安全.
 		if s.onRegisterHttpService != nil && s.config.Name != "" {
@@ -466,7 +472,7 @@ var defaultHttpPanicHandler = &Handler{
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
-			_ = ctx.WriteErrorResult(ctx.ResponseWriter, StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
+			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
 		},
 	},
 }
@@ -474,7 +480,7 @@ var defaultHttpPanicHandler = &Handler{
 var defaultHttpNotFoundHandler = &Handler{
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			_ = ctx.WriteErrorResult(ctx.ResponseWriter, StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
+			_ = ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
 		},
 	},
 }
@@ -523,7 +529,7 @@ func generateBootstrapStreamInterceptor(metas map[string]*MethodSetting, grpcPan
 		}
 
 		// 错误转换(grpc默认关闭i18n追求更快性能)
-		if grpcI18nError && lenResMap > 0 && err != nil {
+		if grpcI18nError && err != nil {
 			err = i18nGrpcError(ctx, err)
 		}
 
@@ -576,7 +582,7 @@ func generateBootstrapUnaryInterceptor(metas map[string]*MethodSetting, grpcPani
 		}
 
 		// 错误转换(grpc默认关闭i18n追求更快性能)
-		if grpcI18nError && lenResMap > 0 && err != nil {
+		if grpcI18nError && err != nil {
 			err = i18nGrpcError(ctx, err)
 		}
 

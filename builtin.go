@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -91,6 +92,15 @@ func StackTrace(skip int, sep string) string {
 			}
 		}
 	}
+}
+
+func NvlD(vs ...time.Duration) time.Duration {
+	for _, v := range vs {
+		if v != 0 {
+			return v
+		}
+	}
+	return 0
 }
 
 func NvlI[I int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64](vs ...I) I {
