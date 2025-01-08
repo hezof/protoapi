@@ -35,10 +35,7 @@ func (sr *StatusResult) DecodeJSON(r *JsonDecoder) {
 		case profile.ResultMessageField:
 			DecodeString(r, &sr.Message)
 		case profile.ResultDataField:
-			// 如果不是JsonCodec则忽略,无法混用encoding/json库
-			if jc, ok := sr.Data.(JsonCodec); ok {
-				jc.DecodeJSON(r)
-			}
+			DecodeAny(r, &sr.Data)
 		}
 	})
 }

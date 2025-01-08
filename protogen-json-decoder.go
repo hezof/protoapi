@@ -105,6 +105,9 @@ func (r *JsonDecoder) expectedDelimiterErrorMark(mark int, c byte) {
 
 func (r *JsonDecoder) expectedDelimiterError() {
 	idx := r.mark - 1
+	if idx < 0 {
+		idx = 0
+	}
 	r.expectedDelimiterErrorMark(idx, r.buff[idx])
 }
 
@@ -121,6 +124,9 @@ func (r *JsonDecoder) invalidCharacterErrorMark(mark int, c byte) {
 
 func (r *JsonDecoder) invalidCharacterError() {
 	idx := r.mark - 1
+	if idx < 0 {
+		idx = 0
+	}
 	r.invalidCharacterErrorMark(idx, r.buff[idx])
 }
 
@@ -704,6 +710,57 @@ func (r *JsonDecoder) skipNull() {
 		r.expectedDelimiterError()
 	}
 	r.unreadByte()
+}
+
+// dumpData, dump数据
+func (r *JsonDecoder) dumpObjectOrArray() []byte {
+
+	var start, end byte
+	switch r.token {
+	case ObjectBegin:
+		start, end = '{', '}'
+	case ArrayBegin:
+		start, end = '[', ']'
+	default:
+		return nil
+	}
+
+	r.token = 0 // 很关键!
+
+	// 先添加start
+	var data = append(make([]byte, 0, 256), start)
+
+	level := 1
+	inQuotes := false
+	wasEscape := false
+	for {
+		for i, c := range r.buff[r.mark:r.size] {
+			switch {
+			case c == start && !inQuotes:
+				level++
+			case c == end && !inQuotes:
+				level--
+				if level == 0 {
+					mark := r.mark
+					r.mark += i + 1
+					data = append(data, r.buff[mark:r.mark]...)
+					return data
+				}
+			case c == '\\' && inQuotes:
+				wasEscape = !wasEscape
+				continue
+			case c == '"' && inQuotes:
+				inQuotes = wasEscape
+			case c == '"':
+				inQuotes = true
+			}
+			wasEscape = false
+		}
+		data = append(data, r.buff[r.mark:r.size]...)
+		if !r.more() {
+			return data
+		}
+	}
 }
 
 // JsonToken 词汇令牌. 0表示EOF, -1表示ERROR
