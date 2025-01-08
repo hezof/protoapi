@@ -602,7 +602,7 @@ func (r *JsonDecoder) skipNumber() {
 			default:
 				r.mark += i // mark永远指向下次读位置
 				if !isTokenEnd(c) {
-					r.invalidCharacterErrorMark(r.mark, c)
+					r.expectedDelimiterErrorMark(r.mark, c)
 				}
 				return
 			}
