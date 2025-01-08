@@ -36,7 +36,7 @@ var bs = `{"code":1111,"name":"1111","message":"消息","data":{"name":"myname",
 
 func TestStatusResult_DecodeJSON(t *testing.T) {
 	sr := new(StatusResult)
-	sr.Data = new(Data)
+	sr.Data = "abc"
 	in := strings.NewReader(bs)
 	err := DecodeJSON(in, sr)
 	if err != nil {
