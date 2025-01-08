@@ -18,7 +18,6 @@ func DecodeBool(r *JsonDecoder, p *bool) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(True)
 	}
@@ -33,7 +32,6 @@ func DecodeInt32(r *JsonDecoder, p *int32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -47,8 +45,6 @@ func DecodeInt64(r *JsonDecoder, p *int64) {
 		r.skipNull()
 	case 0:
 		r.unexpectedEndError()
-	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -63,7 +59,6 @@ func DecodeUint32(r *JsonDecoder, p *uint32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -78,7 +73,6 @@ func DecodeUint64(r *JsonDecoder, p *uint64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -93,7 +87,6 @@ func DecodeFloat(r *JsonDecoder, p *float32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -108,7 +101,6 @@ func DecodeDouble(r *JsonDecoder, p *float64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -123,7 +115,6 @@ func DecodeString(r *JsonDecoder, p *string) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(String)
 	}
@@ -133,8 +124,9 @@ func DecodeBytes(r *JsonDecoder, p *[]byte) {
 	switch r.token {
 	case String:
 		val, err := base64.StdEncoding.DecodeString(r.readString())
-		if err != nil && r.firstError == nil {
-			r.firstError = err
+		if err != nil {
+			r.reportError(err)
+			return
 		}
 		*p = val
 	case Null:
@@ -142,7 +134,6 @@ func DecodeBytes(r *JsonDecoder, p *[]byte) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(String)
 	}
@@ -153,16 +144,16 @@ func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, va
 	case String:
 		s := r.readString()
 		v, ok := values[s]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %s", s)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", s))
 			return
 		}
 		*p = Enum(v)
 	case Number:
 		v := int32(r.readInt64())
 		_, ok := names[v]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %d", v)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", v))
 			return
 		}
 		*p = Enum(v)
@@ -171,7 +162,6 @@ func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, va
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(String)
 	}
@@ -182,16 +172,16 @@ func DecodeEnum_EnumAsInt[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]
 	case Number:
 		v := int32(r.readInt64())
 		_, ok := names[v]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %d", v)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", v))
 			return
 		}
 		*p = Enum(v)
 	case String:
 		s := r.readString()
 		v, ok := values[s]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %s", s)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", s))
 			return
 		}
 		*p = Enum(v)
@@ -200,9 +190,8 @@ func DecodeEnum_EnumAsInt[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
-		r.expectedTokenError(String)
+		r.expectedTokenError(Number)
 	}
 }
 
@@ -212,6 +201,8 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message, h func(r *JsonDecod
 		if *p == nil {
 			*p = new(Message)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -226,6 +217,7 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message, h func(r *JsonDecod
 				r.expectedTokenError(Colon)
 				return
 			}
+
 			switch r.next() {
 			case 0:
 				r.unexpectedEndError()
@@ -235,6 +227,7 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message, h func(r *JsonDecod
 			default:
 				h(r, *p, k)
 			}
+
 			t = r.next()
 			switch t {
 			case Comma:
@@ -255,7 +248,6 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message, h func(r *JsonDecod
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}

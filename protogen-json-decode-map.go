@@ -6,6 +6,8 @@ func DecodeBoolMap(r *JsonDecoder, p *map[string]bool) {
 		if *p == nil {
 			*p = make(map[string]bool)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -46,7 +48,6 @@ func DecodeBoolMap(r *JsonDecoder, p *map[string]bool) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -58,6 +59,8 @@ func DecodeInt32Map(r *JsonDecoder, p *map[string]int32) {
 		if *p == nil {
 			*p = make(map[string]int32)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -98,7 +101,6 @@ func DecodeInt32Map(r *JsonDecoder, p *map[string]int32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -110,6 +112,8 @@ func DecodeInt64Map(r *JsonDecoder, p *map[string]int64) {
 		if *p == nil {
 			*p = make(map[string]int64)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -150,7 +154,6 @@ func DecodeInt64Map(r *JsonDecoder, p *map[string]int64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -162,6 +165,8 @@ func DecodeUint32Map(r *JsonDecoder, p *map[string]uint32) {
 		if *p == nil {
 			*p = make(map[string]uint32)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -202,7 +207,6 @@ func DecodeUint32Map(r *JsonDecoder, p *map[string]uint32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -214,6 +218,8 @@ func DecodeUint64Map(r *JsonDecoder, p *map[string]uint64) {
 		if *p == nil {
 			*p = make(map[string]uint64)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -254,7 +260,6 @@ func DecodeUint64Map(r *JsonDecoder, p *map[string]uint64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -266,6 +271,8 @@ func DecodeFloat32Map(r *JsonDecoder, p *map[string]float32) {
 		if *p == nil {
 			*p = make(map[string]float32)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -306,7 +313,6 @@ func DecodeFloat32Map(r *JsonDecoder, p *map[string]float32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -318,6 +324,8 @@ func DecodeDoubleMap(r *JsonDecoder, p *map[string]float64) {
 		if *p == nil {
 			*p = make(map[string]float64)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -358,7 +366,6 @@ func DecodeDoubleMap(r *JsonDecoder, p *map[string]float64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -370,6 +377,8 @@ func DecodeStringMap(r *JsonDecoder, p *map[string]string) {
 		if *p == nil {
 			*p = make(map[string]string)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -410,7 +419,6 @@ func DecodeStringMap(r *JsonDecoder, p *map[string]string) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -422,6 +430,8 @@ func DecodeBytesMap(r *JsonDecoder, p *map[string][]byte) {
 		if *p == nil {
 			*p = make(map[string][]byte)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -462,7 +472,6 @@ func DecodeBytesMap(r *JsonDecoder, p *map[string][]byte) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -474,6 +483,8 @@ func DecodeEnumMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[in
 		if *p == nil {
 			*p = make(map[string]Enum)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -514,7 +525,6 @@ func DecodeEnumMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[in
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -526,6 +536,8 @@ func DecodeEnumMap_EnumAsInt[Enum ~int32](r *JsonDecoder, p *map[string]Enum, na
 		if *p == nil {
 			*p = make(map[string]Enum)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -566,7 +578,6 @@ func DecodeEnumMap_EnumAsInt[Enum ~int32](r *JsonDecoder, p *map[string]Enum, na
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}
@@ -578,6 +589,8 @@ func DecodeMessageMap[Message any](r *JsonDecoder, p *map[string]*Message, h fun
 		if *p == nil {
 			*p = make(map[string]*Message)
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		t := r.next()
 		if t == ObjectEnd {
 			return
@@ -618,7 +631,6 @@ func DecodeMessageMap[Message any](r *JsonDecoder, p *map[string]*Message, h fun
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ObjectBegin)
 	}

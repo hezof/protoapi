@@ -6,7 +6,7 @@ import (
 )
 
 const MinimumBufferLength = 1024 // limit minimum length of buffer
-const MaximumErrorLength = 13    // limit maximum length of error
+const MaximumErrorLength = 16    // limit maximum length of error
 
 func NewJsonEncoder(out io.Writer, size int) *JsonEncoder {
 	if size < MinimumBufferLength {

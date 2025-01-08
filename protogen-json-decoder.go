@@ -39,7 +39,7 @@ func NewJsonBuffer(buf []byte) *JsonDecoder {
 type JsonDecoder struct {
 	in         io.Reader // 读入流
 	buff       []byte    // 缓存区
-	mark       int       // 读位置
+	mark       int       // 读位置(+1)
 	size       int       // 末位置
 	base       int       // 基位置(base + pos)
 	token      JsonToken // token类型
@@ -80,7 +80,7 @@ func (r *JsonDecoder) clean() *JsonDecoder {
 func (r *JsonDecoder) Close() error {
 	// 解析结束,不能再有其他字符
 	if r.next() != 0 {
-		r.invalidCharacterError()
+		r.unexpectedEndError()
 	}
 	return r.firstError
 }
@@ -92,29 +92,36 @@ func (r *JsonDecoder) expectedTokenError(t JsonToken) {
 	}
 }
 
-func (r *JsonDecoder) expectedCharacterError(c byte) {
-	if r.firstError == nil {
-		r.token = -1
-		r.firstError = newParseError(r, r.mark-1, fmt.Sprintf("expected '%c', but got '%c'", c, r.buff[r.mark-1]))
-	}
-}
-
-func (r *JsonDecoder) invalidCharacterError2(c byte, m int) {
+func (r *JsonDecoder) expectedDelimiterErrorMark(mark int, c byte) {
 	if r.firstError == nil {
 		r.token = -1
 		if c < '\u0020' {
-			r.firstError = newParseError(r, r.mark+m, fmt.Sprintf("invalid character '\\x%x'", c))
+			r.firstError = newParseError(r, mark, fmt.Sprintf("expected <delimiter>, but got '\\x%x'", c))
 		} else {
-			r.firstError = newParseError(r, r.mark+m, fmt.Sprintf("invalid character '%c'", c))
+			r.firstError = newParseError(r, mark, fmt.Sprintf("expected <delimiter>, but got '%c'", c))
+		}
+	}
+}
+
+func (r *JsonDecoder) expectedDelimiterError() {
+	idx := r.mark - 1
+	r.expectedDelimiterErrorMark(idx, r.buff[idx])
+}
+
+func (r *JsonDecoder) invalidCharacterErrorMark(mark int, c byte) {
+	if r.firstError == nil {
+		r.token = -1
+		if c < '\u0020' {
+			r.firstError = newParseError(r, mark, fmt.Sprintf("invalid character '\\x%x'", c))
+		} else {
+			r.firstError = newParseError(r, mark, fmt.Sprintf("invalid character '%c'", c))
 		}
 	}
 }
 
 func (r *JsonDecoder) invalidCharacterError() {
-	if r.firstError == nil {
-		r.token = -1
-		r.firstError = newParseError(r, r.mark-1, fmt.Sprintf("invalid character '%c'", r.buff[r.mark-1]))
-	}
+	idx := r.mark - 1
+	r.invalidCharacterErrorMark(idx, r.buff[idx])
 }
 
 func (r *JsonDecoder) unexpectedEndError() {
@@ -128,6 +135,13 @@ func (r *JsonDecoder) exceedMaximumNestingDepthError() {
 	if r.firstError == nil {
 		r.token = -1
 		r.firstError = newParseError(r, r.mark-1, "exceed maximum depth of nesting")
+	}
+}
+
+func (r *JsonDecoder) reportError(err error) {
+	if r.firstError == nil {
+		r.token = -1
+		r.firstError = err
 	}
 }
 
@@ -146,8 +160,8 @@ func (r *JsonDecoder) more() bool {
 			if r.size > 0 {
 				return true
 			}
-			if r.firstError == nil && err != io.EOF {
-				r.firstError = err
+			if err != io.EOF {
+				r.reportError(err)
 			}
 			return false
 		}
@@ -159,11 +173,11 @@ func (r *JsonDecoder) next() JsonToken {
 	if r.token != 0 {
 		switch r.token {
 		case ObjectBegin:
-			r.token = 0
+			r.skipObject()
 		case ObjectEnd:
 			r.token = 0
 		case ArrayBegin:
-			r.token = 0
+			r.skipArray()
 		case ArrayEnd:
 			r.token = 0
 		case Comma:
@@ -193,14 +207,14 @@ func (r *JsonDecoder) next() JsonToken {
 				if r.depth++; r.depth > MaximumNestingDepth {
 					r.exceedMaximumNestingDepthError()
 					r.depth--
-					return 0
+					return -1
 				}
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = ObjectBegin
 				return ObjectBegin
 			case '}':
 				r.depth--
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = ObjectEnd
 				return ObjectEnd
 			case '[':
@@ -209,47 +223,47 @@ func (r *JsonDecoder) next() JsonToken {
 					r.depth--
 					return 0
 				}
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = ArrayBegin
 				return ArrayBegin
 			case ']':
 				r.depth--
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = ArrayEnd
 				return ArrayEnd
 			case ',':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = Comma
 				return Comma
 			case ':':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = Colon
 				return Colon
 			case '"':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = String
 				return String
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.number = append(r.number[0:0], c)
 				r.token = Number
 				return Number
 			case 't':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = True
 				return True
 			case 'f':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = False
 				return False
 			case 'n':
-				r.mark += i + 1
+				r.mark += i + 1 // mark永远指向下次读位置
 				r.token = Null
 				return Null
 			default:
-				r.mark += i + 1
-				r.invalidCharacterError2(c, i)
-				return 0
+				r.mark += i + 1 // mark永远指向下次读位置
+				r.invalidCharacterError()
+				return -1
 			}
 		}
 		if !r.more() {
@@ -264,19 +278,16 @@ func (r *JsonDecoder) skipObject() {
 	token := r.next()
 	for token != ObjectEnd {
 		if token != String {
-			r.expectedCharacterError('"')
+			r.expectedTokenError(String)
 			return
 		}
 		token = r.next()
 		if token != Colon {
-			r.expectedCharacterError(':')
+			r.expectedTokenError(Colon)
 			return
 		}
 		token = r.next()
 		switch token {
-		case 0:
-			r.unexpectedEndError()
-			return
 		case ObjectBegin:
 			r.skipObject()
 		case ObjectEnd:
@@ -303,6 +314,11 @@ func (r *JsonDecoder) skipObject() {
 			r.skipFalse()
 		case Null:
 			r.skipNull()
+		case 0:
+			r.unexpectedEndError()
+			return
+		case -1:
+			return
 		}
 		token = r.next()
 		if token == Comma {
@@ -322,9 +338,6 @@ func (r *JsonDecoder) skipArray() {
 	token := r.next()
 	for token != ArrayEnd {
 		switch token {
-		case 0:
-			r.unexpectedEndError()
-			return
 		case ObjectBegin:
 			r.skipObject()
 		case ObjectEnd:
@@ -351,6 +364,11 @@ func (r *JsonDecoder) skipArray() {
 			r.skipFalse()
 		case Null:
 			r.skipNull()
+		case 0:
+			r.unexpectedEndError()
+			return
+		case -1:
+			return
 		}
 		token = r.next()
 		if token == Comma {
@@ -506,12 +524,11 @@ func (r *JsonDecoder) skipString() {
 		for i, c := range r.buff[r.mark:r.size] {
 			switch {
 			case c < '\u0020':
-				r.invalidCharacterError2(c, i) // 记录错误后继续
+				r.invalidCharacterErrorMark(r.mark+i, c) // 特殊处理: 控制字符继续
 			case c == '"' && !isEscape:
-				r.mark += i + 1 // 跳过当前(")
-				c = r.readByte()
-				if !isTokenEnd(c) {
-					r.invalidCharacterError2(c, i)
+				r.mark += i + 1 // mark永远指向下次读位置
+				if !isTokenEnd(r.readByte()) {
+					r.expectedDelimiterError()
 				}
 				r.unreadByte()
 				return
@@ -537,23 +554,20 @@ __ENTRY__:
 		for i, c := range r.buff[r.mark:r.size] {
 			switch {
 			case c < '\u0020':
-				r.invalidCharacterError2(c, i) // 记录错误后继续
+				r.invalidCharacterErrorMark(r.mark+i, c) // 记录错误后继续
 			case c == '"':
 				mark := r.mark
-				r.mark += i
-				buf = append(buf, r.buff[mark:r.mark]...)
-				r.mark++ // 跳过当前(")
-				c = r.readByte()
-				if !isTokenEnd(c) {
-					r.invalidCharacterError2(c, i)
+				r.mark += i + 1 // mark永远指向下次读位置
+				buf = append(buf, r.buff[mark:r.mark-1]...)
+				if !isTokenEnd(r.readByte()) {
+					r.expectedDelimiterError()
 				}
 				r.unreadByte()
 				return UnsafeString(buf)
 			case c == '\\':
 				mark := r.mark
-				r.mark += i
-				buf = append(buf, r.buff[mark:r.mark]...)
-				r.mark++ // 跳过当前(/)
+				r.mark += i + 1
+				buf = append(buf, r.buff[mark:r.mark-1]...)
 				buf = r.appendEscape(buf, r.readByte())
 				continue __ENTRY__
 			}
@@ -586,11 +600,10 @@ func (r *JsonDecoder) skipNumber() {
 			case (c == '+' || c == '-') && afterE:
 				afterE = false
 			default:
-				r.mark += i
+				r.mark += i // mark永远指向下次读位置
 				if !isTokenEnd(c) {
-					r.invalidCharacterError2(c, i)
+					r.invalidCharacterErrorMark(r.mark, c)
 				}
-				r.unreadByte()
 				return
 			}
 		}
@@ -624,7 +637,7 @@ func (r *JsonDecoder) readNumber() {
 				r.mark += i
 				r.number = append(r.number, r.buff[mark:r.mark]...)
 				if !isTokenEnd(c) {
-					r.invalidCharacterError2(c, i)
+					r.expectedDelimiterErrorMark(r.mark, c)
 				}
 				return
 			}
@@ -640,16 +653,16 @@ func (r *JsonDecoder) skipTrue() {
 	r.token = 0
 	// 跳过't'
 	if r.readByte() != 'r' {
-		r.expectedCharacterError('r')
+		r.expectedTokenError(True)
 	}
 	if r.readByte() != 'u' {
-		r.expectedCharacterError('u')
+		r.expectedTokenError(True)
 	}
 	if r.readByte() != 'e' {
-		r.expectedCharacterError('e')
+		r.expectedTokenError(True)
 	}
 	if !isTokenEnd(r.readByte()) {
-		r.invalidCharacterError()
+		r.expectedDelimiterError()
 	}
 	r.unreadByte()
 }
@@ -658,19 +671,19 @@ func (r *JsonDecoder) skipFalse() {
 	r.token = 0
 	//  跳过'f'
 	if r.readByte() != 'a' {
-		r.expectedCharacterError('a')
+		r.expectedTokenError(True)
 	}
 	if r.readByte() != 'l' {
-		r.expectedCharacterError('l')
+		r.expectedTokenError(True)
 	}
 	if r.readByte() != 's' {
-		r.expectedCharacterError('s')
+		r.expectedTokenError(True)
 	}
 	if r.readByte() != 'e' {
-		r.expectedCharacterError('e')
+		r.expectedTokenError(True)
 	}
 	if !isTokenEnd(r.readByte()) {
-		r.invalidCharacterError()
+		r.expectedDelimiterError()
 	}
 	r.unreadByte()
 }
@@ -679,16 +692,16 @@ func (r *JsonDecoder) skipNull() {
 	r.token = 0
 	// 跳过'n'
 	if r.readByte() != 'u' {
-		r.expectedCharacterError('u')
+		r.expectedTokenError(Null)
 	}
 	if r.readByte() != 'l' {
-		r.expectedCharacterError('l')
+		r.expectedTokenError(Null)
 	}
 	if r.readByte() != 'l' {
-		r.expectedCharacterError('l')
+		r.expectedTokenError(Null)
 	}
 	if !isTokenEnd(r.readByte()) {
-		r.invalidCharacterError()
+		r.expectedDelimiterError()
 	}
 	r.unreadByte()
 }
@@ -736,7 +749,7 @@ type ParseError struct {
 }
 
 func (l *ParseError) Error() string {
-	return fmt.Sprintf("%s: '%s'", l.Reason, l.Data)
+	return fmt.Sprintf("%s near offset %v: '%s'", l.Reason, l.Offset, l.Data)
 }
 
 func newParseError(ctx *JsonDecoder, mark int, reason string) error {

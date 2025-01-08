@@ -8,6 +8,8 @@ func DecodeBoolRepeated(r *JsonDecoder, p *[]bool) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -34,7 +36,6 @@ func DecodeBoolRepeated(r *JsonDecoder, p *[]bool) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -48,6 +49,8 @@ func DecodeInt32Repeated(r *JsonDecoder, p *[]int32) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -74,7 +77,6 @@ func DecodeInt32Repeated(r *JsonDecoder, p *[]int32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -88,6 +90,8 @@ func DecodeInt64Repeated(r *JsonDecoder, p *[]int64) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -114,7 +118,6 @@ func DecodeInt64Repeated(r *JsonDecoder, p *[]int64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -128,6 +131,8 @@ func DecodeUint32Repeated(r *JsonDecoder, p *[]uint32) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -154,7 +159,6 @@ func DecodeUint32Repeated(r *JsonDecoder, p *[]uint32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -168,6 +172,8 @@ func DecodeUint64Repeated(r *JsonDecoder, p *[]uint64) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -194,7 +200,6 @@ func DecodeUint64Repeated(r *JsonDecoder, p *[]uint64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -208,6 +213,8 @@ func DecodeFloat32Repeated(r *JsonDecoder, p *[]float32) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -234,7 +241,6 @@ func DecodeFloat32Repeated(r *JsonDecoder, p *[]float32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -248,6 +254,8 @@ func DecodeFloat64Repeated(r *JsonDecoder, p *[]float64) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -274,7 +282,6 @@ func DecodeFloat64Repeated(r *JsonDecoder, p *[]float64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -288,6 +295,8 @@ func DecodeStringRepeated(r *JsonDecoder, p *[]string) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -314,7 +323,6 @@ func DecodeStringRepeated(r *JsonDecoder, p *[]string) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -328,6 +336,8 @@ func DecodeBytesRepeated(r *JsonDecoder, p *[][]byte) {
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -354,7 +364,6 @@ func DecodeBytesRepeated(r *JsonDecoder, p *[][]byte) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -368,6 +377,8 @@ func DecodeEnumRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[int32]
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -394,7 +405,6 @@ func DecodeEnumRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[int32]
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -408,6 +418,8 @@ func DecodeEnumRepeated_EnumAsInt[Enum ~int32](r *JsonDecoder, p *[]Enum, names 
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -434,7 +446,6 @@ func DecodeEnumRepeated_EnumAsInt[Enum ~int32](r *JsonDecoder, p *[]Enum, names 
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}
@@ -448,6 +459,8 @@ func DecodeMessageRepeated[Message any](r *JsonDecoder, p *[]*Message, h func(r 
 		} else {
 			*p = (*p)[0:0]
 		}
+
+		r.token = 0 // 指示next()执行"step info"而不是"step over"
 		if r.next() == ArrayEnd {
 			return
 		}
@@ -474,7 +487,6 @@ func DecodeMessageRepeated[Message any](r *JsonDecoder, p *[]*Message, h func(r 
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(ArrayBegin)
 	}

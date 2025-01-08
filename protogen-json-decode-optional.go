@@ -20,7 +20,6 @@ func DecodeBoolOptional(r *JsonDecoder, p **bool) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(True)
 	}
@@ -36,7 +35,6 @@ func DecodeInt32Optional(r *JsonDecoder, p **int32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -52,7 +50,6 @@ func DecodeInt64Optional(r *JsonDecoder, p **int64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -68,7 +65,6 @@ func DecodeUint32Optional(r *JsonDecoder, p **uint32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -84,7 +80,6 @@ func DecodeUint64Optional(r *JsonDecoder, p **uint64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -100,7 +95,6 @@ func DecodeFloat32Optional(r *JsonDecoder, p **float32) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -116,7 +110,6 @@ func DecodeFloat64Optional(r *JsonDecoder, p **float64) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -132,7 +125,6 @@ func DecodeStringOptional(r *JsonDecoder, p **string) {
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(String)
 	}
@@ -147,8 +139,8 @@ func DecodeEnumOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int32]s
 	case String:
 		s := r.readString()
 		v, ok := values[s]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %s", s)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", s))
 			return
 		}
 		e := Enum(v)
@@ -156,8 +148,8 @@ func DecodeEnumOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int32]s
 	case Number:
 		v := int32(r.readInt64())
 		_, ok := names[v]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %d", v)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", v))
 			return
 		}
 		e := Enum(v)
@@ -167,7 +159,6 @@ func DecodeEnumOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int32]s
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
@@ -178,8 +169,8 @@ func DecodeEnumOptional_EnumAsInt[Enum ~int32](r *JsonDecoder, p **Enum, names m
 	case Number:
 		v := int32(r.readInt64())
 		_, ok := names[v]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %d", v)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", v))
 			return
 		}
 		e := Enum(v)
@@ -187,8 +178,8 @@ func DecodeEnumOptional_EnumAsInt[Enum ~int32](r *JsonDecoder, p **Enum, names m
 	case String:
 		s := r.readString()
 		v, ok := values[s]
-		if !ok && r.firstError == nil {
-			r.firstError = fmt.Errorf("invalid enum: %s", s)
+		if !ok {
+			r.reportError(fmt.Errorf("invalid enum: %v", s))
 			return
 		}
 		e := Enum(v)
@@ -198,7 +189,6 @@ func DecodeEnumOptional_EnumAsInt[Enum ~int32](r *JsonDecoder, p **Enum, names m
 	case 0:
 		r.unexpectedEndError()
 	case -1:
-		return
 	default:
 		r.expectedTokenError(Number)
 	}
