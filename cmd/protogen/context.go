@@ -328,11 +328,12 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 	for _, path := range protoPath {
 		args = append(args, `--proto_path=`+path)
 	}
+	args = append(args, protoFile)
 
 	PrintInfo(`build %s`, protoFile)
 	cmd := exec.Command(ctx.ProtocFile, args...)
 	if ctx.Debug {
-		fmt.Fprintln(os.Stdout, protoc, strings.Join(args, ` `)) // 打印命令
+		fmt.Fprintln(os.Stdout, ctx.ProtocFile, strings.Join(args, ` `)) // 打印命令
 		cmd.Stdout = os.Stdout
 	}
 	cmd.Stderr = os.Stderr
