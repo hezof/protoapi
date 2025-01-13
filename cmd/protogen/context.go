@@ -23,7 +23,7 @@ func NewContext(args []string) *Context {
 	initSystemOptions(ctx)
 	initCustomOptions(ctx)
 	if err := ctx.flagset.Parse(args); err != nil {
-		PrintExit("parse argument error: %v", err)
+		PrintExit("parse error, %v", err)
 	}
 
 	return ctx
@@ -136,6 +136,14 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 }
 
 func (ctx *Context) HttpGetProtoc(config *Config, module, version string) {
+
+	if !Exists(ctx.HomeDir) {
+		os.MkdirAll(ctx.HomeDir, 0755)
+	}
+
+	if !Exists(ctx.TempDir) {
+		os.MkdirAll(ctx.TempDir, fs.ModePerm)
+	}
 
 	name := filepath.Base(module)
 	if version == `` {
