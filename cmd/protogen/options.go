@@ -14,6 +14,7 @@ type CustomOptions struct {
 	Help      bool   // 打印帮助
 	Debug     bool   // 打印调试
 	Update    bool   // 更新插件
+	Clean     bool   // 清理自动化代码(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
 	Config    string // 配置变量, 例如: "VERSION=0.5.1;GOPROXY=https://goproxy.cn;GOPRIVATE=*.net,*.cn"
 	GoOut     string // GO输出目录
 	ProtoBase string // PB基准目录
