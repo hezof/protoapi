@@ -20,6 +20,8 @@ func main() {
 		ctx.PrintHelp()
 	case ctx.Update:
 		ctx.UpdatePlugin(parseConfig(ctx.Config), true)
+	case ctx.Clean:
+		ctx.CleanFiles()
 	case len(ctx.flagset.Args()) == 0:
 		ctx.PrintHelp()
 	default:
@@ -31,6 +33,7 @@ func main() {
 
 		protoPaths[ctx.ProtoBase] = true
 		protoPaths[ctx.IncludeDir] = true
+
 		for _, p := range strings.Split(ctx.ProtoPath, `,`) {
 			p = strings.TrimSpace(p)
 			if p != `` {

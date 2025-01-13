@@ -14,7 +14,7 @@ type CustomOptions struct {
 	Help      bool   // 打印帮助
 	Debug     bool   // 打印调试
 	Update    bool   // 更新插件
-	Clean     bool   // 清理自动化代码(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
+	Clean     bool   // 清理文件(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
 	Config    string // 配置变量, 例如: "VERSION=0.5.1;GOPROXY=https://goproxy.cn;GOPRIVATE=*.net,*.cn"
 	GoOut     string // GO输出目录
 	ProtoBase string // PB基准目录
@@ -24,11 +24,15 @@ type CustomOptions struct {
 
 // SystemOptions 系统选项
 type SystemOptions struct {
-	HomeDir    string // .protogen目录
-	TempDir    string // .protogen/tmp目录
-	IncludeDir string // .protogen/include目录
-	GoModFile  string // .protogen/go.mod文件
-	GoSumFile  string // .protogen/go.sum文件
+	HomeDir                 string // .protogen目录
+	TempDir                 string // .protogen/tmp目录
+	IncludeDir              string // .protogen/include目录
+	ProtocFile              string // .protogen/protoc文件
+	ProtocGenGoFile         string // .protogen/protoc-gen-go文件
+	ProtocGenGoGrpcFile     string // .protogen/protoc-gen-go-grpc文件
+	ProtocGenGoProtoapiFile string // .protogen/protoc-gen-go-protoapi文件
+	GoModFile               string // .protogen/go.mod文件
+	GoSumFile               string // .protogen/go.sum文件
 
 	GO111MODULE string
 	GOSUMDB     string
@@ -43,6 +47,7 @@ func initCustomOptions(ops *Context) {
 	ops.flagset.BoolVar(&ops.Help, `help`, false, `打印帮助`)
 	ops.flagset.BoolVar(&ops.Debug, `debug`, false, `打印调试`)
 	ops.flagset.BoolVar(&ops.Update, `update`, false, `更新插件`)
+	ops.flagset.BoolVar(&ops.Clean, `clean`, false, `清理文件[*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json]`)
 	ops.flagset.StringVar(&ops.Config, `config`, ``, fmt.Sprintf(`配置变量.默认"VERSION=%v;GOPROXY=%v;GOPRIVATE=%v;MAVEN_CENTRAL=%v"`, VERSION, `https://goproxy.cn`, `*.net,*.cn`, `https://maven.aliyun.com/repository/central`))
 	ops.flagset.StringVar(&ops.GoOut, `go_out`, work(), `GO输出目录,默认当前目录`)
 	ops.flagset.StringVar(&ops.ProtoBase, `proto_base`, work(), `PB基准目录,默认当前目录`)
@@ -54,6 +59,10 @@ func initSystemOptions(ops *Context) {
 	ops.HomeDir = home()
 	ops.TempDir = filepath.Join(ops.HomeDir, `tmp`)
 	ops.IncludeDir = filepath.Join(ops.HomeDir, include())
+	ops.ProtocFile = filepath.Join(ops.HomeDir, protoc())
+	ops.ProtocGenGoFile = filepath.Join(ops.HomeDir, protocGenGo())
+	ops.ProtocGenGoGrpcFile = filepath.Join(ops.HomeDir, protocGenGoGrpc())
+	ops.ProtocGenGoProtoapiFile = filepath.Join(ops.HomeDir, protocGenGoProtoapi())
 	ops.GoModFile = filepath.Join(ops.HomeDir, `go.mod`)
 	ops.GoSumFile = filepath.Join(ops.HomeDir, `go.sum`)
 
@@ -153,9 +162,45 @@ func root(path string) string {
 	return ret
 }
 
+func protoc() string {
+	for _, p := range Plugins {
+		if p.Name == `protoc` {
+			return filepath.Base(p.Module) + `_` + p.Version[1:]
+		}
+	}
+	return ``
+}
+
 func include() string {
 	for _, p := range Plugins {
 		if p.Name == `include` {
+			return filepath.Base(p.Module) + `_` + p.Version[1:]
+		}
+	}
+	return ``
+}
+
+func protocGenGo() string {
+	for _, p := range Plugins {
+		if p.Name == `protoc-gen-go` {
+			return filepath.Base(p.Module) + `_` + p.Version[1:]
+		}
+	}
+	return ``
+}
+
+func protocGenGoGrpc() string {
+	for _, p := range Plugins {
+		if p.Name == `protoc-gen-go-grpc` {
+			return filepath.Base(p.Module) + `_` + p.Version[1:]
+		}
+	}
+	return ``
+}
+
+func protocGenGoProtoapi() string {
+	for _, p := range Plugins {
+		if p.Name == `protoc-gen-go-protoapi` {
 			return filepath.Base(p.Module) + `_` + p.Version[1:]
 		}
 	}

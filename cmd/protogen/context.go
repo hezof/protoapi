@@ -186,7 +186,7 @@ func (ctx *Context) HttpGetProtoc(config *Config, module, version string) {
 		PrintExit(`http get %v error, %v`, name, err)
 	}
 
-	err = os.WriteFile(filepath.Join(ctx.HomeDir, name+`_`+version[1:]+ctx.GOEXE), data, 0755)
+	err = os.WriteFile(ctx.ProtocFile, data, 0755)
 	if err != nil {
 		PrintExit(`http get %v error, %v`, name, err)
 	}
@@ -298,9 +298,9 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 
 	var args []string
 
-	args = append(args, `--plugin=protoc-gen-go=`+filepath.Join(ctx.HomeDir, `protoc-gen-go`))
-	args = append(args, `--plugin=protoc-gen-go-grpc=`+filepath.Join(ctx.HomeDir, `protoc-gen-go-grpc`))
-	args = append(args, `--plugin=protoc-gen-go-protoapi=`+filepath.Join(ctx.HomeDir, `protoc-gen-go-protoapi`))
+	args = append(args, `--plugin=protoc-gen-go=`+ctx.ProtocGenGoFile)
+	args = append(args, `--plugin=protoc-gen-go-grpc=`+ctx.ProtocGenGoGrpcFile)
+	args = append(args, `--plugin=protoc-gen-go-protoapi=`+ctx.ProtocGenGoProtoapiFile)
 
 	args = append(args, `--go_out=`+ctx.GoOut)
 	if ctx.GrpcV2 {
@@ -314,15 +314,38 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 		args = append(args, `--proto_path=`+path)
 	}
 
-	PrintInfo(`build %s`, protoFile)
-	protoc := filepath.Join(ctx.HomeDir, `protoc`)
-	cmd := exec.Command(protoc, args...)
+	PrintInfo(`compile %s`, protoFile)
+	cmd := exec.Command(ctx.ProtocFile, args...)
 	if ctx.Debug {
 		fmt.Fprintln(os.Stdout, protoc, strings.Join(args, ` `)) // 打印命令
 		cmd.Stdout = os.Stdout
 	}
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		PrintExit(`build error: %+v`, err)
+		PrintExit(`compile error, %+v`, err)
 	}
+}
+
+// CleanFiles 清量文件(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
+func (ctx *Context) CleanFiles() {
+	filepath.Walk(ctx.ProtoBase, func(path string, info fs.FileInfo, err error) error {
+		if !info.IsDir() {
+			name := info.Name()
+			switch {
+			case strings.HasSuffix(name, `.pb.go`):
+				_ = os.Chmod(path, os.ModePerm)
+				_ = os.Remove(path)
+			case strings.HasSuffix(name, `_grpc.pb.go`):
+				_ = os.Chmod(path, os.ModePerm)
+				_ = os.Remove(path)
+			case strings.HasSuffix(name, `_protoapi.pb.go`):
+				_ = os.Chmod(path, os.ModePerm)
+				_ = os.Remove(path)
+			case strings.HasSuffix(name, `_protoapi.json`):
+				_ = os.Chmod(path, os.ModePerm)
+				_ = os.Remove(path)
+			}
+		}
+		return nil
+	})
 }
