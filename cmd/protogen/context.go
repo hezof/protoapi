@@ -77,8 +77,8 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		`GOMODCACHE=`,
 		`GOCACHE=`,
 		`GOTMPDIR=`,
-		`GoProxy=`,
-		`GoPrivate=`,
+		`GOPROXY=`,
+		`GOPRIVATE=`,
 	)...)
 	cmd.Env = append(cmd.Env,
 		`GO111MODULE=`+ctx.GO111MODULE,
@@ -88,8 +88,8 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		`GOMODCACHE=`+ctx.GOMODCACHE,
 		`GOCACHE=`+ctx.GOCACHE,
 		`GOTMPDIR=`+ctx.GOTMPDIR,
-		`GoProxy=`+config.GOPROXY,
-		`GoPrivate=`+config.GOPRIVATE,
+		`GOPROXY=`+config.GOPROXY,
+		`GOPRIVATE=`+config.GOPRIVATE,
 	)
 	cmd.Dir = ctx.HomeDir
 	if err := cmd.Run(); err != nil {
