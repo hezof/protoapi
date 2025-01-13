@@ -301,7 +301,6 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 	args = append(args, `--plugin=protoc-gen-go=`+filepath.Join(ctx.HomeDir, `protoc-gen-go`))
 	args = append(args, `--plugin=protoc-gen-go-grpc=`+filepath.Join(ctx.HomeDir, `protoc-gen-go-grpc`))
 	args = append(args, `--plugin=protoc-gen-go-protoapi=`+filepath.Join(ctx.HomeDir, `protoc-gen-go-protoapi`))
-	args = append(args, `--plugin=protoc-gen-go-openapi=`+filepath.Join(ctx.HomeDir, `protoc-gen-go-openapi`))
 
 	args = append(args, `--go_out=`+ctx.GoOut)
 	if ctx.GrpcV2 {
@@ -310,7 +309,6 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
 	}
 	args = append(args, `--go-protoapi_out=`+ctx.GoOut)
-	args = append(args, `--go-openapi_out=`+ctx.GoOut)
 
 	for _, path := range protoPath {
 		args = append(args, `--proto_path=`+path)
