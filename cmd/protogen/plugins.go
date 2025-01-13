@@ -51,7 +51,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) FullName() string {
-	return FullName(p.Module, p.Name, p.Mode)
+	return FullName(p.Module, p.Version, p.Mode)
 }
 
 func FullName(module, version string, mode Mode) string {
