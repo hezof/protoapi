@@ -84,6 +84,10 @@ type Config struct {
 }
 
 func parseConfig(s string) *Config {
+
+	// 将windows环境变量替换为linux
+	s = strings.ReplaceAll(s, `:`, `;`)
+
 	c := new(Config)
 	// 默认值
 	c.VERSION = VERSION
