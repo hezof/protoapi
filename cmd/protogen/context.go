@@ -92,16 +92,16 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		`GOPRIVATE=`+config.GOPRIVATE,
 	)
 	cmd.Dir = ctx.HomeDir
-	PrintInfo("get %v@%v", module, version)
+	PrintInfo("setup %v@%v", module, version)
 	if err := cmd.Run(); err != nil {
-		PrintExit("get %v error, %v", module, err)
+		PrintExit("setup %v error, %v", module, err)
 	}
 
 	switch mode {
 	case GoGetBin:
 		newBin := filepath.Join(ctx.TempDir, filepath.Base(module)+ctx.GOEXE)
 		if !Exists(newBin) {
-			PrintExit("get %v failed", module)
+			PrintExit("setup %v failed", module)
 		}
 		_ = os.Chmod(newBin, 0755)
 		oldBin := filepath.Join(ctx.HomeDir, FullName(module, version, mode))
@@ -109,12 +109,12 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		_ = os.Remove(oldBin)
 		err := os.Rename(newBin, oldBin)
 		if err != nil {
-			PrintExit("get %v error, %v", module, err)
+			PrintExit("setup %v error, %v", module, err)
 		}
 	case GoGetSrc:
 		newSrc := RealPath(ctx.TempDir, module)
 		if newSrc == "" {
-			PrintExit("get %v failed", module)
+			PrintExit("setup %v failed", module)
 		}
 		filepath.Walk(newSrc, func(path string, info fs.FileInfo, err error) error {
 			_ = os.Chmod(path, 0644)
@@ -130,7 +130,7 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		}
 		err := os.Rename(newSrc, oldSrc)
 		if err != nil {
-			PrintExit("get %v error, %v", module, err)
+			PrintExit("setup %v error, %v", module, err)
 		}
 	}
 }
@@ -182,23 +182,23 @@ func (ctx *Context) HttpGetProtoc(config *Config, module, version string) {
 		sysARCH = `s390x`
 	}
 
-	PrintInfo("get %v@%v", module, version)
+	PrintInfo("setup %v@%v", module, version)
 
 	furl := config.MAVEN_CENTRAL + `/com/google/protobuf/protoc/` + version[1:] + `/protoc-` + version[1:] + `-` + sysOS + `-` + sysARCH + `.exe`
 	rsp, err := http.Get(furl)
 	if err != nil {
-		PrintExit(`get %v error, %v`, name, err)
+		PrintExit(`setup %v error, %v`, name, err)
 	}
 	defer rsp.Body.Close()
 
 	data, err := io.ReadAll(rsp.Body)
 	if err != nil {
-		PrintExit(`get %v error, %v`, name, err)
+		PrintExit(`setup %v error, %v`, name, err)
 	}
 
 	err = os.WriteFile(ctx.ProtocFile, data, 0755)
 	if err != nil {
-		PrintExit(`get %v error, %v`, name, err)
+		PrintExit(`setup %v error, %v`, name, err)
 	}
 }
 
@@ -321,7 +321,7 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 		args = append(args, `--proto_path=`+path)
 	}
 
-	PrintInfo(`compile %s`, protoFile)
+	PrintInfo(`build %s`, protoFile)
 	cmd := exec.Command(ctx.ProtocFile, args...)
 	if ctx.Debug {
 		fmt.Fprintln(os.Stdout, protoc, strings.Join(args, ` `)) // 打印命令
@@ -329,7 +329,7 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 	}
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		PrintExit(`compile error, %+v`, err)
+		PrintExit(err.Error())
 	}
 }
 
