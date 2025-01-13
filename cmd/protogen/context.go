@@ -26,6 +26,14 @@ func NewContext(args []string) *Context {
 		PrintExit("parse error, %v", err)
 	}
 
+	// 默认参数修订
+	if ctx.ProtoBase == `` {
+		ctx.ProtoBase = work()
+	}
+	if ctx.GoOut == `` {
+		ctx.GoOut = ctx.ProtoBase
+	}
+
 	return ctx
 }
 

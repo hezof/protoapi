@@ -49,8 +49,8 @@ func initCustomOptions(ops *Context) {
 	ops.flagset.BoolVar(&ops.Update, `update`, false, `更新插件`)
 	ops.flagset.BoolVar(&ops.Clean, `clean`, false, `清理文件[*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json]`)
 	ops.flagset.StringVar(&ops.Config, `config`, ``, fmt.Sprintf(`配置变量.默认"VERSION=%v;GOPROXY=%v;GOPRIVATE=%v;MAVEN_CENTRAL=%v"`, VERSION, `https://goproxy.cn`, `*.net,*.cn`, `https://maven.aliyun.com/repository/central`))
-	ops.flagset.StringVar(&ops.GoOut, `go_out`, work(), `GO输出目录,默认当前目录`)
-	ops.flagset.StringVar(&ops.ProtoBase, `proto_base`, work(), `PB基准目录,默认当前目录`)
+	ops.flagset.StringVar(&ops.GoOut, `go_out`, ``, `GO输出目录,默认--proto_base`)
+	ops.flagset.StringVar(&ops.ProtoBase, `proto_base`, ``, `PB基准目录,默认当前目录`)
 	ops.flagset.StringVar(&ops.ProtoPath, `proto_path`, ``, `PB查找目录[逗号分隔]`)
 	ops.flagset.BoolVar(&ops.GrpcV2, `grpc_v2`, false, `生成GRPC代码[require_unimplemented_servers=true]`)
 }
