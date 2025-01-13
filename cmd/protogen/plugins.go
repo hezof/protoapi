@@ -1,5 +1,7 @@
 package main
 
+import "path/filepath"
+
 var Plugins = []*Plugin{
 	{
 		Mode:    HttpGetProtoc,
@@ -46,4 +48,20 @@ type Plugin struct {
 	Name    string
 	Module  string
 	Version string
+}
+
+func (p *Plugin) FullName() string {
+	fname := filepath.Base(p.Module) + `_` + p.Version[1:]
+	if p.Mode != GoGetSrc {
+		fname += goexe()
+	}
+	return fname
+}
+
+func FullName(module, version string, mode Mode) string {
+	fname := filepath.Base(module) + `_` + version[1:]
+	if mode != GoGetSrc {
+		fname += goexe()
+	}
+	return fname
 }

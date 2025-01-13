@@ -96,15 +96,14 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		PrintExit("go get %v error, %v", module, err)
 	}
 
-	name := filepath.Base(module) // base包含@version部分
 	switch mode {
 	case GoGetBin:
-		newBin := filepath.Join(ctx.TempDir, name+ctx.GOEXE)
+		newBin := filepath.Join(ctx.TempDir, filepath.Base(module)+ctx.GOEXE)
 		if !Exists(newBin) {
 			PrintExit("go get %v failed", module)
 		}
 		_ = os.Chmod(newBin, 0755)
-		oldBin := filepath.Join(ctx.HomeDir, name+`_`+version[1:]+ctx.GOEXE)
+		oldBin := filepath.Join(ctx.HomeDir, FullName(module, version, mode))
 		_ = os.Chmod(oldBin, os.ModePerm)
 		_ = os.Remove(oldBin)
 		err := os.Rename(newBin, oldBin)
@@ -120,7 +119,7 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 			_ = os.Chmod(path, 0644)
 			return nil
 		})
-		oldSrc := filepath.Join(ctx.HomeDir, name+`_`+version[1:])
+		oldSrc := filepath.Join(ctx.HomeDir, FullName(module, version, mode))
 		if Exists(oldSrc) {
 			filepath.Walk(oldSrc, func(path string, info fs.FileInfo, err error) error {
 				os.Chmod(path, fs.ModePerm)
@@ -235,12 +234,8 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 	if c.VERSION == VERSION {
 		// 先更新插件
 		for _, p := range Plugins {
-			name := p.Name + p.Version
-			if p.Mode == GoGetBin {
-				name += ctx.GOEXE
-			}
 			// 非强制更新忽略已存在的插件
-			if force || !Exists(filepath.Join(ctx.HomeDir, name)) {
+			if force || !Exists(filepath.Join(ctx.HomeDir, p.FullName())) {
 				if p.Mode == HttpGetProtoc {
 					ctx.HttpGetProtoc(c, p.Module, p.Version)
 				} else {
@@ -265,7 +260,7 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 					time.Sleep(100 * time.Millisecond)
 				}
 				oldBin := Lookup(os.Args[0])
-				newBin := filepath.Join(ctx.HomeDir, filepath.Base(MODULE)+`_`+VERSION[1:]+ctx.GOEXE)
+				newBin := filepath.Join(ctx.HomeDir, FullName(MODULE, VERSION, GoGetBin))
 				_ = os.Chmod(oldBin, os.ModePerm)
 				_ = os.Remove(oldBin)
 				if err := os.Rename(newBin, oldBin); err != nil {
@@ -280,7 +275,7 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 
 	} else {
 		ctx.GoGet(c, MODULE, c.VERSION, GoGetBin)
-		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, filepath.Base(MODULE)+`_`+c.VERSION[1:]+ctx.GOEXE), os.Args, &os.ProcAttr{
+		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(MODULE, VERSION, GoGetBin)), os.Args, &os.ProcAttr{
 			Env:   append(os.Environ(), __self_update_pid__+`=`+strconv.Itoa(os.Getpid())),
 			Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		})

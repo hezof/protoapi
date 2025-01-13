@@ -178,7 +178,7 @@ func protoc() string {
 func include() string {
 	for _, p := range Plugins {
 		if p.Name == `include` {
-			return filepath.Base(p.Module) + `_` + p.Version[1:]
+			return p.FullName()
 		}
 	}
 	return ``
@@ -187,7 +187,7 @@ func include() string {
 func protocGenGo() string {
 	for _, p := range Plugins {
 		if p.Name == `protoc-gen-go` {
-			return filepath.Base(p.Module) + `_` + p.Version[1:] + goexe()
+			return p.FullName()
 		}
 	}
 	return ``
@@ -196,7 +196,7 @@ func protocGenGo() string {
 func protocGenGoGrpc() string {
 	for _, p := range Plugins {
 		if p.Name == `protoc-gen-go-grpc` {
-			return filepath.Base(p.Module) + `_` + p.Version[1:] + goexe()
+			return p.FullName()
 		}
 	}
 	return ``
@@ -205,7 +205,7 @@ func protocGenGoGrpc() string {
 func protocGenGoProtoapi() string {
 	for _, p := range Plugins {
 		if p.Name == `protoc-gen-go-protoapi` {
-			return filepath.Base(p.Module) + `_` + p.Version[1:] + goexe()
+			return p.FullName()
 		}
 	}
 	return ``
