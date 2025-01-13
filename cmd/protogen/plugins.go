@@ -51,11 +51,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) FullName() string {
-	fname := filepath.Base(p.Module) + `_` + p.Version[1:]
-	if p.Mode != GoGetSrc {
-		fname += goexe()
-	}
-	return fname
+	return FullName(p.Module, p.Name, p.Mode)
 }
 
 func FullName(module, version string, mode Mode) string {
