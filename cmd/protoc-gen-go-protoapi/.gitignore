@@ -1,2 +1,4 @@
-*.pb.go
-*.json
+test/demo.pb.go
+test/demo_grpc.pb.go
+test/demo_protoapi.pb.go
+test/demo_protoapi.json
