@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/hezof/protoapi/cmd/protoc-gen-go-protoapi/protoapi"
+	"github.com/hezof/protoapi"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-type Field struct {
-	File       *File
+type FieldExt struct {
+	File       *FileExt
 	Name       string
 	FullName   string
 	GoName     string
@@ -16,61 +16,61 @@ type Field struct {
 	IsMap      bool
 	IsRepeated bool
 	IsOptional bool
-	Message    *Message
+	Message    *MessageExt
 	Prop       *protoapi.Prop
 	Rule       *protoapi.Rule
 }
 
-type Message struct {
-	File     *File
+type MessageExt struct {
+	File     *FileExt
 	Name     string
 	FullName string
 	GoIdent  protogen.GoIdent
 
-	Fields IdxVec[*Field]
+	Fields IdxVec[*FieldExt]
 	Schema *protoapi.Schema
 	Plugin *protoapi.Plugin
 }
 
-type Enum struct {
-	File     *File
+type EnumExt struct {
+	File     *FileExt
 	Name     string
 	FullName string
 	GoIdent  protogen.GoIdent
 }
 
-type Method struct {
-	File              *File
+type MethodExt struct {
+	File              *FileExt
 	Name              string
 	FullName          string
 	GoName            string
 	IsStreamingClient bool // client streaming
 	IsStreamingServer bool // server streaming
-	InputMessage      *Message
-	OutputMessage     *Message
+	InputMessage      *MessageExt
+	OutputMessage     *MessageExt
 	Http              *protoapi.Http
 	Role              *protoapi.Role
 }
 
-type Service struct {
-	File     *File
+type ServiceExt struct {
+	File     *FileExt
 	Name     string
 	FullName string
 	GoName   string
-	Methods  IdxVec[*Method]
+	Methods  IdxVec[*MethodExt]
 	Tag      *protoapi.Tag
 	HttpOnly bool
 }
 
-type File struct {
+type FileExt struct {
 	Path         string
 	Package      string
 	GoPackage    string
 	GoImportPath string
 	/*展开成平面*/
-	Enums    IdxVec[*Enum]
-	Messages IdxVec[*Message]
-	Services IdxVec[*Service]
+	Enums    IdxVec[*EnumExt]
+	Messages IdxVec[*MessageExt]
+	Services IdxVec[*ServiceExt]
 }
 
 type IdxVec[V any] struct {

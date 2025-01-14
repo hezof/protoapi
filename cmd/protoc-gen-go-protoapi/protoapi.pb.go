@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: protoapi.proto
 
-package protoapi
+package main
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -29,7 +29,7 @@ const (
 	Http_omit Http_Body = 2 // 忽略解析body
 )
 
-// Enum value maps for Http_Body.
+// EnumExt value maps for Http_Body.
 var (
 	Http_Body_name = map[int32]string{
 		0: "json",
@@ -78,7 +78,7 @@ const (
 	Http_events Http_Result = 2 // 结果使用Server-Send-Events包裹
 )
 
-// Enum value maps for Http_Result.
+// EnumExt value maps for Http_Result.
 var (
 	Http_Result_name = map[int32]string{
 		0: "simple",
@@ -129,7 +129,7 @@ const (
 	Prop_cookie Prop_In = 4 // 位于cookie
 )
 
-// Enum value maps for Prop_In.
+// EnumExt value maps for Prop_In.
 var (
 	Prop_In_name = map[int32]string{
 		0: "body",
@@ -182,7 +182,7 @@ const (
 	Prop_json   Prop_Style = 2 // json
 )
 
-// Enum value maps for Prop_Style.
+// EnumExt value maps for Prop_Style.
 var (
 	Prop_Style_name = map[int32]string{
 		0: "simple",
@@ -231,7 +231,7 @@ const (
 	Prop_conv_empty Prop_Empty = 2 // 转换空值: 对于slice/map,会将null转为[]或{}.
 )
 
-// Enum value maps for Prop_Empty.
+// EnumExt value maps for Prop_Empty.
 var (
 	Prop_Empty_name = map[int32]string{
 		0: "omit_empty",
@@ -921,7 +921,7 @@ func (x *Enum) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Enum.ProtoReflect.Descriptor instead.
+// Deprecated: Use EnumExt.ProtoReflect.Descriptor instead.
 func (*Enum) Descriptor() ([]byte, []int) {
 	return file_protoapi_proto_rawDescGZIP(), []int{8}
 }
@@ -1520,7 +1520,7 @@ var file_protoapi_proto_goTypes = []any{
 	(*Schema)(nil),                      // 10: protoapi.Schema
 	(*Plugin)(nil),                      // 11: protoapi.Plugin
 	(*Range)(nil),                       // 12: protoapi.Range
-	(*Enum)(nil),                        // 13: protoapi.Enum
+	(*Enum)(nil),                        // 13: protoapi.EnumExt
 	(*Pattern)(nil),                     // 14: protoapi.Pattern
 	(*Prop)(nil),                        // 15: protoapi.Prop
 	(*Rule)(nil),                        // 16: protoapi.Rule
@@ -1540,7 +1540,7 @@ var file_protoapi_proto_depIdxs = []int32{
 	6,  // 7: protoapi.Schema.docs:type_name -> protoapi.Docs
 	5,  // 8: protoapi.Plugin.err:type_name -> protoapi.Error
 	5,  // 9: protoapi.Range.err:type_name -> protoapi.Error
-	5,  // 10: protoapi.Enum.err:type_name -> protoapi.Error
+	5,  // 10: protoapi.EnumExt.err:type_name -> protoapi.Error
 	5,  // 11: protoapi.Pattern.err:type_name -> protoapi.Error
 	6,  // 12: protoapi.Prop.docs:type_name -> protoapi.Docs
 	4,  // 13: protoapi.Prop.empty:type_name -> protoapi.Prop.Empty
@@ -1553,7 +1553,7 @@ var file_protoapi_proto_depIdxs = []int32{
 	12, // 20: protoapi.Rule.max_length:type_name -> protoapi.Range
 	12, // 21: protoapi.Rule.min_items:type_name -> protoapi.Range
 	12, // 22: protoapi.Rule.max_items:type_name -> protoapi.Range
-	13, // 23: protoapi.Rule.enum:type_name -> protoapi.Enum
+	13, // 23: protoapi.Rule.enum:type_name -> protoapi.EnumExt
 	14, // 24: protoapi.Rule.pattern:type_name -> protoapi.Pattern
 	11, // 25: protoapi.Rule.plugin:type_name -> protoapi.Plugin
 	17, // 26: protoapi.tag:extendee -> google.protobuf.ServiceOptions

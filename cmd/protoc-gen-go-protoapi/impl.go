@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/hezof/protoapi/cmd/protoc-gen-go-protoapi/protoapi"
+	"github.com/hezof/protoapi"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 )
@@ -23,24 +23,24 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) {
 }
 
 // generateCodeFile 生成实现文件: *_protoapi.pb.go
-func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
+func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 
 }
 
 // generateDocsFile 生成文档文件: *_protoapi.json
-func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
+func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
 	bs, _ := json.MarshalIndent(meta, "", "\t")
 	g.P(string(bs))
 }
 
 // generateCodeFile 生成代码文件: *_protoapi.code
-func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
+func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 
 }
 
-func extractFile(f *protogen.File) *File {
-	file := new(File)
+func extractFile(f *protogen.File) *FileExt {
+	file := new(FileExt)
 	file.Path = f.Desc.Path()
 	file.Package = string(f.Desc.Package())
 	file.GoPackage = string(f.GoPackageName)
@@ -61,11 +61,11 @@ func extractFile(f *protogen.File) *File {
 	return file
 }
 
-func extractEnum(f *File, s *protogen.Enum) *Enum {
+func extractEnum(f *FileExt, s *protogen.Enum) *EnumExt {
 	if s == nil {
 		return nil
 	}
-	v := new(Enum)
+	v := new(EnumExt)
 	v.File = f
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
@@ -74,12 +74,12 @@ func extractEnum(f *File, s *protogen.Enum) *Enum {
 	return v
 }
 
-func extractMessage(file *File, s *protogen.Message) *Message {
+func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
 	if s == nil {
 		return nil
 	}
 
-	v := new(Message)
+	v := new(MessageExt)
 	v.File = file
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
@@ -104,11 +104,11 @@ func extractMessage(file *File, s *protogen.Message) *Message {
 
 }
 
-func extractField(file *File, message *Message, s *protogen.Field) *Field {
+func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldExt {
 	if s == nil {
 		return nil
 	}
-	v := new(Field)
+	v := new(FieldExt)
 	v.File = file
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
@@ -125,11 +125,11 @@ func extractField(file *File, message *Message, s *protogen.Field) *Field {
 	return v
 }
 
-func extractService(file *File, s *protogen.Service) *Service {
+func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 	if s == nil {
 		return nil
 	}
-	v := new(Service)
+	v := new(ServiceExt)
 	v.File = file
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
@@ -143,11 +143,11 @@ func extractService(file *File, s *protogen.Service) *Service {
 	return v
 }
 
-func extractMethod(file *File, service *Service, s *protogen.Method) *Method {
+func extractMethod(file *FileExt, service *ServiceExt, s *protogen.Method) *MethodExt {
 	if s == nil {
 		return nil
 	}
-	v := new(Method)
+	v := new(MethodExt)
 	v.File = file
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
