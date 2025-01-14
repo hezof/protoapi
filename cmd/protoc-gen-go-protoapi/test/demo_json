@@ -1,7 +1,7 @@
 {
 	"Path": "demo.proto",
-	"Package": "test",
-	"GoPackage": "test",
+	"Package": "test2",
+	"GoPackage": "test2",
 	"GoImportPath": ".",
 	"Enums": {
 		"Idx": null,

@@ -1,8 +1,12 @@
 syntax = "proto3";
-package test;
-option go_package = ".;test";
+package test2;
+option go_package = ".;test2";
 
 import "github.com/hezof/protoapi.proto";
+
+enum Enum {
+  null = 0; one = 1; two = 2;
+}
 
 service Demo {
 

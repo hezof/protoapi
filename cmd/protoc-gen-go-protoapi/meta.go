@@ -77,7 +77,7 @@ type IdxVec[V any] struct {
 	Vec []V
 }
 
-func (m IdxVec[V]) Add(k string, v V) (V, bool) {
+func (m *IdxVec[V]) Add(k string, v V) (V, bool) {
 	if m.Idx == nil {
 		m.Idx = make(map[string]V)
 	}
