@@ -11,6 +11,8 @@ import (
 func generateFile(g *protogen.Plugin, f *protogen.File) {
 	file := extractFile(f)
 	bs, _ := json.MarshalIndent(file, "", "	")
+	fmt.Println(*requireUnimplemented)
+	fmt.Println(*useGenericStreams)
 	fmt.Println(string(bs))
 }
 
