@@ -320,10 +320,11 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 	args = append(args, `--go_out=`+ctx.GoOut)
 	if ctx.GrpcV2 {
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
+		args = append(args, `--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
 	} else {
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
+		args = append(args, `--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
 	}
-	args = append(args, `--go-protoapi_out=`+ctx.GoOut)
 
 	for _, path := range protoPath {
 		args = append(args, `--proto_path=`+path)

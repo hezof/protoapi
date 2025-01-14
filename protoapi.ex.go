@@ -1,7 +1,16 @@
 package protoapi
 
 func (e *Error) DecodeJSON(r *JsonDecoder) {
-	panic("unsupported operation")
+	DecodeMessage(r, &e, func(r *JsonDecoder, sr *Error, k string) {
+		switch k {
+		case profile.ResultCodeField:
+			DecodeUint32(r, &sr.Code)
+		case profile.ResultNameField:
+			DecodeString(r, &sr.Name)
+		case profile.ResultMessageField:
+			DecodeString(r, &sr.Message)
+		}
+	})
 }
 
 func (e *Error) EncodeJSON(w *JsonEncoder) {

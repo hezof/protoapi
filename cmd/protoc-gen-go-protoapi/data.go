@@ -1,0 +1,91 @@
+package main
+
+import (
+	"github.com/hezof/protoapi/cmd/protoc-gen-go-protoapi/protoapi"
+	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/reflect/protoreflect"
+)
+
+type Field struct {
+	File       *File
+	Name       string
+	FullName   string
+	GoName     string
+	GoIdent    protogen.GoIdent
+	Kind       protoreflect.Kind
+	IsMap      bool
+	IsRepeated bool
+	IsOptional bool
+	Message    *Message
+	Prop       *protoapi.Prop
+	Rule       *protoapi.Rule
+}
+
+type Message struct {
+	File     *File
+	Name     string
+	FullName string
+	GoIdent  protogen.GoIdent
+
+	Fields IdxVec[*Field]
+	Schema *protoapi.Schema
+	Plugin *protoapi.Plugin
+}
+
+type Enum struct {
+	File     *File
+	Name     string
+	FullName string
+	GoIdent  protogen.GoIdent
+}
+
+type Method struct {
+	File              *File
+	Name              string
+	FullName          string
+	GoName            string
+	IsStreamingClient bool // client streaming
+	IsStreamingServer bool // server streaming
+	InputMessage      *Message
+	OutputMessage     *Message
+	Http              *protoapi.Http
+	Role              *protoapi.Role
+}
+
+type Service struct {
+	File     *File
+	Name     string
+	FullName string
+	GoName   string
+	Methods  IdxVec[*Method]
+	Tag      *protoapi.Tag
+	HttpOnly bool
+}
+
+type File struct {
+	Path         string
+	Package      string
+	GoPackage    string
+	GoImportPath string
+	/*展开成平面*/
+	Enums    IdxVec[*Enum]
+	Messages IdxVec[*Message]
+	Services IdxVec[*Service]
+}
+
+type IdxVec[V any] struct {
+	Idx map[string]V
+	Vec []V
+}
+
+func (m IdxVec[V]) Add(k string, v V) (V, bool) {
+	if m.Idx == nil {
+		m.Idx = make(map[string]V)
+	}
+	if vl, ok := m.Idx[k]; ok {
+		return vl, false
+	}
+	m.Idx[k] = v
+	m.Vec = append(m.Vec, v)
+	return v, true
+}

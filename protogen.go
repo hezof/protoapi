@@ -22,14 +22,16 @@ type ServiceRegistry func() *ServiceSetting
 
 // MethodSetting 对应Service.Method的元数据
 type MethodSetting struct {
-	parent     *ServiceSetting // 父节点设置
-	fullMethod string          // 方法全名
-	Package    string          // 包名
-	Service    string          // 服务名
-	Method     string          // 方法名
-	Http                       // protoapi.http元数据
-	Role                       // protoapi.role元数据
-	Call                       // 方法函数
+	parent          *ServiceSetting // 父节点设置
+	fullMethod      string          // 方法全名
+	Package         string          // 包名
+	Service         string          // 服务名
+	Method          string          // 方法名
+	StreamingClient bool            // streaming client
+	StreamingServer bool            // streaming server
+	Http                            // protoapi.http元数据
+	Role                            // protoapi.role元数据
+	Call                            // 方法函数
 }
 
 // ServiceSetting 对应Service的元数据

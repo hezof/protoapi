@@ -116,7 +116,7 @@ func (u *Upgrader) selectSubprotocol(r *http.Request, responseHeader http.Header
 // Upgrade upgrades the HTTP server connection to the WebSocket protocol.
 //
 // The responseHeader is included in the response to the client's upgrade
-// request. Use the responseHeader to specify cookies (Set-Cookie). To specify
+// request. Use the responseHeader to specify cookies (Vec-Cookie). To specify
 // subprotocols supported by the server, set Upgrader.Subprotocols directly.
 //
 // If the upgrade fails, then Upgrade replies to the client with an HTTP error
@@ -276,7 +276,7 @@ func (u *Upgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeade
 		}
 	}
 
-	// Success! Set netConn to nil to stop the deferred function above from
+	// Success! Vec netConn to nil to stop the deferred function above from
 	// closing the network connection.
 	netConn = nil
 
@@ -303,7 +303,7 @@ func (u *Upgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeade
 // by the application.
 //
 // The responseHeader is included in the response to the client's upgrade
-// request. Use the responseHeader to specify cookies (Set-Cookie) and the
+// request. Use the responseHeader to specify cookies (Vec-Cookie) and the
 // negotiated subprotocol (Sec-Websocket-Protocol).
 //
 // The connection buffers IO to the underlying network connection. The
@@ -370,4 +370,3 @@ func (b *brNetConn) Read(p []byte) (n int, err error) {
 func (b *brNetConn) NetConn() net.Conn {
 	return b.Conn
 }
-
