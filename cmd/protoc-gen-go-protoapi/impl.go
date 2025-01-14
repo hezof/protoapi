@@ -2,18 +2,43 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/hezof/protoapi/cmd/protoc-gen-go-protoapi/protoapi"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 )
 
-func generateFile(g *protogen.Plugin, f *protogen.File) {
-	file := extractFile(f)
-	bs, _ := json.MarshalIndent(file, "", "	")
-	fmt.Println(*requireUnimplemented)
-	fmt.Println(*useGenericStreams)
-	fmt.Println(string(bs))
+func generateFile(gen *protogen.Plugin, file *protogen.File) {
+
+	// 1. 提取数据
+	meta := extractFile(file)
+
+	// 2. 生成实现文件: *_protoapi.pb.go
+	generateImplFile(gen, file, meta)
+
+	// 3. 生成文档文件: *_protoapi.json
+	generateDocsFile(gen, file, meta)
+
+	// 4. 生成代码文件: *_protoapi.code
+	generateCodeFile(gen, file, meta)
+}
+
+// generateCodeFile 生成实现文件: *_protoapi.pb.go
+func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
+
+}
+
+// generateDocsFile 生成文档文件: *_protoapi.json
+func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
+	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
+	g.P(*requireUnimplemented)
+	g.P(*useGenericStreams)
+	bs, _ := json.MarshalIndent(meta, "", "\t")
+	g.P(string(bs))
+}
+
+// generateCodeFile 生成代码文件: *_protoapi.code
+func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
+
 }
 
 func extractFile(f *protogen.File) *File {

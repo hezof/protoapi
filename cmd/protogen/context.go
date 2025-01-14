@@ -361,6 +361,9 @@ func (ctx *Context) CleanFiles() {
 			case strings.HasSuffix(name, `_protoapi.json`):
 				_ = os.Chmod(path, os.ModePerm)
 				_ = os.Remove(path)
+			case strings.HasSuffix(name, `_protoapi.code`):
+				_ = os.Chmod(path, os.ModePerm)
+				_ = os.Remove(path)
 			}
 		}
 		return nil

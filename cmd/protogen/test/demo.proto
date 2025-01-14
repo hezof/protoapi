@@ -1,6 +1,6 @@
 syntax = "proto3";
 package test;
-option go_package = "github.com/hezof/protoapi/test";
+option go_package = ".;test";
 
 import "github.com/hezof/protoapi.proto";
 
@@ -76,19 +76,40 @@ service Demo {
 }
 
 message Req {
-  string id = 1 [(protoapi.prop) = {
-    name: "id",
-    desc: "主键字段",
-    escape_html: true,
-    in: body,
-  }, (protoapi.rule) = {
-
-  }];
+  string id = 1 [
+    (protoapi.prop) = {
+      name: "id",
+      desc: "主键字段",
+      escape_html: true,
+      in: body,
+      style: simple,
+    },
+    (protoapi.rule) = {
+      required: {
+        status: 403,
+        code: 1001,
+        name: "required",
+        message: "必需",
+      },
+    }];
   string name = 2 [
-    (protoapi.desc) = "名称",
-    (protoapi.validate) = {
-      err_code: 555,
-      err_status: 555,
+    (protoapi.prop) = {
+      name: "name",
+      desc: "名称字段",
+      escape_html: true,
+      in: body,
+      style: simple,
+    },
+    (protoapi.rule) = {
+      max_length: {
+        val: 100,
+        err: {
+          status: 403,
+          code: 1001,
+          name: "required",
+          message: "必需",
+        }
+      }
     }];
 }
 
@@ -99,6 +120,5 @@ enum Sex{
 }
 
 message Rsp {
-  optional map<string, sfixed64> sex = 1;
-  int64 weight = 2 [(protoapi.desc) = "体重"];
+  int64 weight = 2 [(protoapi.prop) = {desc: "体重"}];
 }
