@@ -29,7 +29,10 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 // generateDocsFile 生成文档文件: *_json
 func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
-	bs, _ := json.MarshalIndent(meta, "", "\t")
+	bs, err := json.Marshal(meta)
+	if err != nil {
+		gen.Error(err)
+	}
 	g.Write(bs)
 }
 
@@ -65,7 +68,7 @@ func extractEnum(f *FileExt, s *protogen.Enum) *EnumExt {
 		return nil
 	}
 	v := new(EnumExt)
-	v.File = f
+	v.FilePath = s.Desc.ParentFile().Path()
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
@@ -79,7 +82,7 @@ func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
 	}
 
 	v := new(MessageExt)
-	v.File = file
+	v.FilePath = s.Desc.ParentFile().Path()
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
@@ -108,7 +111,6 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 		return nil
 	}
 	v := new(FieldExt)
-	v.File = file
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoName = s.GoName
@@ -129,7 +131,7 @@ func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 		return nil
 	}
 	v := new(ServiceExt)
-	v.File = file
+	v.FilePath = s.Desc.ParentFile().Path()
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoName = s.GoName
@@ -147,7 +149,6 @@ func extractMethod(file *FileExt, service *ServiceExt, s *protogen.Method) *Meth
 		return nil
 	}
 	v := new(MethodExt)
-	v.File = file
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoName = s.GoName

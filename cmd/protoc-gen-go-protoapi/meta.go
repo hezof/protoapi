@@ -6,7 +6,6 @@ import (
 )
 
 type FieldExt struct {
-	File       *FileExt
 	Name       string
 	FullName   string
 	GoName     string
@@ -21,25 +20,23 @@ type FieldExt struct {
 }
 
 type MessageExt struct {
-	File     *FileExt
+	FilePath string // 需要用来判断是否当前file
 	Name     string
 	FullName string
 	GoIdent  protogen.GoIdent
-
-	Fields IdxVec[*FieldExt]
-	Schema *Schema
-	Plugin *Plugin
+	Fields   IdxVec[*FieldExt]
+	Schema   *Schema
+	Plugin   *Plugin
 }
 
 type EnumExt struct {
-	File     *FileExt
+	FilePath string // 需要用来判断是否当前file
 	Name     string
 	FullName string
 	GoIdent  protogen.GoIdent
 }
 
 type MethodExt struct {
-	File              *FileExt
 	Name              string
 	FullName          string
 	GoName            string
@@ -52,7 +49,7 @@ type MethodExt struct {
 }
 
 type ServiceExt struct {
-	File     *FileExt
+	FilePath string // 需要用来判断是否当前file
 	Name     string
 	FullName string
 	GoName   string
