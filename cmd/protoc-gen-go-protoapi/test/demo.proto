@@ -105,8 +105,8 @@ message Req {
       style: simple,
     },
     (protoapi.rule) = {
-      max_length: {
-        val: 100,
+      enum: {
+        val: 'a,b,c',
         err: {
           status: 403,
           code: 1001,
