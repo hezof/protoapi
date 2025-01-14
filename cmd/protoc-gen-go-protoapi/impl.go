@@ -30,8 +30,6 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
 // generateDocsFile 生成文档文件: *_protoapi.json
 func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *File) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
-	g.P(*requireUnimplemented)
-	g.P(*useGenericStreams)
 	bs, _ := json.MarshalIndent(meta, "", "\t")
 	g.P(string(bs))
 }
@@ -63,13 +61,17 @@ func extractFile(f *protogen.File) *File {
 	return file
 }
 
-func extractEnum(f *File, s *protogen.Enum) {
+func extractEnum(f *File, s *protogen.Enum) *Enum {
+	if s == nil {
+		return nil
+	}
 	v := new(Enum)
 	v.File = f
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
 	f.Enums.Add(v.FullName, v)
+	return v
 }
 
 func extractMessage(file *File, s *protogen.Message) *Message {
@@ -124,6 +126,9 @@ func extractField(file *File, message *Message, s *protogen.Field) *Field {
 }
 
 func extractService(file *File, s *protogen.Service) *Service {
+	if s == nil {
+		return nil
+	}
 	v := new(Service)
 	v.File = file
 	v.Name = string(s.Desc.Name())
@@ -139,6 +144,9 @@ func extractService(file *File, s *protogen.Service) *Service {
 }
 
 func extractMethod(file *File, service *Service, s *protogen.Method) *Method {
+	if s == nil {
+		return nil
+	}
 	v := new(Method)
 	v.File = file
 	v.Name = string(s.Desc.Name())
