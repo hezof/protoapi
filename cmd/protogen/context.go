@@ -349,7 +349,7 @@ func (ctx *Context) CleanFiles() {
 		if !info.IsDir() {
 			name := info.Name()
 			switch {
-			case strings.HasSuffix(name, `.pb.go`):
+			case strings.HasSuffix(name, `.pb.go`) && name != `protoapi.pb.go`:
 				_ = os.Chmod(path, os.ModePerm)
 				_ = os.Remove(path)
 			case strings.HasSuffix(name, `_grpc.pb.go`):
