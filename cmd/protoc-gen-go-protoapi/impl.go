@@ -30,7 +30,7 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
 	bs, _ := json.MarshalIndent(meta, "", "\t")
-	g.P(string(bs))
+	g.Write(bs)
 }
 
 // generateCodeFile 生成代码文件: *_code
