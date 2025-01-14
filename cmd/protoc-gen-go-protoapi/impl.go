@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/hezof/protoapi"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 )
@@ -12,29 +11,29 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) {
 	// 1. 提取数据
 	meta := extractFile(file)
 
-	// 2. 生成实现文件: *_protoapi.pb.go
+	// 2. 生成实现文件: *_pb.go
 	generateImplFile(gen, file, meta)
 
-	// 3. 生成文档文件: *_protoapi.json
+	// 3. 生成文档文件: *_json
 	generateDocsFile(gen, file, meta)
 
-	// 4. 生成代码文件: *_protoapi.code
+	// 4. 生成代码文件: *_code
 	generateCodeFile(gen, file, meta)
 }
 
-// generateCodeFile 生成实现文件: *_protoapi.pb.go
+// generateCodeFile 生成实现文件: *_pb.go
 func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 
 }
 
-// generateDocsFile 生成文档文件: *_protoapi.json
+// generateDocsFile 生成文档文件: *_json
 func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
 	bs, _ := json.MarshalIndent(meta, "", "\t")
 	g.P(string(bs))
 }
 
-// generateCodeFile 生成代码文件: *_protoapi.code
+// generateCodeFile 生成代码文件: *_code
 func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 
 }
@@ -97,8 +96,8 @@ func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
 	for _, s1 := range s.Messages {
 		extractMessage(file, s1)
 	}
-	v.Schema = proto.GetExtension(s.Desc.Options(), protoapi.E_Schema).(*protoapi.Schema)
-	v.Plugin = proto.GetExtension(s.Desc.Options(), protoapi.E_Plugin).(*protoapi.Plugin)
+	v.Schema = proto.GetExtension(s.Desc.Options(), E_Schema).(*Schema)
+	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
 
 	return v
 
@@ -119,8 +118,8 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.IsRepeated = s.Desc.IsList()
 	v.IsOptional = s.Desc.HasOptionalKeyword()
 	v.Message = extractMessage(file, s.Message)
-	v.Prop = proto.GetExtension(s.Desc.Options(), protoapi.E_Prop).(*protoapi.Prop)
-	v.Rule = proto.GetExtension(s.Desc.Options(), protoapi.E_Rule).(*protoapi.Rule)
+	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
+	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
 	message.Fields.Add(v.FullName, v)
 	return v
 }
@@ -137,8 +136,8 @@ func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 	for _, m1 := range s.Methods {
 		extractMethod(file, v, m1)
 	}
-	v.Tag = proto.GetExtension(s.Desc.Options(), protoapi.E_Tag).(*protoapi.Tag)
-	v.HttpOnly = proto.GetExtension(s.Desc.Options(), protoapi.E_HttpOnly).(bool)
+	v.Tag = proto.GetExtension(s.Desc.Options(), E_Tag).(*Tag)
+	v.HttpOnly = proto.GetExtension(s.Desc.Options(), E_HttpOnly).(bool)
 	file.Services.Add(v.FullName, v)
 	return v
 }
@@ -156,8 +155,8 @@ func extractMethod(file *FileExt, service *ServiceExt, s *protogen.Method) *Meth
 	v.IsStreamingServer = s.Desc.IsStreamingServer()
 	v.InputMessage = extractMessage(file, s.Input)
 	v.OutputMessage = extractMessage(file, s.Output)
-	v.Http = proto.GetExtension(s.Desc.Options(), protoapi.E_Http).(*protoapi.Http)
-	v.Role = proto.GetExtension(s.Desc.Options(), protoapi.E_Role).(*protoapi.Role)
+	v.Http = proto.GetExtension(s.Desc.Options(), E_Http).(*Http)
+	v.Role = proto.GetExtension(s.Desc.Options(), E_Role).(*Role)
 	service.Methods.Add(v.FullName, v)
 	return v
 }

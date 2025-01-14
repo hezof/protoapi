@@ -1,0 +1,18 @@
+{
+	"Path": "demo.proto",
+	"Package": "test",
+	"GoPackage": "test",
+	"GoImportPath": ".",
+	"Enums": {
+		"Idx": null,
+		"Vec": null
+	},
+	"Messages": {
+		"Idx": null,
+		"Vec": null
+	},
+	"Services": {
+		"Idx": null,
+		"Vec": null
+	}
+}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/hezof/protoapi"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -17,8 +16,8 @@ type FieldExt struct {
 	IsRepeated bool
 	IsOptional bool
 	Message    *MessageExt
-	Prop       *protoapi.Prop
-	Rule       *protoapi.Rule
+	Prop       *Prop
+	Rule       *Rule
 }
 
 type MessageExt struct {
@@ -28,8 +27,8 @@ type MessageExt struct {
 	GoIdent  protogen.GoIdent
 
 	Fields IdxVec[*FieldExt]
-	Schema *protoapi.Schema
-	Plugin *protoapi.Plugin
+	Schema *Schema
+	Plugin *Plugin
 }
 
 type EnumExt struct {
@@ -48,8 +47,8 @@ type MethodExt struct {
 	IsStreamingServer bool // server streaming
 	InputMessage      *MessageExt
 	OutputMessage     *MessageExt
-	Http              *protoapi.Http
-	Role              *protoapi.Role
+	Http              *Http
+	Role              *Role
 }
 
 type ServiceExt struct {
@@ -58,7 +57,7 @@ type ServiceExt struct {
 	FullName string
 	GoName   string
 	Methods  IdxVec[*MethodExt]
-	Tag      *protoapi.Tag
+	Tag      *Tag
 	HttpOnly bool
 }
 
