@@ -1,0 +1,104 @@
+syntax = "proto3";
+package test;
+option go_package = "github.com/hezof/protoapi/test";
+
+import "github.com/hezof/protoapi.proto";
+
+service Demo {
+
+  option (protoapi.http_only) = true;
+
+  option (protoapi.tag) = {
+    name: "Demo测试",
+    desc: "这是一个Demo测试",
+    docs: {
+      url: "https://wwww.baidu.com",
+      desc: "百度测试链接",
+    },
+  };
+
+  rpc Simple(Req) returns (Rsp){
+    option (protoapi.http) = {
+      name: "Simple",
+      desc: "简单RPC",
+      get: "/demo/simple/:id",
+      body: omit,
+    };
+    option (protoapi.role) = {
+      code: 101,
+      name: "101",
+      desc: "需要101角色",
+    };
+  }
+
+  rpc Client(stream Req) returns (Rsp){
+    option (protoapi.http) = {
+      name: "Client",
+      desc: "Streaming Client",
+      post: "/demo/client/:id",
+      head: "/demo/client/:id",
+      body: json,
+    };
+    option (protoapi.role) = {
+      code: 102,
+      name: "102",
+      desc: "需要102角色",
+    };
+  }
+  rpc Server(Req) returns (stream Rsp){
+    option (protoapi.http) = {
+      name: "Server",
+      desc: "Streaming Server",
+      post: "/demo/server/:id",
+      head: "/demo/server/:id",
+      body: json,
+    };
+    option (protoapi.role) = {
+      code: 102,
+      name: "102",
+      desc: "需要102角色",
+    };
+  }
+  rpc Bidirectional(stream Req) returns (stream Rsp){
+    option (protoapi.http) = {
+      name: "Server",
+      desc: "Streaming Server",
+      post: "/demo/Bidirectional/:id",
+      head: "/demo/Bidirectional/:id",
+      body: json,
+    };
+    option (protoapi.role) = {
+      code: 102,
+      name: "102",
+      desc: "需要102角色",
+    };
+  }
+}
+
+message Req {
+  string id = 1 [(protoapi.prop) = {
+    name: "id",
+    desc: "主键字段",
+    escape_html: true,
+    in: body,
+  }, (protoapi.rule) = {
+
+  }];
+  string name = 2 [
+    (protoapi.desc) = "名称",
+    (protoapi.validate) = {
+      err_code: 555,
+      err_status: 555,
+    }];
+}
+
+enum Sex{
+  None = 0;
+  Male = 1;
+  Female = 2;
+}
+
+message Rsp {
+  optional map<string, sfixed64> sex = 1;
+  int64 weight = 2 [(protoapi.desc) = "体重"];
+}
