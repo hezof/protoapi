@@ -29,7 +29,7 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 // generateDocsFile 生成文档文件: *_json
 func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.json`, file.GoImportPath)
-	bs, err := json.Marshal(meta)
+	bs, err := json.MarshalIndent(meta, ``, "\t")
 	if err != nil {
 		gen.Error(err)
 	}

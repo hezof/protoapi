@@ -80,7 +80,7 @@ service Demo {
 }
 
 message Req {
-  string id = 1 [
+  repeated string id = 1 [
     (protoapi.prop) = {
       name: "id",
       desc: "主键字段",
@@ -96,7 +96,7 @@ message Req {
         message: "必需",
       },
     }];
-  string name = 2 [
+  optional string name = 2 [
     (protoapi.prop) = {
       name: "name",
       desc: "名称字段",
@@ -115,6 +115,7 @@ message Req {
         }
       }
     }];
+  map<string, int32> scores = 3;
 }
 
 enum Sex{

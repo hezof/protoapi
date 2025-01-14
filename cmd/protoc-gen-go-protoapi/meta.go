@@ -70,7 +70,7 @@ type FileExt struct {
 }
 
 type IdxVec[V any] struct {
-	Idx map[string]V
+	Idx map[string]V `json:"-,omitempty"`
 	Vec []V
 }
 
