@@ -358,7 +358,7 @@ func (ctx *Context) CleanFiles() {
 			case strings.HasSuffix(name, `_protoapi.pb.go`):
 				_ = os.Chmod(path, os.ModePerm)
 				_ = os.Remove(path)
-			case strings.HasSuffix(name, `_protoapi.json`):
+			case strings.HasSuffix(name, `_protoapi.yaml`):
 				_ = os.Chmod(path, os.ModePerm)
 				_ = os.Remove(path)
 			case strings.HasSuffix(name, `_protoapi.code`):

@@ -10,18 +10,11 @@ message Error {
   uint32 code = 2;                 // 错误代码
   string name = 3;                 // 错误名称
   string message = 4;              // 错误描述
-  Docs docs = 5;                   // 外部文档
-}
-
-message Docs {
-  string url = 1;                   // 外部文档链接
-  string desc = 2;                  // 外部文档描述
 }
 
 message Tag {
   string name = 1;                  // The name of the tag
   string desc = 2;                  // A short description for the tag
-  Docs docs = 4;                    // Additional external documentation for this tag.
 }
 
 message Http {
@@ -40,35 +33,32 @@ message Http {
 
   string name = 1;                  // 概要信息
   string desc = 2;                  // 描述信息
-  Docs docs = 3;                    // 外部文档
-  string get = 4;                   // GET请求
-  string put = 5;                   // PUT请求
-  string post = 6;                  // POST请求
-  string delete = 7;                // DELETE请求
-  string options = 8;               // OPTIONS请求
-  string head = 9;                  // HEAD请求
-  string patch = 10;                // PATCH请求
-  string trace = 11;                // TRACE请求
-  string connect = 12;              // CONNECT请求
-  string websocket = 13;            // WS请求(可能与GET冲突)
-  Body body = 14;                   // body解析方式. 默认json!
-  uint32 status = 15;               // 成功响应状态码
-  Result result = 16;               // 结果处理方式.
-  repeated Error errors = 17;       // 错误列表
-  repeated string tags = 18;        // 标签列表
+  string get = 3;                   // GET请求
+  string put = 4;                   // PUT请求
+  string post = 5;                  // POST请求
+  string delete = 6;                // DELETE请求
+  string options = 7;               // OPTIONS请求
+  string head = 8;                  // HEAD请求
+  string patch = 9;                // PATCH请求
+  string trace = 10;                // TRACE请求
+  string connect = 11;              // CONNECT请求
+  string websocket = 12;            // WS请求(可能与GET冲突)
+  Body body = 13;                   // body解析方式. 默认json!
+  uint32 status = 14;               // 成功响应状态码
+  Result result = 15;               // 结果处理方式.
+  repeated Error errors = 16;       // 错误列表
+  repeated string tags = 17;        // 标签列表
 }
 
 message Role {
   uint64 code = 1;                  // 角色标识
   string name = 2;                  // 角色名称
   string desc = 3;                  // 角色描述
-  Docs docs = 4;                    // 角色文档
 }
 
 message Schema {
   string name = 1;                 // schema名称
   string desc = 2;                 // schema描述
-  Docs docs = 3;                   // schema文档
 }
 
 message Plugin {
@@ -117,12 +107,11 @@ message Prop {
 
   string name = 1;                  // 概要信息
   string desc = 2;                  // 描述信息
-  Docs docs = 3;                    // 外部文档
-  Empty empty = 4;                  // 值处理策略
-  bool escape_html = 5;             // 是否转义html特殊字符.
-  bool enum_as_int = 6;             // 是否使用枚举下标.
-  In in = 7;                        // 数据位置. 同openapi的in.
-  Style style = 8;                  // 数据样式. 同openapi的style. 用于非json array或object!
+  Empty empty = 3;                  // 值处理策略
+  bool escape_html = 4;             // 是否转义html特殊字符.
+  bool enum_as_int = 5;             // 是否使用枚举下标.
+  In in = 6;                        // 数据位置. 同openapi的in.
+  Style style = 7;                  // 数据样式. 同openapi的style. 用于非json array或object!
 }
 
 message Rule {
