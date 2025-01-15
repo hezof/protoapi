@@ -116,7 +116,8 @@ message Prop {
   bool escape_html = 4;             // 是否转义html特殊字符.
   bool enum_name = 5;               // 是否使用枚举名称.
   In in = 6;                        // 数据位置. 同openapi的in.
-  Style style = 7;                  // 数据样式. 同openapi的style. 用于非json array或object!
+  Style style = 7;                  // 数据式样. 同openapi的style. 用于非json array或object!
+  string format = 8;                // 数据格式. 仅用于swagger文档提示.
 }
 
 message Rule {

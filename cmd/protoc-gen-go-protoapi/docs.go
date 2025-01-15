@@ -126,7 +126,6 @@ func definition(m *MessageExt) *OASv2Schema {
 		case f.IsRepeated:
 			p.Type = `array`
 			p.Items = gpf(f)
-
 		case f.IsMap:
 		default:
 
@@ -150,46 +149,56 @@ func gpf(f *FieldExt) *OASv2Schema {
 	case protoreflect.BoolKind:
 		s.Type = `boolean`
 	case protoreflect.EnumKind:
-		s.Type = `integer`
-		s.Format = `int32`
+		if f.Prop != nil && f.Prop.EnumName {
+			s.Type = `string`
+			for _, e := range f.Enum.Values {
+				s.Enum = append(s.Enum, e.Name)
+			}
+		} else {
+			s.Type = `integer`
+			s.Format = `int32`
+			for _, e := range f.Enum.Values {
+				s.Enum = append(s.Enum, e.Number)
+			}
+		}
 	case protoreflect.Int32Kind:
 		s.Type = `integer`
 		s.Format = `int32`
 	case protoreflect.Sint32Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int32"`)
+		s.Type = `integer`
+		s.Format = `int32`
 	case protoreflect.Uint32Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int32"`)
+		s.Type = `integer`
+		s.Format = `int32`
 	case protoreflect.Int64Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int64"`)
+		s.Type = `integer`
+		s.Format = `int64`
 	case protoreflect.Sint64Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int64"`)
+		s.Type = `integer`
+		s.Format = `int64`
 	case protoreflect.Uint64Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int64"`)
+		s.Type = `integer`
+		s.Format = `int64`
 	case protoreflect.Sfixed32Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int32"`)
+		s.Type = `integer`
+		s.Format = `int32`
 	case protoreflect.Fixed32Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int32"`)
+		s.Type = `integer`
+		s.Format = `int32`
 	case protoreflect.FloatKind:
-		g.P(prefix, `"type": "number"`)
-		g.P(prefix, `"format": "float"`)
+		s.Type = `number`
+		s.Format = `float`
 	case protoreflect.Sfixed64Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int64"`)
+		s.Type = `integer`
+		s.Format = `int64`
 	case protoreflect.Fixed64Kind:
-		g.P(prefix, `"type": "integer"`)
-		g.P(prefix, `"format": "int64"`)
+		s.Type = `integer`
+		s.Format = `int64`
 	case protoreflect.DoubleKind:
-		g.P(prefix, `"type": "number"`)
-		g.P(prefix, `"format": "double"`)
+		s.Type = `number`
+		s.Format = `double`
 	case protoreflect.StringKind:
-		g.P(prefix, `"type": "string"`)
+		s.Type = `string`
 	case protoreflect.BytesKind:
 		g.P(prefix, `"type": "string"`)
 		g.P(prefix, `"format": "binary"`)
