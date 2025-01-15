@@ -39,6 +39,7 @@ func extractEnumValue(f *FileExt, e *EnumExt, s *protogen.EnumValue) *EnumValueE
 	v.GoIdent = s.GoIdent
 	v.Number = int32(s.Desc.Number())
 	v.Deprecated = s.Desc.Options().(*descriptorpb.EnumValueOptions).GetDeprecated()
+	e.Values = append(e.Values, v)
 	return v
 }
 

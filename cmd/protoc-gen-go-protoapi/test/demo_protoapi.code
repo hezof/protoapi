@@ -1,0 +1,1104 @@
+{
+	"Path": "demo.proto",
+	"Package": "test2",
+	"GoPackage": "test2",
+	"GoImportPath": ".",
+	"Enums": {
+		"Vec": [
+			{
+				"FilePath": "demo.proto",
+				"Name": "Enum",
+				"FullName": "test2.Enum",
+				"GoIdent": {
+					"GoName": "Enum",
+					"GoImportPath": "."
+				},
+				"Values": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "demo.proto",
+				"Name": "Sex",
+				"FullName": "test2.Sex",
+				"GoIdent": {
+					"GoName": "Sex",
+					"GoImportPath": "."
+				},
+				"Values": null,
+				"Deprecated": false
+			}
+		]
+	},
+	"Messages": {
+		"Vec": [
+			{
+				"FilePath": "demo.proto",
+				"Name": "Req",
+				"FullName": "test2.Req",
+				"GoIdent": {
+					"GoName": "Req",
+					"GoImportPath": "."
+				},
+				"Fields": {
+					"Vec": [
+						{
+							"Name": "id",
+							"FullName": "test2.Req.id",
+							"GoName": "Id",
+							"GoIdent": {
+								"GoName": "Req_Id",
+								"GoImportPath": "."
+							},
+							"Kind": 9,
+							"IsMap": false,
+							"IsRepeated": true,
+							"IsOptional": false,
+							"Enum": null,
+							"Message": null,
+							"Prop": {
+								"name": "id",
+								"desc": "主键字段",
+								"enum_as_int": true
+							},
+							"Rule": {
+								"required": {
+									"status": 403,
+									"code": 1001,
+									"name": "required",
+									"message": "必需"
+								}
+							},
+							"Deprecated": false
+						},
+						{
+							"Name": "name",
+							"FullName": "test2.Req.name",
+							"GoName": "Name",
+							"GoIdent": {
+								"GoName": "Req_Name",
+								"GoImportPath": "."
+							},
+							"Kind": 9,
+							"IsMap": false,
+							"IsRepeated": false,
+							"IsOptional": true,
+							"Enum": null,
+							"Message": null,
+							"Prop": {
+								"name": "name",
+								"desc": "名称字段",
+								"enum_as_int": true
+							},
+							"Rule": {
+								"enum": {
+									"val": [
+										"a,b,c"
+									],
+									"err": {
+										"status": 403,
+										"code": 1001,
+										"name": "required",
+										"message": "必需"
+									}
+								}
+							},
+							"Deprecated": false
+						},
+						{
+							"Name": "scores",
+							"FullName": "test2.Req.scores",
+							"GoName": "Scores",
+							"GoIdent": {
+								"GoName": "Req_Scores",
+								"GoImportPath": "."
+							},
+							"Kind": 11,
+							"IsMap": true,
+							"IsRepeated": false,
+							"IsOptional": false,
+							"Enum": null,
+							"Message": {
+								"FilePath": "demo.proto",
+								"Name": "ScoresEntry",
+								"FullName": "test2.Req.ScoresEntry",
+								"GoIdent": {
+									"GoName": "Req_ScoresEntry",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "key",
+											"FullName": "test2.Req.ScoresEntry.key",
+											"GoName": "Key",
+											"GoIdent": {
+												"GoName": "Req_ScoresEntry_Key",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": null,
+											"Rule": null,
+											"Deprecated": false
+										},
+										{
+											"Name": "value",
+											"FullName": "test2.Req.ScoresEntry.value",
+											"GoName": "Value",
+											"GoIdent": {
+												"GoName": "Req_ScoresEntry_Value",
+												"GoImportPath": "."
+											},
+											"Kind": 5,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": null,
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"Prop": null,
+							"Rule": null,
+							"Deprecated": false
+						}
+					]
+				},
+				"Schema": null,
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "demo.proto",
+				"Name": "ScoresEntry",
+				"FullName": "test2.Req.ScoresEntry",
+				"GoIdent": {
+					"GoName": "Req_ScoresEntry",
+					"GoImportPath": "."
+				},
+				"Fields": {
+					"Vec": [
+						{
+							"Name": "key",
+							"FullName": "test2.Req.ScoresEntry.key",
+							"GoName": "Key",
+							"GoIdent": {
+								"GoName": "Req_ScoresEntry_Key",
+								"GoImportPath": "."
+							},
+							"Kind": 9,
+							"IsMap": false,
+							"IsRepeated": false,
+							"IsOptional": false,
+							"Enum": null,
+							"Message": null,
+							"Prop": null,
+							"Rule": null,
+							"Deprecated": false
+						},
+						{
+							"Name": "value",
+							"FullName": "test2.Req.ScoresEntry.value",
+							"GoName": "Value",
+							"GoIdent": {
+								"GoName": "Req_ScoresEntry_Value",
+								"GoImportPath": "."
+							},
+							"Kind": 5,
+							"IsMap": false,
+							"IsRepeated": false,
+							"IsOptional": false,
+							"Enum": null,
+							"Message": null,
+							"Prop": null,
+							"Rule": null,
+							"Deprecated": false
+						}
+					]
+				},
+				"Schema": null,
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "demo.proto",
+				"Name": "Rsp",
+				"FullName": "test2.Rsp",
+				"GoIdent": {
+					"GoName": "Rsp",
+					"GoImportPath": "."
+				},
+				"Fields": {
+					"Vec": [
+						{
+							"Name": "weight",
+							"FullName": "test2.Rsp.weight",
+							"GoName": "Weight",
+							"GoIdent": {
+								"GoName": "Rsp_Weight",
+								"GoImportPath": "."
+							},
+							"Kind": 3,
+							"IsMap": false,
+							"IsRepeated": false,
+							"IsOptional": false,
+							"Enum": null,
+							"Message": null,
+							"Prop": {
+								"desc": "体重"
+							},
+							"Rule": null,
+							"Deprecated": false
+						}
+					]
+				},
+				"Schema": null,
+				"Plugin": null,
+				"Deprecated": false
+			}
+		]
+	},
+	"Services": {
+		"Vec": [
+			{
+				"FilePath": "demo.proto",
+				"Name": "Demo",
+				"FullName": "test2.Demo",
+				"GoName": "Demo",
+				"Methods": {
+					"Vec": [
+						{
+							"Name": "Simple",
+							"FullName": "test2.Demo.Simple",
+							"GoName": "Simple",
+							"IsStreamingClient": false,
+							"IsStreamingServer": false,
+							"InputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Req",
+								"FullName": "test2.Req",
+								"GoIdent": {
+									"GoName": "Req",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "id",
+											"FullName": "test2.Req.id",
+											"GoName": "Id",
+											"GoIdent": {
+												"GoName": "Req_Id",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": true,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "id",
+												"desc": "主键字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"required": {
+													"status": 403,
+													"code": 1001,
+													"name": "required",
+													"message": "必需"
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "name",
+											"FullName": "test2.Req.name",
+											"GoName": "Name",
+											"GoIdent": {
+												"GoName": "Req_Name",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": true,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "name",
+												"desc": "名称字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"enum": {
+													"val": [
+														"a,b,c"
+													],
+													"err": {
+														"status": 403,
+														"code": 1001,
+														"name": "required",
+														"message": "必需"
+													}
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "scores",
+											"FullName": "test2.Req.scores",
+											"GoName": "Scores",
+											"GoIdent": {
+												"GoName": "Req_Scores",
+												"GoImportPath": "."
+											},
+											"Kind": 11,
+											"IsMap": true,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": {
+												"FilePath": "demo.proto",
+												"Name": "ScoresEntry",
+												"FullName": "test2.Req.ScoresEntry",
+												"GoIdent": {
+													"GoName": "Req_ScoresEntry",
+													"GoImportPath": "."
+												},
+												"Fields": {
+													"Vec": [
+														{
+															"Name": "key",
+															"FullName": "test2.Req.ScoresEntry.key",
+															"GoName": "Key",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Key",
+																"GoImportPath": "."
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "value",
+															"FullName": "test2.Req.ScoresEntry.value",
+															"GoName": "Value",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Value",
+																"GoImportPath": "."
+															},
+															"Kind": 5,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													]
+												},
+												"Schema": null,
+												"Plugin": null,
+												"Deprecated": false
+											},
+											"Prop": null,
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"OutputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Rsp",
+								"FullName": "test2.Rsp",
+								"GoIdent": {
+									"GoName": "Rsp",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "weight",
+											"FullName": "test2.Rsp.weight",
+											"GoName": "Weight",
+											"GoIdent": {
+												"GoName": "Rsp_Weight",
+												"GoImportPath": "."
+											},
+											"Kind": 3,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"desc": "体重"
+											},
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"Http": {
+								"name": "Simple",
+								"desc": "简单RPC",
+								"put": "/demo/simple/:id",
+								"status": 2
+							},
+							"Role": {
+								"code": 101,
+								"name": "101",
+								"desc": "需要101角色"
+							},
+							"Deprecated": false
+						},
+						{
+							"Name": "Client",
+							"FullName": "test2.Demo.Client",
+							"GoName": "Client",
+							"IsStreamingClient": true,
+							"IsStreamingServer": false,
+							"InputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Req",
+								"FullName": "test2.Req",
+								"GoIdent": {
+									"GoName": "Req",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "id",
+											"FullName": "test2.Req.id",
+											"GoName": "Id",
+											"GoIdent": {
+												"GoName": "Req_Id",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": true,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "id",
+												"desc": "主键字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"required": {
+													"status": 403,
+													"code": 1001,
+													"name": "required",
+													"message": "必需"
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "name",
+											"FullName": "test2.Req.name",
+											"GoName": "Name",
+											"GoIdent": {
+												"GoName": "Req_Name",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": true,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "name",
+												"desc": "名称字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"enum": {
+													"val": [
+														"a,b,c"
+													],
+													"err": {
+														"status": 403,
+														"code": 1001,
+														"name": "required",
+														"message": "必需"
+													}
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "scores",
+											"FullName": "test2.Req.scores",
+											"GoName": "Scores",
+											"GoIdent": {
+												"GoName": "Req_Scores",
+												"GoImportPath": "."
+											},
+											"Kind": 11,
+											"IsMap": true,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": {
+												"FilePath": "demo.proto",
+												"Name": "ScoresEntry",
+												"FullName": "test2.Req.ScoresEntry",
+												"GoIdent": {
+													"GoName": "Req_ScoresEntry",
+													"GoImportPath": "."
+												},
+												"Fields": {
+													"Vec": [
+														{
+															"Name": "key",
+															"FullName": "test2.Req.ScoresEntry.key",
+															"GoName": "Key",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Key",
+																"GoImportPath": "."
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "value",
+															"FullName": "test2.Req.ScoresEntry.value",
+															"GoName": "Value",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Value",
+																"GoImportPath": "."
+															},
+															"Kind": 5,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													]
+												},
+												"Schema": null,
+												"Plugin": null,
+												"Deprecated": false
+											},
+											"Prop": null,
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"OutputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Rsp",
+								"FullName": "test2.Rsp",
+								"GoIdent": {
+									"GoName": "Rsp",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "weight",
+											"FullName": "test2.Rsp.weight",
+											"GoName": "Weight",
+											"GoIdent": {
+												"GoName": "Rsp_Weight",
+												"GoImportPath": "."
+											},
+											"Kind": 3,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"desc": "体重"
+											},
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"Http": {
+								"name": "Client",
+								"desc": "Streaming Client",
+								"delete": "/demo/client/:id",
+								"patch": "/demo/client/:id"
+							},
+							"Role": {
+								"code": 102,
+								"name": "102",
+								"desc": "需要102角色"
+							},
+							"Deprecated": false
+						},
+						{
+							"Name": "Server",
+							"FullName": "test2.Demo.Server",
+							"GoName": "Server",
+							"IsStreamingClient": false,
+							"IsStreamingServer": true,
+							"InputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Req",
+								"FullName": "test2.Req",
+								"GoIdent": {
+									"GoName": "Req",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "id",
+											"FullName": "test2.Req.id",
+											"GoName": "Id",
+											"GoIdent": {
+												"GoName": "Req_Id",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": true,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "id",
+												"desc": "主键字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"required": {
+													"status": 403,
+													"code": 1001,
+													"name": "required",
+													"message": "必需"
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "name",
+											"FullName": "test2.Req.name",
+											"GoName": "Name",
+											"GoIdent": {
+												"GoName": "Req_Name",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": true,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "name",
+												"desc": "名称字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"enum": {
+													"val": [
+														"a,b,c"
+													],
+													"err": {
+														"status": 403,
+														"code": 1001,
+														"name": "required",
+														"message": "必需"
+													}
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "scores",
+											"FullName": "test2.Req.scores",
+											"GoName": "Scores",
+											"GoIdent": {
+												"GoName": "Req_Scores",
+												"GoImportPath": "."
+											},
+											"Kind": 11,
+											"IsMap": true,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": {
+												"FilePath": "demo.proto",
+												"Name": "ScoresEntry",
+												"FullName": "test2.Req.ScoresEntry",
+												"GoIdent": {
+													"GoName": "Req_ScoresEntry",
+													"GoImportPath": "."
+												},
+												"Fields": {
+													"Vec": [
+														{
+															"Name": "key",
+															"FullName": "test2.Req.ScoresEntry.key",
+															"GoName": "Key",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Key",
+																"GoImportPath": "."
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "value",
+															"FullName": "test2.Req.ScoresEntry.value",
+															"GoName": "Value",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Value",
+																"GoImportPath": "."
+															},
+															"Kind": 5,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													]
+												},
+												"Schema": null,
+												"Plugin": null,
+												"Deprecated": false
+											},
+											"Prop": null,
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"OutputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Rsp",
+								"FullName": "test2.Rsp",
+								"GoIdent": {
+									"GoName": "Rsp",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "weight",
+											"FullName": "test2.Rsp.weight",
+											"GoName": "Weight",
+											"GoIdent": {
+												"GoName": "Rsp_Weight",
+												"GoImportPath": "."
+											},
+											"Kind": 3,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"desc": "体重"
+											},
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"Http": {
+								"name": "Server",
+								"desc": "Streaming Server",
+								"delete": "/demo/server/:id",
+								"patch": "/demo/server/:id"
+							},
+							"Role": {
+								"code": 102,
+								"name": "102",
+								"desc": "需要102角色"
+							},
+							"Deprecated": false
+						},
+						{
+							"Name": "Bidirectional",
+							"FullName": "test2.Demo.Bidirectional",
+							"GoName": "Bidirectional",
+							"IsStreamingClient": true,
+							"IsStreamingServer": true,
+							"InputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Req",
+								"FullName": "test2.Req",
+								"GoIdent": {
+									"GoName": "Req",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "id",
+											"FullName": "test2.Req.id",
+											"GoName": "Id",
+											"GoIdent": {
+												"GoName": "Req_Id",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": true,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "id",
+												"desc": "主键字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"required": {
+													"status": 403,
+													"code": 1001,
+													"name": "required",
+													"message": "必需"
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "name",
+											"FullName": "test2.Req.name",
+											"GoName": "Name",
+											"GoIdent": {
+												"GoName": "Req_Name",
+												"GoImportPath": "."
+											},
+											"Kind": 9,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": true,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"name": "name",
+												"desc": "名称字段",
+												"enum_as_int": true
+											},
+											"Rule": {
+												"enum": {
+													"val": [
+														"a,b,c"
+													],
+													"err": {
+														"status": 403,
+														"code": 1001,
+														"name": "required",
+														"message": "必需"
+													}
+												}
+											},
+											"Deprecated": false
+										},
+										{
+											"Name": "scores",
+											"FullName": "test2.Req.scores",
+											"GoName": "Scores",
+											"GoIdent": {
+												"GoName": "Req_Scores",
+												"GoImportPath": "."
+											},
+											"Kind": 11,
+											"IsMap": true,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": {
+												"FilePath": "demo.proto",
+												"Name": "ScoresEntry",
+												"FullName": "test2.Req.ScoresEntry",
+												"GoIdent": {
+													"GoName": "Req_ScoresEntry",
+													"GoImportPath": "."
+												},
+												"Fields": {
+													"Vec": [
+														{
+															"Name": "key",
+															"FullName": "test2.Req.ScoresEntry.key",
+															"GoName": "Key",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Key",
+																"GoImportPath": "."
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "value",
+															"FullName": "test2.Req.ScoresEntry.value",
+															"GoName": "Value",
+															"GoIdent": {
+																"GoName": "Req_ScoresEntry_Value",
+																"GoImportPath": "."
+															},
+															"Kind": 5,
+															"IsMap": false,
+															"IsRepeated": false,
+															"IsOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													]
+												},
+												"Schema": null,
+												"Plugin": null,
+												"Deprecated": false
+											},
+											"Prop": null,
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"OutputMessage": {
+								"FilePath": "demo.proto",
+								"Name": "Rsp",
+								"FullName": "test2.Rsp",
+								"GoIdent": {
+									"GoName": "Rsp",
+									"GoImportPath": "."
+								},
+								"Fields": {
+									"Vec": [
+										{
+											"Name": "weight",
+											"FullName": "test2.Rsp.weight",
+											"GoName": "Weight",
+											"GoIdent": {
+												"GoName": "Rsp_Weight",
+												"GoImportPath": "."
+											},
+											"Kind": 3,
+											"IsMap": false,
+											"IsRepeated": false,
+											"IsOptional": false,
+											"Enum": null,
+											"Message": null,
+											"Prop": {
+												"desc": "体重"
+											},
+											"Rule": null,
+											"Deprecated": false
+										}
+									]
+								},
+								"Schema": null,
+								"Plugin": null,
+								"Deprecated": false
+							},
+							"Http": {
+								"name": "Server",
+								"desc": "Streaming Server",
+								"delete": "/demo/Bidirectional/:id",
+								"patch": "/demo/Bidirectional/:id"
+							},
+							"Role": {
+								"code": 102,
+								"name": "102",
+								"desc": "需要102角色"
+							},
+							"Deprecated": false
+						}
+					]
+				},
+				"Tag": {
+					"name": "Demo测试",
+					"desc": "这是一个Demo测试"
+				},
+				"HttpOnly": true,
+				"Deprecated": false
+			}
+		]
+	}
+}
