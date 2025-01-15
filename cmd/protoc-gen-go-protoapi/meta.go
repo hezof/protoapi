@@ -75,7 +75,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.Message = extractMessage(file, s.Message)
 	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
 	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
-	v.Deprecated = s.Desc.Options().(*descriptorpb.FileOptions).GetDeprecated()
+	v.Deprecated = s.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated()
 	message.Fields.Add(v.FullName, v)
 	return v
 }
