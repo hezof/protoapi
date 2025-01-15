@@ -13,7 +13,38 @@
 					"GoName": "Enum",
 					"GoImportPath": "."
 				},
-				"Values": null,
+				"Values": [
+					{
+						"Name": "null",
+						"FullName": "test2.null",
+						"GoIdent": {
+							"GoName": "Enum_null",
+							"GoImportPath": "."
+						},
+						"Number": 0,
+						"Deprecated": true
+					},
+					{
+						"Name": "one",
+						"FullName": "test2.one",
+						"GoIdent": {
+							"GoName": "Enum_one",
+							"GoImportPath": "."
+						},
+						"Number": 1,
+						"Deprecated": false
+					},
+					{
+						"Name": "two",
+						"FullName": "test2.two",
+						"GoIdent": {
+							"GoName": "Enum_two",
+							"GoImportPath": "."
+						},
+						"Number": 2,
+						"Deprecated": false
+					}
+				],
 				"Deprecated": false
 			},
 			{
@@ -24,7 +55,38 @@
 					"GoName": "Sex",
 					"GoImportPath": "."
 				},
-				"Values": null,
+				"Values": [
+					{
+						"Name": "None",
+						"FullName": "test2.None",
+						"GoIdent": {
+							"GoName": "Sex_None",
+							"GoImportPath": "."
+						},
+						"Number": 0,
+						"Deprecated": false
+					},
+					{
+						"Name": "Male",
+						"FullName": "test2.Male",
+						"GoIdent": {
+							"GoName": "Sex_Male",
+							"GoImportPath": "."
+						},
+						"Number": 1,
+						"Deprecated": false
+					},
+					{
+						"Name": "Female",
+						"FullName": "test2.Female",
+						"GoIdent": {
+							"GoName": "Sex_Female",
+							"GoImportPath": "."
+						},
+						"Number": 2,
+						"Deprecated": false
+					}
+				],
 				"Deprecated": false
 			}
 		]

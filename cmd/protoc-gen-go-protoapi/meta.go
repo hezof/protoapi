@@ -52,11 +52,13 @@ func extractEnum(f *FileExt, s *protogen.Enum) *EnumExt {
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
+	if rv, ok := f.Enums.Add(v.FullName, v); !ok {
+		return rv
+	}
 	for _, s1 := range s.Values {
 		extractEnumValue(f, v, s1)
 	}
 	v.Deprecated = s.Desc.Options().(*descriptorpb.EnumOptions).GetDeprecated()
-	f.Enums.Add(v.FullName, v)
 	return v
 }
 
@@ -77,7 +79,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
 	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated()
-	message.Fields.Add(v.FullName, v)
+	message.Fields = append(message.Fields, v)
 	return v
 }
 
@@ -126,7 +128,7 @@ func extractMethod(file *FileExt, service *ServiceExt, s *protogen.Method) *Meth
 	v.Http = proto.GetExtension(s.Desc.Options(), E_Http).(*Http)
 	v.Role = proto.GetExtension(s.Desc.Options(), E_Role).(*Role)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated()
-	service.Methods.Add(v.FullName, v)
+	service.Methods = append(service.Methods, v)
 	return v
 }
 
@@ -145,7 +147,7 @@ func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 	v.Tag = proto.GetExtension(s.Desc.Options(), E_Tag).(*Tag)
 	v.HttpOnly = proto.GetExtension(s.Desc.Options(), E_HttpOnly).(bool)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.ServiceOptions).GetDeprecated()
-	file.Services.Add(v.FullName, v)
+	file.Services = append(file.Services, v)
 	return v
 }
 
@@ -170,7 +172,7 @@ type MessageExt struct {
 	Name       string
 	FullName   string
 	GoIdent    protogen.GoIdent
-	Fields     IdxVec[*FieldExt]
+	Fields     []*FieldExt
 	Schema     *Schema
 	Plugin     *Plugin
 	Deprecated bool
@@ -211,7 +213,7 @@ type ServiceExt struct {
 	Name       string
 	FullName   string
 	GoName     string
-	Methods    IdxVec[*MethodExt]
+	Methods    []*MethodExt
 	Tag        *Tag
 	HttpOnly   bool
 	Deprecated bool
@@ -222,10 +224,9 @@ type FileExt struct {
 	Package      string
 	GoPackage    string
 	GoImportPath string
-	/*展开成平面*/
-	Enums    IdxVec[*EnumExt]
-	Messages IdxVec[*MessageExt]
-	Services IdxVec[*ServiceExt]
+	Services     []*ServiceExt
+	Messages     IdxVec[*MessageExt] /*展开成平面*/
+	Enums        IdxVec[*EnumExt]    /*展开成平面*/
 }
 
 type IdxVec[V any] struct {
