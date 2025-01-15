@@ -139,7 +139,7 @@ func DecodeBytes(r *JsonDecoder, p *[]byte) {
 	}
 }
 
-func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumName[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, values map[string]int32) {
 	switch r.token {
 	case String:
 		s := r.readString()
@@ -167,7 +167,7 @@ func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, va
 	}
 }
 
-func DecodeEnum_EnumAsInt[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, values map[string]int32) {
 	switch r.token {
 	case Number:
 		v := int32(r.readInt64())

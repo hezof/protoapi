@@ -1014,7 +1014,7 @@ func EncodeBytesRepeated_ConvEmpty(w *JsonEncoder, name string, value [][]byte) 
 	enum类型: OptionalEnum_<enum_as_int>_<empty>
  *************************************/
 
-func EncodeEnumRepeated[E ~int32](w *JsonEncoder, value []E, names map[int32]string) {
+func EncodeEnumNameRepeated[E ~int32](w *JsonEncoder, value []E, names map[int32]string) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -1026,7 +1026,7 @@ func EncodeEnumRepeated[E ~int32](w *JsonEncoder, value []E, names map[int32]str
 		w.ensure(2)
 		w.buff = append(w.buff, leftBracket)
 		for _, v := range value {
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1037,14 +1037,14 @@ func EncodeEnumRepeated[E ~int32](w *JsonEncoder, value []E, names map[int32]str
 	}
 }
 
-func EncodeEnumRepeated_OmitEmpty[E ~int32](w *JsonEncoder, name string, value []E, names map[int32]string) {
+func EncodeEnumNameRepeated_OmitEmpty[E ~int32](w *JsonEncoder, name string, value []E, names map[int32]string) {
 	if len(value) != 0 {
 		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1056,7 +1056,7 @@ func EncodeEnumRepeated_OmitEmpty[E ~int32](w *JsonEncoder, name string, value [
 	}
 }
 
-func EncodeEnumRepeated_WithEmpty[E ~int32](w *JsonEncoder, name string, value []E, names map[int32]string) {
+func EncodeEnumNameRepeated_WithEmpty[E ~int32](w *JsonEncoder, name string, value []E, names map[int32]string) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -1074,7 +1074,7 @@ func EncodeEnumRepeated_WithEmpty[E ~int32](w *JsonEncoder, name string, value [
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1086,7 +1086,7 @@ func EncodeEnumRepeated_WithEmpty[E ~int32](w *JsonEncoder, name string, value [
 	}
 }
 
-func EncodeEnumRepeated_ConvEmpty[E ~int32](w *JsonEncoder, name string, value []E, names map[int32]string) {
+func EncodeEnumNameRepeated_ConvEmpty[E ~int32](w *JsonEncoder, name string, value []E, names map[int32]string) {
 	switch {
 	case value == nil || len(value) == 0:
 		w.ensure(6 + len(name))
@@ -1099,7 +1099,7 @@ func EncodeEnumRepeated_ConvEmpty[E ~int32](w *JsonEncoder, name string, value [
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1111,7 +1111,7 @@ func EncodeEnumRepeated_ConvEmpty[E ~int32](w *JsonEncoder, name string, value [
 	}
 }
 
-func EncodeEnumRepeated_EnumAsInt[Enum ~int32](w *JsonEncoder, value []Enum) {
+func EncodeEnumRepeated[Enum ~int32](w *JsonEncoder, value []Enum) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -1123,7 +1123,7 @@ func EncodeEnumRepeated_EnumAsInt[Enum ~int32](w *JsonEncoder, value []Enum) {
 		w.ensure(2)
 		w.buff = append(w.buff, leftBracket)
 		for _, v := range value {
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1134,14 +1134,14 @@ func EncodeEnumRepeated_EnumAsInt[Enum ~int32](w *JsonEncoder, value []Enum) {
 	}
 }
 
-func EncodeEnumRepeated_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value []Enum) {
+func EncodeEnumRepeated_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value []Enum) {
 	if len(value) != 0 {
 		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1153,7 +1153,7 @@ func EncodeEnumRepeated_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name st
 	}
 }
 
-func EncodeEnumRepeated_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value []Enum) {
+func EncodeEnumRepeated_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value []Enum) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -1171,7 +1171,7 @@ func EncodeEnumRepeated_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name st
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1183,7 +1183,7 @@ func EncodeEnumRepeated_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name st
 	}
 }
 
-func EncodeEnumRepeated_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value []Enum) {
+func EncodeEnumRepeated_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value []Enum) {
 	switch {
 	case value == nil || len(value) == 0:
 		w.ensure(6 + len(name))
@@ -1196,7 +1196,7 @@ func EncodeEnumRepeated_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name st
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {

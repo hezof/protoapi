@@ -603,24 +603,24 @@ func EncodeBytesOptional_ConvEmpty(w *JsonEncoder, name string, value []byte) {
 	enum类型: OptionalEnum_<enum_as_int>_<empty>
  *************************************/
 
-func EncodeEnumOptional[Enum ~int32](w *JsonEncoder, value *Enum, names map[int32]string) {
+func EncodeEnumNameOptional[Enum ~int32](w *JsonEncoder, value *Enum, names map[int32]string) {
 	if value != nil {
-		EncodeEnum(w, *value, names)
+		EncodeEnumName(w, *value, names)
 	} else {
 		w.ensure(4)
 		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
 	}
 }
 
-func EncodeEnumOptional_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum, names map[int32]string) {
+func EncodeEnumNameOptional_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum, names map[int32]string) {
 	if value != nil {
-		EncodeEnum_OmitEmpty(w, name, *value, names)
+		EncodeEnumName_OmitEmpty(w, name, *value, names)
 	}
 }
 
-func EncodeEnumOptional_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum, names map[int32]string) {
+func EncodeEnumNameOptional_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum, names map[int32]string) {
 	if value != nil {
-		EncodeEnum_WithEmpty(w, name, *value, names)
+		EncodeEnumName_WithEmpty(w, name, *value, names)
 	} else {
 		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -629,9 +629,9 @@ func EncodeEnumOptional_WithEmpty[Enum ~int32](w *JsonEncoder, name string, valu
 	}
 }
 
-func EncodeEnumOptional_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum, names map[int32]string) {
+func EncodeEnumNameOptional_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum, names map[int32]string) {
 	if value != nil {
-		EncodeEnum_ConvEmpty(w, name, *value, names)
+		EncodeEnumName_ConvEmpty(w, name, *value, names)
 	} else {
 		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -640,24 +640,24 @@ func EncodeEnumOptional_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, valu
 	}
 }
 
-func EncodeEnumOptional_EnumAsInt[Enum ~int32](w *JsonEncoder, value *Enum) {
+func EncodeEnumOptional[Enum ~int32](w *JsonEncoder, value *Enum) {
 	if value != nil {
-		EncodeEnum_EnumAsInt(w, *value)
+		EncodeEnum(w, *value)
 	} else {
 		w.ensure(4)
 		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
 	}
 }
 
-func EncodeEnumOptional_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum) {
+func EncodeEnumOptional_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum) {
 	if value != nil {
-		EncodeEnum_EnumAsInt_OmitEmpty(w, name, *value)
+		EncodeEnum_OmitEmpty(w, name, *value)
 	}
 }
 
-func EncodeEnumOptional_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum) {
+func EncodeEnumOptional_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum) {
 	if value != nil {
-		EncodeEnum_EnumAsInt_WithEmpty(w, name, *value)
+		EncodeEnum_WithEmpty(w, name, *value)
 	} else {
 		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -666,9 +666,9 @@ func EncodeEnumOptional_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name st
 	}
 }
 
-func EncodeEnumOptional_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum) {
+func EncodeEnumOptional_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value *Enum) {
 	if value != nil {
-		EncodeEnum_EnumAsInt_ConvEmpty(w, name, *value)
+		EncodeEnum_ConvEmpty(w, name, *value)
 	} else {
 		w.ensure(5 + len(name))
 		w.buff = append(w.buff, quotes)

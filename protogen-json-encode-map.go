@@ -1094,7 +1094,7 @@ func EncodeBytesMap_ConvEmpty(w *JsonEncoder, name string, value map[string][]by
 	enum类型: MapEnumMap_<enum_as_int>_<empty>
  *************************************/
 
-func EncodeEnumMap[Enum ~int32](w *JsonEncoder, value map[string]Enum, names map[int32]string) {
+func EncodeEnumNameMap[Enum ~int32](w *JsonEncoder, value map[string]Enum, names map[int32]string) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -1108,7 +1108,7 @@ func EncodeEnumMap[Enum ~int32](w *JsonEncoder, value map[string]Enum, names map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1119,7 +1119,7 @@ func EncodeEnumMap[Enum ~int32](w *JsonEncoder, value map[string]Enum, names map
 	}
 }
 
-func EncodeEnumMap_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum, names map[int32]string) {
+func EncodeEnumNameMap_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum, names map[int32]string) {
 	if len(value) != 0 {
 		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -1128,7 +1128,7 @@ func EncodeEnumMap_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1140,7 +1140,7 @@ func EncodeEnumMap_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value map
 	}
 }
 
-func EncodeEnumMap_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum, names map[int32]string) {
+func EncodeEnumNameMap_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum, names map[int32]string) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -1160,7 +1160,7 @@ func EncodeEnumMap_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1172,7 +1172,7 @@ func EncodeEnumMap_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value map
 	}
 }
 
-func EncodeEnumMap_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum, names map[int32]string) {
+func EncodeEnumNameMap_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum, names map[int32]string) {
 	switch {
 	case value == nil || len(value) == 0:
 		w.ensure(6 + len(name))
@@ -1187,7 +1187,7 @@ func EncodeEnumMap_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum(w, v, names)
+			EncodeEnumName(w, v, names)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1199,7 +1199,7 @@ func EncodeEnumMap_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value map
 	}
 }
 
-func EncodeEnumMap_EnumAsInt[Enum ~int32](w *JsonEncoder, value map[string]Enum) {
+func EncodeEnumMap[Enum ~int32](w *JsonEncoder, value map[string]Enum) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -1213,7 +1213,7 @@ func EncodeEnumMap_EnumAsInt[Enum ~int32](w *JsonEncoder, value map[string]Enum)
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1224,7 +1224,7 @@ func EncodeEnumMap_EnumAsInt[Enum ~int32](w *JsonEncoder, value map[string]Enum)
 	}
 }
 
-func EncodeEnumMap_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum) {
+func EncodeEnumMap_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum) {
 	if len(value) != 0 {
 		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -1233,7 +1233,7 @@ func EncodeEnumMap_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name string,
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1245,7 +1245,7 @@ func EncodeEnumMap_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name string,
 	}
 }
 
-func EncodeEnumMap_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum) {
+func EncodeEnumMap_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -1265,7 +1265,7 @@ func EncodeEnumMap_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name string,
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -1277,7 +1277,7 @@ func EncodeEnumMap_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name string,
 	}
 }
 
-func EncodeEnumMap_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum) {
+func EncodeEnumMap_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value map[string]Enum) {
 	switch {
 	case value == nil || len(value) == 0:
 		w.ensure(6 + len(name))
@@ -1292,7 +1292,7 @@ func EncodeEnumMap_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name string,
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeEnum_EnumAsInt(w, v)
+			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {

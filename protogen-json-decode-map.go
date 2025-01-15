@@ -477,7 +477,7 @@ func DecodeBytesMap(r *JsonDecoder, p *map[string][]byte) {
 	}
 }
 
-func DecodeEnumMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumNameMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[int32]string, values map[string]int32) {
 	switch r.token {
 	case ObjectBegin:
 		if *p == nil {
@@ -530,7 +530,7 @@ func DecodeEnumMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[in
 	}
 }
 
-func DecodeEnumMap_EnumAsInt[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[int32]string, values map[string]int32) {
 	switch r.token {
 	case ObjectBegin:
 		if *p == nil {
@@ -555,7 +555,7 @@ func DecodeEnumMap_EnumAsInt[Enum ~int32](r *JsonDecoder, p *map[string]Enum, na
 			r.next()
 
 			var v Enum
-			DecodeEnum_EnumAsInt(r, &v, names, values)
+			DecodeEnum(r, &v, names, values)
 			(*p)[k] = v
 
 			t = r.next()

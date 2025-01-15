@@ -473,19 +473,19 @@ func EncodeBytes_ConvEmpty(w *JsonEncoder, name string, value []byte) {
 	enum类型: EncodeEnum_<enum_as_int>_<empty>
  *************************************/
 
-func EncodeEnum[Enum ~int32](w *JsonEncoder, value Enum, names map[int32]string) {
+func EncodeEnumName[Enum ~int32](w *JsonEncoder, value Enum, names map[int32]string) {
 	w.ensure(10)
 	w.buff = append(w.buff, quotes)
 	w.buff = append(w.buff, names[int32(value)]...)
 	w.buff = append(w.buff, quotes)
 }
 
-func EncodeEnum_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, names map[int32]string) {
+func EncodeEnumName_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, names map[int32]string) {
 	// Enum比较特殊, 0对应的name非空
-	EncodeEnum_WithEmpty(w, name, value, names)
+	EncodeEnumName_WithEmpty(w, name, value, names)
 }
 
-func EncodeEnum_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, names map[int32]string) {
+func EncodeEnumName_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, names map[int32]string) {
 	w.ensure(10 + len(name))
 	w.buff = append(w.buff, quotes)
 	w.buff = append(w.buff, name...)
@@ -494,23 +494,23 @@ func EncodeEnum_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, 
 	w.buff = append(w.buff, quotes, comma)
 }
 
-func EncodeEnum_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, names map[int32]string) {
-	EncodeEnum_WithEmpty(w, name, value, names)
+func EncodeEnumName_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum, names map[int32]string) {
+	EncodeEnumName_WithEmpty(w, name, value, names)
 }
 
-func EncodeEnum_EnumAsInt[Enum ~int32](w *JsonEncoder, value Enum) {
+func EncodeEnum[Enum ~int32](w *JsonEncoder, value Enum) {
 	EncodeInt32(w, int32(value))
 }
 
-func EncodeEnum_EnumAsInt_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) {
+func EncodeEnum_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) {
 	EncodeInt32_OmitEmpty(w, name, int32(value))
 }
 
-func EncodeEnum_EnumAsInt_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) {
+func EncodeEnum_WithEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) {
 	EncodeInt32_WithEmpty(w, name, int32(value))
 }
 
-func EncodeEnum_EnumAsInt_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) {
+func EncodeEnum_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) {
 	EncodeInt32_ConvEmpty(w, name, int32(value))
 }
 
