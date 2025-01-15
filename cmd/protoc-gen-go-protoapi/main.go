@@ -47,11 +47,11 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) {
 	meta := extractFile(file)
 
 	// 2. 生成实现文件: *_pb.go
-	generateImplFile(gen, file, meta)
+	//generateImplFile(gen, file, meta)
 
 	// 3. 生成文档文件: *_json
 	//generateDocsFile(gen, file, meta)
 
 	// 4. 生成代码文件: *_code
-	//generateCodeFile(gen, file, meta)
+	generateCodeFile(gen, file, meta)
 }

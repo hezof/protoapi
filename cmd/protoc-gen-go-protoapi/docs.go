@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-// generateDocsFile 生成文档文件: *_json
+// generateDocsFile 生成文档文件: *_protoapi.yaml
 func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.yaml`, file.GoImportPath)
 
