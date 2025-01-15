@@ -5,7 +5,7 @@ option go_package = ".;test2";
 import "github.com/hezof/protoapi.proto";
 
 enum Enum {
-  null = 0; one = 1; two = 2;
+  null = 0[deprecated = true]; one = 1; two = 2;
 }
 
 service Demo {
@@ -15,10 +15,6 @@ service Demo {
   option (protoapi.tag) = {
     name: "Demo测试",
     desc: "这是一个Demo测试",
-    docs: {
-      url: "https://wwww.baidu.com",
-      desc: "百度测试链接",
-    },
   };
 
   rpc Simple(Req) returns (Rsp){
