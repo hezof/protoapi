@@ -199,14 +199,48 @@ func gpf(f *FieldExt) *OASv2Schema {
 		s.Format = `double`
 	case protoreflect.StringKind:
 		s.Type = `string`
+		if f.Prop != nil {
+			s.Format = f.Prop.Format
+		}
 	case protoreflect.BytesKind:
-		g.P(prefix, `"type": "string"`)
-		g.P(prefix, `"format": "binary"`)
+		s.Type = `string`
+		s.Format = `binary`
 	case protoreflect.MessageKind:
-		g.P(prefix, `"$ref": `, fmt.Sprintf(`"#/definitions/%s"`, field.Message.FullName))
+		s.Ref = fmt.Sprintf(`"#/definitions/%s"`, f.Message.FullName)
 	case protoreflect.GroupKind:
-		g.P(prefix, `"$ref": `, fmt.Sprintf(`"#/definitions/%s"`, field.Message.FullName))
+		s.Ref = fmt.Sprintf(`"#/definitions/%s"`, f.Message.FullName)
 	}
+	if f.Rule != nil {
+		if f.Rule.Minimum != nil {
+			s.Minimum = float64(f.Rule.Minimum.Val)
+			s.ExclusiveMinimum = f.Rule.Minimum.Exclusive
+		}
+		if f.Rule.Maximum != nil {
+			s.Maximum = float64(f.Rule.Maximum.Val)
+			s.ExclusiveMaximum = f.Rule.Maximum.Exclusive
+		}
+		if f.Rule.MinLength != nil {
+			s.MinLength = f.Rule.MinLength.Val
+		}
+		if f.Rule.MaxLength != nil {
+			s.MaxLength = f.Rule.MaxLength.Val
+		}
+		if f.Rule.MinItems != nil {
+			s.MinItems = f.Rule.MinItems.Val
+		}
+		if f.Rule.MaxItems != nil {
+			s.MaxItems = f.Rule.MaxItems.Val
+		}
+		if f.Rule.Enum != nil {
+			if s.Enum == nil {
+				for _, v := range strings.Split(f.Rule.Enum.Val, `,`)
+			}
+		}
+		if f.Rule.Pattern != nil {
+
+		}
+	}
+	s.Deprecated = f.Deprecated
 }
 
 /****************************************************************
@@ -275,15 +309,15 @@ type OASv2Schema struct {
 	AdditionalProperties *OASv2Schema   `yaml:"additionalProperties,omitempty"` // 当type为object时描述元素类型(map)
 	Properties           OASv2SchemaMap `yaml:"properties,omitempty"`           // 当type为object时描述属性
 	Required             []string       `yaml:"required,omitempty"`
-	Maximum              *float64       `yaml:"maximum,omitempty"`
+	Maximum              float64        `yaml:"maximum,omitempty"`
 	ExclusiveMaximum     bool           `yaml:"exclusiveMaximum,omitempty"`
-	Minimum              *float64       `yaml:"minimum,omitempty"`
+	Minimum              float64        `yaml:"minimum,omitempty"`
 	ExclusiveMinimum     bool           `yaml:"exclusiveMinimum,omitempty"`
-	MaxLength            *int64         `yaml:"maxLength,omitempty"`
-	MinLength            *int64         `yaml:"minLength,omitempty"`
+	MaxLength            int64          `yaml:"maxLength,omitempty"`
+	MinLength            int64          `yaml:"minLength,omitempty"`
 	Pattern              string         `yaml:"pattern,omitempty"`
-	MaxItems             *int64         `yaml:"maxItems,omitempty"`
-	MinItems             *int64         `yaml:"minItems,omitempty"`
+	MaxItems             int64          `yaml:"maxItems,omitempty"`
+	MinItems             int64          `yaml:"minItems,omitempty"`
 	Enum                 []interface{}  `yaml:"enum,omitempty"`
 	Deprecated           bool           `yaml:"deprecated,omitempty"`
 }

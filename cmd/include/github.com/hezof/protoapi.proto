@@ -79,7 +79,7 @@ message RangeExclusive {
 }
 
 message Enum {
-  repeated string val = 1;        // 数组列表
+  string val = 1;                 // 数组列表(逗号分隔)
   Error err = 2;                  // 错误定义
 }
 
