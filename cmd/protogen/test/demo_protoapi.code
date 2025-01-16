@@ -3,7 +3,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Demo test2.Demo. 这是一个Demo测试
+// DemoImplement test2.Demo. 这是一个Demo测试
 type DemoImplement struct {}
 
 var _ test2.DemoServer = (*DemoImplement)(nil)
@@ -35,7 +35,7 @@ func (ps *DemoImplement) Bidirectional(svr grpc.BidiStreamingServer[test2.Req,te
     return
 }
 
-// CopyDemo test2.CopyDemo. 这是一个Demo测试
+// CopyDemoImplement test2.CopyDemo. 这是一个Demo测试
 type CopyDemoImplement struct {}
 
 var _ test2.CopyDemoServer = (*CopyDemoImplement)(nil)

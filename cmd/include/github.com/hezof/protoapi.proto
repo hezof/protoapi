@@ -59,7 +59,6 @@ message Role {
 message Plugin {
   string ref = 1;                  // 插件引用
   Error err = 2;                   // 插件错误
-  repeated string ext = 3;         // 插件扩展
 }
 
 message Range {
