@@ -748,13 +748,13 @@ type OASv2Operation struct {
 }
 
 type OASv2Parameter struct {
-	Name        string       `yaml:"name,omitempty"`
-	In          string       `yaml:"in,omitempty"`
-	Schema      *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
-	OASv2Schema `yaml:",inline"`                       // if in is not "body"
-	Style       string       `yaml:"style,omitempty"`
-	Explode     bool         `yaml:"explode,omitempty"`
-	Required    bool         `yaml:"required,omitempty"`
+	Name        string           `yaml:"name,omitempty"`
+	In          string           `yaml:"in,omitempty"`
+	Schema      *OASv2Schema     `yaml:"schema,omitempty"` // If in is "body":
+	OASv2Schema `yaml:",inline"` // if in is not "body"
+	Style       string           `yaml:"style,omitempty"`
+	Explode     bool             `yaml:"explode,omitempty"`
+	Required    bool             `yaml:"required,omitempty"`
 }
 
 type OASv2Response struct {

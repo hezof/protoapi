@@ -31,7 +31,7 @@ service Demo {
     };
   }
 
-  rpc Client(stream Req) returns (Rsp){
+  rpc Client3(stream Req) returns (Rsp){
     option (protoapi.http) = {
       name: "Client",
       desc: "Streaming Client",
@@ -45,7 +45,7 @@ service Demo {
       desc: "需要102角色",
     };
   }
-  rpc Server(Req) returns (stream Rsp){
+  rpc Server3(Req) returns (stream Rsp){
     option (protoapi.http) = {
       name: "Server",
       desc: "Streaming Server",

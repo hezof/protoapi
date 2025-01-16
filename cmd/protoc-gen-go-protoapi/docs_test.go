@@ -22,6 +22,8 @@ func (m Map) MarshalYAML() (interface{}, error) {
 
 var _ yaml.Marshaler = Map{}
 
+// TestDocs 测试文档. 这是一个测试文档的例子
+// GET xxx/babe
 func TestDocs(t *testing.T) {
 	m := make(Map)
 	m["a"] = 1
