@@ -21,7 +21,6 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 		}
 	}
 
-	g.P()
 	g.P(`import (`)
 	g.P(`	"context"`)
 	if streaming {
@@ -74,7 +73,6 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 				if pm.Http.Websocket != "" {
 					g.P(`// WEBSOCKET `, pm.Http.Websocket) // WEBSOCKET会覆盖SSE
 				}
-				g.P(`// `, pm.Http.Name)
 			}
 			// streaming泛型接口要求grpc v1.64.0+ 及protoc-gen-go-grpc v1.4.0+
 			switch {
@@ -87,7 +85,7 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 				g.P(`    return`)
 				g.P(`}`)
 			case !pm.IsStreamingClient && pm.IsStreamingServer:
-				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(ctx context.Context, req *`, qualifiedGoIdent(pm.InputMessage.GoIdent), `grpc.ServerStreamingServer[`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
+				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(ctx context.Context, req *`, qualifiedGoIdent(pm.InputMessage.GoIdent), `, svr grpc.ServerStreamingServer[`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
 				g.P(`    return`)
 				g.P(`}`)
 			case pm.IsStreamingClient && pm.IsStreamingServer:
@@ -116,19 +114,9 @@ func genQualifiedGoIdentFunc(file *protogen.File) func(ident protogen.GoIdent) s
 
 func serviceTitle(ps *ServiceExt) string {
 	if ps.Tag == nil {
-		return fmt.Sprintf(`// %v %v`, ps.GoName, ps.FullName)
+		return fmt.Sprintf(`// %v %v.`, ps.GoName, ps.FullName)
 	} else {
-		name := NvlS(ps.Tag.Name, ps.FullName)
-		last := len(name) - 1
-		if last >= 0 && name[last] == '.' {
-			name = name[:last]
-		}
-		desc := ps.Tag.Desc
-		last = len(desc) - 1
-		if last >= 0 && desc[last] == '.' {
-			desc = desc[:last]
-		}
-		return fmt.Sprintf(`// %v %v, %v.`, ps.GoName, name, desc)
+		return fmt.Sprintf(`// %v %v. %v`, ps.GoName, ps.FullName, ps.Tag.Desc)
 	}
 }
 
@@ -136,17 +124,7 @@ func methodTitle(pm *MethodExt) string {
 	if pm.Http == nil {
 		return fmt.Sprintf(`// %v %v.`, pm.GoName, pm.FullName)
 	} else {
-		name := NvlS(pm.Http.Name, pm.FullName)
-		last := len(name) - 1
-		if last >= 0 && name[last] == '.' {
-			name = name[:last]
-		}
-		desc := pm.Http.Desc
-		last = len(desc) - 1
-		if last >= 0 && desc[last] == '.' {
-			desc = desc[:last]
-		}
-		return fmt.Sprintf(`// %v %v, %v.`, pm.GoName, name, desc)
+		return fmt.Sprintf(`// %v %v. %v`, pm.GoName, pm.FullName, pm.Http.Desc)
 	}
 }
 
