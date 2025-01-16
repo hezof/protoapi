@@ -147,3 +147,14 @@ extend google.protobuf.FieldOptions {
   Rule rule = 50001;             // 字段规则
 }
 
+message Meta {
+  string Package = 1;            // 元数据package
+  string Service = 2;            // 元数据service
+  string Method = 3;             // 元数据method
+  bool ClientStreaming = 4;      // 元数据client streaming
+  bool ServerStreaming = 5;      // 元数据server streaming
+  Http Http = 6;                 // 元数据Http
+  Role Role = 7;                 // 元数据Role
+  Plugin InputPlugin = 8;        // 元数据message plugin
+  repeated Rule InputRules = 9;  // 元数据field rules
+}

@@ -27,10 +27,12 @@ type MethodSetting struct {
 	Package         string          // 包名
 	Service         string          // 服务名
 	Method          string          // 方法名
-	StreamingClient bool            // streaming client
-	StreamingServer bool            // streaming server
-	Http                            // protoapi.http元数据
-	Role                            // protoapi.role元数据
+	ClientStreaming bool            // client streaming
+	ServerStreaming bool            // server streaming
+	Plugin          *Plugin         // protoapi.plugin
+	Rules           []*Rule         // protoapi.rule plugin
+	Http            *Http           // protoapi.http元数据
+	Role            *Role           // protoapi.role元数据
 	Call                            // 方法函数
 }
 
@@ -59,10 +61,10 @@ type MessageValidator interface {
 }
 
 // MessageValidatePlugin message校验插件
-type MessageValidatePlugin func(ctx context.Context, req any, err *Error) error
+type MessageValidatePlugin func(ctx context.Context, req any) error
 
 // FieldValidatePlugin field校验插件
-type FieldValidatePlugin func(ctx context.Context, key string, val any, err *Error) error
+type FieldValidatePlugin func(ctx context.Context, idx int, key string, val any) error
 
 func AssertMessageValidatePlugin(el string) MessageValidatePlugin {
 	name, args := CompilePluginExpression(el)

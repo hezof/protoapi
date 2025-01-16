@@ -65,7 +65,9 @@ func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 		}
 	}
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(ctx context.Context) error {")
+	if m.Plugin != nil {
 
+	}
 	g.P("	return nil")
 	g.P("}")
 }
