@@ -114,9 +114,9 @@ func genQualifiedGoIdentFunc(file *protogen.File) func(ident protogen.GoIdent) s
 
 func serviceTitle(ps *ServiceExt) string {
 	if ps.Tag == nil {
-		return fmt.Sprintf(`// %v %v.`, ps.GoName, ps.FullName)
+		return fmt.Sprintf(`// %vImplement %v.`, ps.GoName, ps.FullName)
 	} else {
-		return fmt.Sprintf(`// %v %v. %v`, ps.GoName, ps.FullName, ps.Tag.Desc)
+		return fmt.Sprintf(`// %vImplement %v. %v`, ps.GoName, ps.FullName, ps.Tag.Desc)
 	}
 }
 
