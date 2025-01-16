@@ -83,7 +83,7 @@ message Req {
       name: "id",
       desc: "主键字段",
       escape_html: true,
-      in: body,
+      in: path,
       style: simple,
     },
     (protoapi.rule) = {
@@ -113,7 +113,26 @@ message Req {
         }
       }
     }];
-  map<string, int32> scores = 3;
+  optional uint64 clazz = 3 [
+    (protoapi.prop) = {
+      name: "class",
+      desc: "班级ID",
+      escape_html: true,
+      in: body,
+      style: simple,
+    },
+    (protoapi.rule) = {
+      enum: {
+        val: '1,2,3',
+        err: {
+          status: 403,
+          code: 1001,
+          name: "required",
+          message: "必需",
+        }
+      }
+    }];
+  map<string, int32> scores = 4;
 }
 
 enum Sex{

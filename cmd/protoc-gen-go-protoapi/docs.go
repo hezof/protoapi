@@ -18,7 +18,7 @@ func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	doc := &OASv2Doc{
 		Swagger:     "2.0",
 		Paths:       make(OASv2PathMap),
-		Definitions: make(OASv2SchemaMap),
+		Definitions: make(DefinitionMap),
 	}
 
 	messages := IdxVec[*MessageExt]{}
@@ -115,8 +115,15 @@ func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	}
 }
 
-func definition(m *MessageExt) *OASv2Schema {
-	s := &OASv2Schema{Properties: make(OASv2SchemaMap)}
+func fieldDescription(f *FieldExt) string {
+	if f.Prop != nil && f.Prop.Desc != `` {
+		return f.Prop.Desc
+	}
+	return f.FullName
+}
+
+func definition(m *MessageExt) *Definition {
+	s := &Definition{OASv2Schema: OASv2Schema{Properties: make(OASv2SchemaMap)}}
 	s.Description = NvlS(m.Desc, m.FullName)
 	s.Type = `object`
 	for _, f := range m.Fields {
@@ -128,16 +135,18 @@ func definition(m *MessageExt) *OASv2Schema {
 		switch {
 		case f.IsRepeated:
 			p = &OASv2Schema{
-				Type:  `array`,
-				Items: field(f),
+				Type:        `array`,
+				Description: fieldDescription(f),
+				Items:       field(f, true),
 			}
 		case f.IsMap:
 			p = &OASv2Schema{
 				Type:                 `object`,
-				AdditionalProperties: field(f.Message.Fields[1]),
+				Description:          fieldDescription(f),
+				AdditionalProperties: field(f.Message.Fields[1], true),
 			}
 		default:
-			p = field(f)
+			p = field(f, false)
 		}
 		// 允许覆盖字段名称
 		s.Properties.Add(fname(f), p)
@@ -225,57 +234,109 @@ func responses(h *Http, m *MessageExt) OASv2ResponseMap {
 }
 
 func parameters(h *Http, m *MessageExt) []*OASv2Parameter {
+
+	total := len(m.Fields)
+	other := 0 // 除了body外的其他位置
+	for _, f := range m.Fields {
+		// 默认都是在body
+		if f.Prop != nil && f.Prop.In != Prop_body {
+			other++
+		}
+	}
+
 	ss := make([]*OASv2Parameter, 0, len(m.Fields))
-	{
+	if other > 0 {
+		call := func(f *FieldExt) {
+			// 默认都是在body
+			if f.Prop != nil && f.Prop.In != Prop_body {
+				p := new(OASv2Parameter)
+				p.Name = fname(f)
+				switch f.Prop.In {
+				case Prop_path:
+					p.In = `path`
+				case Prop_query:
+					p.In = `query`
+				case Prop_header:
+					p.In = `header`
+				case Prop_cookie:
+					p.In = `cookie`
+				}
+				switch {
+				case f.IsRepeated:
+					p.OASv2Schema = OASv2Schema{
+						Type:        `array`,
+						Description: fieldDescription(f),
+						Items:       field(f, true),
+					}
+				case f.IsMap:
+					p.OASv2Schema = OASv2Schema{
+						Type:                 `object`,
+						Description:          fieldDescription(f),
+						AdditionalProperties: field(f.Message.Fields[1], true),
+					}
+				default:
+					p.OASv2Schema = *field(f, false)
+				}
+				switch f.Prop.Style {
+				case Prop_simple:
+					p.Style = `simple`
+				case Prop_form:
+					p.Style = `form`
+				case Prop_json:
+					p.Style = `json`
+				}
+				p.Explode = true // 默认是true
+				p.Required = f.Rule != nil && f.Rule.Required != nil
+				if f.Prop.In == Prop_path {
+					p.Required = true // path参数必需的
+				}
+				p.Deprecated = f.Deprecated
+				ss = append(ss, p)
+			}
+		}
+		// path
+		for _, f := range m.Fields {
+			if f.Prop != nil && f.Prop.In == Prop_path {
+				call(f)
+			}
+		}
+		// query
+		for _, f := range m.Fields {
+			if f.Prop != nil && f.Prop.In == Prop_query {
+				call(f)
+			}
+		}
+		// header
+		for _, f := range m.Fields {
+			if f.Prop != nil && f.Prop.In == Prop_header {
+				call(f)
+			}
+		}
+		// cookie
+		for _, f := range m.Fields {
+			if f.Prop != nil && f.Prop.In == Prop_cookie {
+				call(f)
+			}
+		}
+	}
+	if other < total {
 		// body处理
 		p := new(OASv2Parameter)
 		p.Name = `body`
 		p.In = `body`
 		p.Required = true // body参数必须的
-		p.Schema = &OASv2Schema{Properties: make(OASv2SchemaMap)}
-		for _, f := range m.Fields {
-			// 默认都是在body
-			if f.Prop == nil || f.Prop.In == Prop_body {
-				p.Schema.Properties.Add(fname(f), field(f))
+		if other == 0 {
+			p.Schema = &OASv2Schema{Ref: ref(m.FullName)}
+		} else {
+			p.Schema = &OASv2Schema{Properties: make(OASv2SchemaMap)}
+			for _, f := range m.Fields {
+				// 默认都是在body
+				if f.Prop == nil || f.Prop.In == Prop_body {
+					p.Schema.Properties.Add(fname(f), field(f, false))
+				}
 			}
 		}
-		// 包含body参数才添加
-		if len(p.Schema.Properties) > 0 {
-			ss = append(ss, p)
-		}
-	}
-	for _, f := range m.Fields {
-		// 默认都是在body
-		if f.Prop != nil && f.Prop.In != Prop_body {
-			p := new(OASv2Parameter)
-			p.Name = fname(f)
-			switch f.Prop.In {
-			case Prop_path:
-				p.In = `path`
-			case Prop_query:
-				p.In = `query`
-			case Prop_header:
-				p.In = `header`
-			case Prop_cookie:
-				p.In = `cookie`
-			}
-			p.OASv2Schema = field(f)
-			switch f.Prop.Style {
-			case Prop_simple:
-				p.Style = `simple`
-			case Prop_form:
-				p.Style = `form`
-			case Prop_json:
-				p.Style = `json`
-			}
-			p.Explode = true // 默认是true
-			p.Required = f.Rule != nil && f.Rule.Required != nil
-			if f.Prop.In == Prop_path {
-				p.Required = true // path参数必需的
-			}
-			p.Deprecated = f.Deprecated
-			ss = append(ss, p)
-		}
+		ss = append(ss, p)
 	}
 	return ss
 }
@@ -287,11 +348,10 @@ func fname(f *FieldExt) string {
 	return f.Name
 }
 
-func field(f *FieldExt) *OASv2Schema {
+func field(f *FieldExt, sub bool) *OASv2Schema {
 	s := new(OASv2Schema)
-	s.Description = f.FullName
-	if f.Prop != nil && f.Prop.Desc != `` {
-		s.Description = f.Prop.Desc
+	if !sub {
+		s.Description = fieldDescription(f)
 	}
 	switch f.Kind {
 	case protoreflect.BoolKind:
@@ -354,9 +414,20 @@ func field(f *FieldExt) *OASv2Schema {
 		s.Type = `string`
 		s.Format = `binary`
 	case protoreflect.MessageKind:
-		s.Ref = ref(f.Message.FullName)
+		// 需要区分map
+		if f.IsMap {
+			s.Type = `object`
+			s.AdditionalProperties = field(f.Message.Fields[1], true)
+		} else {
+			s.Ref = ref(f.Message.FullName)
+		}
 	case protoreflect.GroupKind:
-		s.Ref = ref(f.Message.FullName)
+		if f.IsMap {
+			s.Type = `object`
+			s.AdditionalProperties = field(f.Message.Fields[1], true)
+		} else {
+			s.Ref = ref(f.Message.FullName)
+		}
 	}
 	if f.Rule != nil {
 		if f.Rule.Minimum != nil {
@@ -382,12 +453,7 @@ func field(f *FieldExt) *OASv2Schema {
 		if f.Rule.Enum != nil {
 			// 避免覆盖enum的枚举
 			if s.Enum == nil {
-				for _, v := range strings.Split(f.Rule.Enum.Val, `,`) {
-					v = strings.TrimSpace(v)
-					if v != `` {
-						s.Enum = append(s.Enum, v)
-					}
-				}
+				s.Enum = enums(f.Kind, f.Rule.Enum.Val)
 			}
 		}
 		if f.Rule.Pattern != nil {
@@ -398,8 +464,60 @@ func field(f *FieldExt) *OASv2Schema {
 	return s
 }
 
+func enums(k protoreflect.Kind, s string) []interface{} {
+	var rt []interface{}
+	for _, v := range strings.Split(s, `,`) {
+		v = strings.TrimSpace(v)
+		if v != `` {
+			switch k {
+			case protoreflect.BoolKind:
+				rt = append(rt, v == `true`)
+			case protoreflect.Int32Kind:
+				vi, _ := strconv.ParseInt(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Sint32Kind:
+				vi, _ := strconv.ParseInt(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Uint32Kind:
+				vi, _ := strconv.ParseUint(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Int64Kind:
+				vi, _ := strconv.ParseInt(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Sint64Kind:
+				vi, _ := strconv.ParseInt(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Uint64Kind:
+				vi, _ := strconv.ParseUint(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Sfixed32Kind:
+				vi, _ := strconv.ParseInt(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Fixed32Kind:
+				vi, _ := strconv.ParseUint(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.FloatKind:
+				vi, _ := strconv.ParseFloat(v, 32)
+				rt = append(rt, vi)
+			case protoreflect.Sfixed64Kind:
+				vi, _ := strconv.ParseInt(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.Fixed64Kind:
+				vi, _ := strconv.ParseUint(v, 10, 64)
+				rt = append(rt, vi)
+			case protoreflect.DoubleKind:
+				vi, _ := strconv.ParseFloat(v, 64)
+				rt = append(rt, vi)
+			case protoreflect.StringKind:
+				rt = append(rt, v)
+			}
+		}
+	}
+	return rt
+}
+
 func ref(fullName string) string {
-	return fmt.Sprintf(`"#/definitions/%s"`, fullName)
+	return fmt.Sprintf(`#/definitions/%s`, fullName)
 }
 
 /****************************************************************
@@ -563,17 +681,46 @@ func (m OASv2ResponseMap) MarshalYAML() (interface{}, error) {
 
 var _ yaml.Marshaler = OASv2ResponseMap{}
 
+type DefinitionMap map[string]*Definition
+
+var DefinitionOrder int
+
+func (m DefinitionMap) Add(k string, v *Definition) {
+	DefinitionOrder++
+	v.XOrder = DefinitionOrder
+
+	m[k] = v
+}
+
+func (m DefinitionMap) MarshalYAML() (interface{}, error) {
+	var items []yaml.MapItem
+	for k, v := range m {
+		items = append(items, yaml.MapItem{Key: k, Value: v})
+	}
+	sort.SliceStable(items, func(i, j int) bool {
+		vi := items[i].Value.(*Definition)
+		vj := items[j].Value.(*Definition)
+		if vi.XOrder < vj.XOrder {
+			return true
+		}
+		return false
+	})
+	return items, nil
+}
+
+var _ yaml.Marshaler = DefinitionMap{}
+
 type OASv2Doc struct {
-	Swagger     string         `yaml:"swagger,omitempty"`
-	Tags        []*OASv2Tag    `yaml:"tags,omitempty"`
-	Paths       OASv2PathMap   `yaml:"paths,omitempty"`
-	Definitions OASv2SchemaMap `yaml:"definitions,omitempty"`
+	Swagger     string        `yaml:"swagger,omitempty"`
+	Tags        []*OASv2Tag   `yaml:"tags,omitempty"`
+	Paths       OASv2PathMap  `yaml:"paths,omitempty"`
+	Definitions DefinitionMap `yaml:"definitions,omitempty"`
 }
 
 type OASv2Tag struct {
 	Deprecated  bool   `yaml:"deprecated,omitempty"`
 	Name        string `yaml:"name,omitempty"`
-	Description string `yaml:"methodDescription,omitempty"`
+	Description string `yaml:"description,omitempty"`
 }
 
 type OASv2Path struct {
@@ -593,7 +740,7 @@ type OASv2Operation struct {
 	XOrder      int               `yaml:"x-order,omitempty"`
 	OperationId string            `yaml:"operationId,omitempty"`
 	Summary     string            `yaml:"summary,omitempty"`
-	Description string            `yaml:"methodDescription,omitempty"`
+	Description string            `yaml:"description,omitempty"`
 	Tags        []string          `yaml:"tags,omitempty"`
 	Parameters  []*OASv2Parameter `yaml:"parameters,omitempty"`
 	Responses   OASv2ResponseMap  `yaml:"responses,omitempty"`
@@ -601,19 +748,18 @@ type OASv2Operation struct {
 }
 
 type OASv2Parameter struct {
-	Name         string       `yaml:"name,omitempty"`
-	In           string       `yaml:"in,omitempty"`
-	Schema       *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
-	*OASv2Schema `yaml:",inline"`                       // if in is not "body"
-	Style        string       `yaml:"style,omitempty"`
-	Explode      bool         `yaml:"explode,omitempty"`
-	Required     bool         `yaml:"required,omitempty"`
-	Deprecated   bool         `yaml:"deprecated,omitempty"`
+	Name        string       `yaml:"name,omitempty"`
+	In          string       `yaml:"in,omitempty"`
+	Schema      *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
+	OASv2Schema `yaml:",inline"`                       // if in is not "body"
+	Style       string       `yaml:"style,omitempty"`
+	Explode     bool         `yaml:"explode,omitempty"`
+	Required    bool         `yaml:"required,omitempty"`
 }
 
 type OASv2Response struct {
 	XOrder      int          `yaml:"x-order,omitempty"`
-	Description string       `yaml:"methodDescription,omitempty"`
+	Description string       `yaml:"description,omitempty"`
 	Schema      *OASv2Schema `yaml:"schema,omitempty"`
 }
 
@@ -625,7 +771,6 @@ type OASv2Schema struct {
 	Items                *OASv2Schema   `yaml:"items,omitempty"`                // 当type为array时描述元素
 	AdditionalProperties *OASv2Schema   `yaml:"additionalProperties,omitempty"` // 当type为object时描述元素类型(map)
 	Properties           OASv2SchemaMap `yaml:"properties,omitempty"`           // 当type为object时描述属性
-	Required             []string       `yaml:"required,omitempty"`
 	Maximum              float64        `yaml:"maximum,omitempty"`
 	ExclusiveMaximum     bool           `yaml:"exclusiveMaximum,omitempty"`
 	Minimum              float64        `yaml:"minimum,omitempty"`
@@ -636,6 +781,11 @@ type OASv2Schema struct {
 	MaxItems             int64          `yaml:"maxItems,omitempty"`
 	MinItems             int64          `yaml:"minItems,omitempty"`
 	Enum                 []interface{}  `yaml:"enum,omitempty"`
-	Description          string         `yaml:"methodDescription,omitempty"`
+	Description          string         `yaml:"description,omitempty"`
 	Deprecated           bool           `yaml:"deprecated,omitempty"`
+}
+
+type Definition struct {
+	OASv2Schema `yaml:",inline"`
+	Required    []string `yaml:"required,omitempty"`
 }
