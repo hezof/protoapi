@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"time"
 )
 
@@ -63,13 +64,58 @@ func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 	for i, f := range m.Fields {
 		if r := f.Rule; r != nil {
 			if r.Required != nil {
-				g.P("if err:=set.MessagePlugin(set, ctx, req); err != nil {")
+				g.P("if err:=protoapi.ValidateRequired(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].Required); err != nil {")
 				g.P("return err")
 				g.P("}")
 			}
-
+			if r.Minimum != nil {
+				g.P("if err:=protoapi.ValidateMinimum(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].Minimum); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+			if r.Maximum != nil {
+				g.P("if err:=protoapi.ValidateMaximum(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].Maximum); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+			if r.MinLength != nil {
+				g.P("if err:=protoapi.ValidateMinLength(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].MinLength); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+			if r.MaxLength != nil {
+				g.P("if err:=protoapi.ValidateMaxLength(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].MaxLength); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+			if r.MinItems != nil {
+				g.P("if err:=protoapi.ValidateMinItems(ctx, `", f.Name, "`, x.", f.GoName, ",set.Meta.FieldRules[", i, "].MinItems); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+			if r.MaxItems != nil {
+				g.P("if err:=protoapi.ValidateMaxItems(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].MaxItems); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+			if r.Enum != nil {
+				if f.Kind == protoreflect.StringKind {
+					g.P("if err:=protoapi.ValidateEnumStr(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].Enum); err != nil {")
+					g.P("return err")
+					g.P("}")
+				} else {
+					g.P("if err:=protoapi.ValidateEnumInt(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].Enum); err != nil {")
+					g.P("return err")
+					g.P("}")
+				}
+			}
+			if r.Pattern != nil {
+				g.P("if err:=protoapi.ValidatePattern(ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.InputRules[", i, "].Pattern, set.Meta.FieldPatterns[", i, "]); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
 			if r.Plugin != nil {
-				g.P("if err:=set.FieldPlugins[", i, "](set, ctx, req); err != nil {")
+				g.P("if err:=set.FieldPlugins[", i, "](`", f.Name, "`, x.", f.GoName, ", set.Meta.InputRules[", i, "].Plugin); err != nil {")
 				g.P("return err")
 				g.P("}")
 			}
