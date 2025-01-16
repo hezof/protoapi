@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -413,10 +412,12 @@ var OASv2PathOrder int
 
 func (m OASv2PathMap) Add(method, path string, op OASv2Operation, sse bool) error {
 
-	method = strings.ToUpper(method)
+	// 忽略path为空的方法
 	if path == `` {
-		return errors.New(method + " path is empty")
+		return nil
 	}
+
+	method = strings.ToUpper(method)
 	// WEBSOCKET会自动忽略sse
 	if sse && method != `WEBSOCKET` {
 		op.Description = fmt.Sprintf(`%v %v [SSE]<br/><br/>%v`, method, path, op.Description)
