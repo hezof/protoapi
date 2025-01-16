@@ -52,43 +52,43 @@ func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 				p.Deprecated = m.Deprecated
 
 				if err := doc.Paths.Add(http.MethodGet, m.Http.Get, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodPut, m.Http.Put, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodPost, m.Http.Post, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodDelete, m.Http.Delete, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodOptions, m.Http.Options, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodHead, m.Http.Head, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodPatch, m.Http.Patch, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodTrace, m.Http.Trace, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(http.MethodConnect, m.Http.Connect, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 				if err := doc.Paths.Add(`websocket`, m.Http.Websocket, *p, sse); err != nil {
-					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
+					gen.Error(fmt.Errorf(`%v %v`, m.FullName, err))
 					return
 				}
 
@@ -413,10 +413,10 @@ var OASv2PathOrder int
 
 func (m OASv2PathMap) Add(method, path string, op OASv2Operation, sse bool) error {
 
-	if path == `` {
-		return errors.New("path is empty")
-	}
 	method = strings.ToUpper(method)
+	if path == `` {
+		return errors.New(method + " path is empty")
+	}
 	// WEBSOCKET会自动忽略sse
 	if sse && method != `WEBSOCKET` {
 		op.Description = fmt.Sprintf(`%v %v [SSE]<br/><br/>%v`, method, path, op.Description)
