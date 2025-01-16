@@ -24,7 +24,7 @@ type RequestPlugin func(all map[string]map[string]*RequestSetting)
 /*
 MessageValidatePluginProvider message校验插件提供者
 */
-type MessageValidatePluginProvider func(args []string) MessageValidatePlugin
+type MessageValidatePluginProvider func(args []string) MessagePlugin
 
 var globalMessageValidatePluginProvider = make(map[string]MessageValidatePluginProvider)
 
@@ -35,7 +35,7 @@ func SetMessageValidatePluginProvider(k string, p MessageValidatePluginProvider)
 /*
 FieldValidatePluginProvider field校验插件提供者
 */
-type FieldValidatePluginProvider func(args []string) FieldValidatePlugin
+type FieldValidatePluginProvider func(args []string) FieldPlugin
 
 var globalFieldValidatePluginProvider = make(map[string]FieldValidatePluginProvider)
 

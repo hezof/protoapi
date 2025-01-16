@@ -57,24 +57,46 @@ message Role {
 }
 
 message Plugin {
-  string ref = 1;                  // 插件引用
+  string val = 1;                  // 插件引用
   Error err = 2;                   // 插件错误
 }
 
-message Range {
+message MinLength {
   int64 val = 1;                  // 字串值
   Error err = 2;                  // 错误定义
 }
 
-message RangeExclusive {
+message MaxLength {
+  int64 val = 1;                  // 字串值
+  Error err = 2;                  // 错误定义
+}
+
+message MinItems {
+  int64 val = 1;                  // 字串值
+  Error err = 2;                  // 错误定义
+}
+
+message MaxItems {
+  int64 val = 1;                  // 字串值
+  Error err = 2;                  // 错误定义
+}
+
+message Minimum {
+  int64 val = 1;                  // 字串值
+  Error err = 2;                  // 错误定义
+  bool exclusive = 3;             // 排除边界
+}
+
+message Maximum {
   int64 val = 1;                  // 字串值
   Error err = 2;                  // 错误定义
   bool exclusive = 3;             // 排除边界
 }
 
 message Enum {
-  string val = 1;                 // 数组列表(逗号分隔)
-  Error err = 2;                  // 错误定义
+  repeated string str = 1;        // 字串枚举值
+  repeated int32 int = 2;         // 整数枚举值
+  Error err = 3;                  // 错误定义
 }
 
 message Pattern {
@@ -116,15 +138,27 @@ message Prop {
 
 message Rule {
   Error required = 1;               // 是否必需. 必须声明optional!
-  RangeExclusive minimum = 2;       // 最小数值
-  RangeExclusive maximum = 3;       // 最大数值
-  Range min_length = 4;             // 最小长度
-  Range max_length = 5;             // 最大长度
-  Range min_items = 6;              // 最小数量
-  Range max_items = 7;              // 最大数量
+  Maximum minimum = 2;       // 最小数值
+  Maximum maximum = 3;       // 最大数值
+  MinLength min_length = 4;             // 最小长度
+  MaxLength max_length = 5;             // 最大长度
+  MinItems min_items = 6;              // 最小数量
+  MaxItems max_items = 7;              // 最大数量
   Enum enum = 8;                    // 枚举列表
   Pattern pattern = 9;              // 正则匹配
   Plugin plugin = 10;               // 插件校验
+}
+
+message Meta {
+  string Package = 1;            // 元数据package
+  string Service = 2;            // 元数据service
+  string Method = 3;             // 元数据method
+  bool ClientStreaming = 4;      // 元数据client streaming
+  bool ServerStreaming = 5;      // 元数据server streaming
+  Http Http = 6;                 // 元数据Http
+  Role Role = 7;                 // 元数据Role
+  Plugin InputPlugin = 8;        // 元数据message plugin
+  repeated Rule InputRules = 9;  // 元数据field rules
 }
 
 extend  google.protobuf.ServiceOptions {
@@ -145,16 +179,4 @@ extend google.protobuf.MessageOptions {
 extend google.protobuf.FieldOptions {
   Prop prop = 50000;             // 字段属性
   Rule rule = 50001;             // 字段规则
-}
-
-message Meta {
-  string Package = 1;            // 元数据package
-  string Service = 2;            // 元数据service
-  string Method = 3;             // 元数据method
-  bool ClientStreaming = 4;      // 元数据client streaming
-  bool ServerStreaming = 5;      // 元数据server streaming
-  Http Http = 6;                 // 元数据Http
-  Role Role = 7;                 // 元数据Role
-  Plugin InputPlugin = 8;        // 元数据message plugin
-  repeated Rule InputRules = 9;  // 元数据field rules
 }

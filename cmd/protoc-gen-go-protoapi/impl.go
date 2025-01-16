@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
-	"hash/crc64"
-	"strconv"
 	"time"
 )
 
@@ -56,19 +54,28 @@ func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
 func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "context", GoImportPath: "context"})
+	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(set *protoapi.MethodSetting, ctx context.Context) error {")
 	if m.Plugin != nil {
-		g.P("var ", messagePluginName(m), " = protoapi.AssertMessageValidatePlugin(`", m.Plugin.Ref, "`")
+		g.P("if err:=set.MessagePlugin(set, ctx, req); err != nil {")
+		g.P("return err")
+		g.P("}")
 	}
-	for _, f := range m.Fields {
-		if f.Rule != nil && f.Rule.Plugin != nil {
-			g.P("var ", fieldPluginName(m, f), " = protoapi.AssertFieldValidatePlugin(`", f.Rule.Plugin, "`")
+	for i, f := range m.Fields {
+		if r := f.Rule; r != nil {
+			if r.Required != nil {
+				g.P("if err:=set.MessagePlugin(set, ctx, req); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
+
+			if r.Plugin != nil {
+				g.P("if err:=set.FieldPlugins[", i, "](set, ctx, req); err != nil {")
+				g.P("return err")
+				g.P("}")
+			}
 		}
 	}
-	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(ctx context.Context) error {")
-	if m.Plugin != nil {
-
-	}
-	g.P("	return nil")
+	g.P("return nil")
 	g.P("}")
 }
 
@@ -115,20 +122,4 @@ func shouldMessageValidator(m *MessageExt) bool {
 		}
 	}
 	return false
-}
-
-// 命名规则: _<GoName>_<hash>
-func messagePluginName(m *MessageExt) string {
-	return `_` + m.GoIdent.GoName + `_` + hash(m.FullName)
-}
-
-// 命名规则: _<GoName>_<GoName>_<hash>
-func fieldPluginName(m *MessageExt, f *FieldExt) string {
-	return `_` + m.GoIdent.GoName + `_` + f.GoName + `_` + hash(f.FullName)
-}
-
-func hash(s string) string {
-	h := crc64.New(crc64.MakeTable(crc64.ECMA))
-	h.Write([]byte(s))
-	return strconv.FormatUint(h.Sum64(), 36)
 }

@@ -170,9 +170,9 @@ func LookPath(path string) (string, bool) {
 	return res, true
 }
 
-// fullMethod is the full RPC method string, i.e., /package.component/method.
-func fullMethod(packageName, serviceName, methodName string) string {
-	return "/" + packageName + "." + serviceName + "/" + methodName
+// FullMethod is the full RPC method string, i.e., /package.component/method.
+func FullMethod(meta *Meta) string {
+	return "/" + meta.Package + "." + meta.Service + "/" + meta.Method
 }
 
 func orderServiceAspects(v1 []ServiceAspect, v2 []ServiceAspect) []ServiceAspect {

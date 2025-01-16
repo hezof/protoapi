@@ -22,7 +22,7 @@ import (
 type Server struct {
 	mux                                                      // 多路
 	config                *Config                            // 配置
-	metas                 map[string]*MethodSetting          // 方法设置(过程数据)
+	settings              map[string]*MethodSetting          // 方法设置(过程数据)
 	onInit                []func()                           // 初始前回调
 	onReady               []func()                           // 启动前回调
 	onExit                []func()                           // 退出前回调
@@ -62,7 +62,7 @@ func NewServer(c *Config) *Server {
 			httpNotFound: defaultHttpNotFoundHandler,
 		},
 		config:        mergeConfig(c),
-		metas:         make(map[string]*MethodSetting),
+		settings:      make(map[string]*MethodSetting),
 		_group:        newGroup(""),
 		grpcPanicFunc: defaultGrpcPanicFunc,
 	}
@@ -145,12 +145,10 @@ func (s *Server) GrpcPanicFunc(f GrpcPanicFunc) {
  **********************************************/
 
 func (s *Server) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) *Server {
-	serviceSetting := registry()
-	serviceSetting.Impl = implement
-	serviceSetting.Aspects = orderServiceAspects(s._serviceAspect, aspects)
+	aspects = orderServiceAspects(s._serviceAspect, aspects)
+	serviceSetting := registry(implement, aspects)
 	for _, methodSetting := range serviceSetting.Methods {
-		methodSetting.parent = serviceSetting
-		methodSetting.fullMethod = fullMethod(methodSetting.Package, methodSetting.Service, methodSetting.Method)
+		methodSetting.Service = serviceSetting
 	}
 	s._serviceSetting = append(s._serviceSetting, serviceSetting)
 	return s
@@ -189,89 +187,88 @@ func (s *Server) ListenAndServe() (err error) {
 	 ********************************************************/
 	for _, ss := range s._serviceSetting {
 		for _, ms := range ss.Methods {
-			s.metas[ms.fullMethod] = ms
-
+			s.settings[FullMethod(ms.Meta)] = ms
 			// 添加method相应的RequestSetting
-			if ms.Get != "" {
+			if ms.Meta.Http.Get != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodGet,
-					Path:        ms.Get,
+					Path:        ms.Meta.Http.Get,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Put != "" {
+			if ms.Meta.Http.Put != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodPut,
-					Path:        ms.Put,
+					Path:        ms.Meta.Http.Put,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Post != "" {
+			if ms.Meta.Http.Post != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodPost,
-					Path:        ms.Post,
+					Path:        ms.Meta.Http.Post,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Delete != "" {
+			if ms.Meta.Http.Delete != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodDelete,
-					Path:        ms.Delete,
+					Path:        ms.Meta.Http.Delete,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Options != "" {
+			if ms.Meta.Http.Options != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodOptions,
-					Path:        ms.Options,
+					Path:        ms.Meta.Http.Options,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Head != "" {
+			if ms.Meta.Http.Head != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodHead,
-					Path:        ms.Head,
+					Path:        ms.Meta.Http.Head,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Patch != "" {
+			if ms.Meta.Http.Patch != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodPatch,
-					Path:        ms.Patch,
+					Path:        ms.Meta.Http.Patch,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Trace != "" {
+			if ms.Meta.Http.Trace != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodTrace,
-					Path:        ms.Trace,
+					Path:        ms.Meta.Http.Trace,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Connect != "" {
+			if ms.Meta.Http.Connect != "" {
 				s._group.Handle(&Handler{
-					Meta:        ms,
+					Setting:     ms,
 					Method:      http.MethodConnect,
-					Path:        ms.Connect,
+					Path:        ms.Meta.Http.Connect,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
-			if ms.Websocket != "" {
+			if ms.Meta.Http.Websocket != "" {
 				if s.mux.upgrader == nil {
 					s.mux.upgrader = newWebsocketUpgrader(s.config)
 				}
 				s._group.Handle(&Handler{
-					Meta:         ms,
+					Setting:      ms,
 					Method:       http.MethodGet,
-					Path:         ms.Websocket,
+					Path:         ms.Meta.Http.Websocket,
 					HandleChain:  []HandleFunc{WebsocketHandleFunc},
 					BodyMaxBytes: -1, // 如果是Websocket长链接则自动忽略BodyMaxBytes参数
 				})
@@ -459,21 +456,21 @@ func (s *Server) ListenAndServe() (err error) {
  **********************************************/
 func (s *Server) generateBootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 	var ctx = ss.Context()
-	var meta = s.metas[info.FullMethod]
-	if meta == nil {
+	var setting = s.settings[info.FullMethod]
+	if setting == nil {
 		return StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
 	defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
 			err = grpcPanicFunc(meta, ctx, p)
 		}
-	}(meta, ctx, s.grpcPanicFunc)
-	var aspects = meta.parent.Aspects
+	}(setting, ctx, s.grpcPanicFunc)
+	var aspects = setting.Service.Aspects
 
 	var idx = -1
 	for _, s := range aspects {
 		idx++
-		if ctx, err = s.Before(meta, ctx, nil); err != nil {
+		if ctx, err = s.Before(setting, ctx, nil); err != nil {
 			goto __AFTER__
 		}
 	}
@@ -483,7 +480,7 @@ func (s *Server) generateBootstrapStreamInterceptor(srv interface{}, ss grpc.Ser
 
 __AFTER__:
 	for idx >= 0 {
-		ctx, _, err = aspects[idx].After(meta, ctx, nil, nil, err)
+		ctx, _, err = aspects[idx].After(setting, ctx, nil, nil, err)
 		idx--
 	}
 
@@ -502,28 +499,28 @@ __AFTER__:
  **********************************************/
 func (s *Server) generateBootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
-	var meta = s.metas[info.FullMethod]
-	if meta == nil {
+	var setting = s.settings[info.FullMethod]
+	if setting == nil {
 		return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
 	defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
 			err = grpcPanicFunc(meta, ctx, p)
 		}
-	}(meta, ctx, s.grpcPanicFunc)
-	var aspects = meta.parent.Aspects
+	}(setting, ctx, s.grpcPanicFunc)
+	var aspects = setting.Service.Aspects
 
 	var idx = -1
 	for _, s := range aspects {
 		idx++
-		if ctx, err = s.Before(meta, ctx, req); err != nil {
+		if ctx, err = s.Before(setting, ctx, req); err != nil {
 			goto __AFTER__
 		}
 	}
 
 	// 语法校验
 	if vd, ok := req.(MessageValidator); ok {
-		if err = vd.Validate(ctx); err != nil {
+		if err = vd.Validate(setting, ctx); err != nil {
 			goto __AFTER__
 		}
 	}
@@ -532,7 +529,7 @@ func (s *Server) generateBootstrapUnaryInterceptor(ctx context.Context, req inte
 
 __AFTER__:
 	for idx >= 0 {
-		ctx, rsp, err = aspects[idx].After(meta, ctx, req, rsp, err)
+		ctx, rsp, err = aspects[idx].After(setting, ctx, req, rsp, err)
 		idx--
 	}
 
