@@ -75,6 +75,74 @@ service Demo {
   }
 }
 
+
+service CopyDemo {
+
+  option (protoapi.http_only) = true;
+
+  option (protoapi.tag) = {
+    name: "Demo测试",
+    desc: "这是一个Demo测试",
+  };
+
+  rpc Simple(Req) returns (Rsp){
+    option (protoapi.http) = {
+      name: "Simple",
+      desc: "简单RPC",
+      get: "/copy/simple/:id",
+      body: omit,
+    };
+    option (protoapi.role) = {
+      code: 101,
+      name: "101",
+      desc: "需要101角色",
+    };
+  }
+
+  rpc Client3(stream Req) returns (Rsp){
+    option (protoapi.http) = {
+      name: "Client",
+      desc: "Streaming Client",
+      post: "/copy/client/:id",
+      head: "/copy/client/:id",
+      body: json,
+    };
+    option (protoapi.role) = {
+      code: 102,
+      name: "102",
+      desc: "需要102角色",
+    };
+  }
+  rpc Server3(Req) returns (stream Rsp){
+    option (protoapi.http) = {
+      name: "Server",
+      desc: "Streaming Server",
+      post: "/copy/server/:id",
+      head: "/copy/server/:id",
+      body: json,
+    };
+    option (protoapi.role) = {
+      code: 102,
+      name: "102",
+      desc: "需要102角色",
+    };
+  }
+  rpc Bidirectional(stream Req) returns (stream Rsp){
+    option (protoapi.http) = {
+      name: "Server",
+      desc: "Streaming Server",
+      post: "/copy/Bidirectional/:id",
+      head: "/copy/Bidirectional/:id",
+      body: json,
+    };
+    option (protoapi.role) = {
+      code: 102,
+      name: "102",
+      desc: "需要102角色",
+    };
+  }
+}
+
 message Req {
   option (protoapi.desc) = "这是一个请求";
 

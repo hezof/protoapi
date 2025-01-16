@@ -81,15 +81,15 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 				g.P(`    return`)
 				g.P(`}`)
 			case pm.IsStreamingClient && !pm.IsStreamingServer:
-				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(ctx context.Context, svr grpc.ClientStreamingServer[`, qualifiedGoIdent(pm.InputMessage.GoIdent), `,`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
+				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(svr grpc.ClientStreamingServer[`, qualifiedGoIdent(pm.InputMessage.GoIdent), `,`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
 				g.P(`    return`)
 				g.P(`}`)
 			case !pm.IsStreamingClient && pm.IsStreamingServer:
-				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(ctx context.Context, req *`, qualifiedGoIdent(pm.InputMessage.GoIdent), `, svr grpc.ServerStreamingServer[`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
+				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(req *`, qualifiedGoIdent(pm.InputMessage.GoIdent), `, svr grpc.ServerStreamingServer[`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
 				g.P(`    return`)
 				g.P(`}`)
 			case pm.IsStreamingClient && pm.IsStreamingServer:
-				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(ctx context.Context, svr grpc.BidiStreamingServer[`, qualifiedGoIdent(pm.InputMessage.GoIdent), `,`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
+				g.P(`func (ps *`, ps.GoName, "Implement) ", pm.GoName, `(svr grpc.BidiStreamingServer[`, qualifiedGoIdent(pm.InputMessage.GoIdent), `,`, qualifiedGoIdent(pm.OutputMessage.GoIdent), `]) (err error) {`)
 				g.P(`    return`)
 				g.P(`}`)
 			}
