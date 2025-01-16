@@ -106,7 +106,7 @@ func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
 	for _, s1 := range s.Messages {
 		extractMessage(file, s1)
 	}
-	v.Schema = proto.GetExtension(s.Desc.Options(), E_Schema).(*Schema)
+	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
 	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.MessageOptions).GetDeprecated()
 	return v
@@ -128,6 +128,7 @@ func extractMethod(file *FileExt, service *ServiceExt, s *protogen.Method) *Meth
 	v.Http = proto.GetExtension(s.Desc.Options(), E_Http).(*Http)
 	v.Role = proto.GetExtension(s.Desc.Options(), E_Role).(*Role)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated()
+
 	service.Methods = append(service.Methods, v)
 	return v
 }
@@ -173,7 +174,7 @@ type MessageExt struct {
 	FullName   string
 	GoIdent    protogen.GoIdent
 	Fields     []*FieldExt
-	Schema     *Schema
+	Desc       string
 	Plugin     *Plugin
 	Deprecated bool
 }

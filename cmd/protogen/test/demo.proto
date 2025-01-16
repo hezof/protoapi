@@ -76,6 +76,8 @@ service Demo {
 }
 
 message Req {
+  option (protoapi.schema) = "这是一个请求";
+
   repeated string id = 1 [
     (protoapi.prop) = {
       name: "id",

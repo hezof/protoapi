@@ -56,11 +56,6 @@ message Role {
   string desc = 3;                  // 角色描述
 }
 
-message Schema {
-  string name = 1;                 // schema名称
-  string desc = 2;                 // schema描述
-}
-
 message Plugin {
   string ref = 1;                  // 插件引用
   Error err = 2;                   // 插件错误
@@ -144,12 +139,12 @@ extend google.protobuf.MethodOptions {
 }
 
 extend google.protobuf.MessageOptions {
-  Schema schema = 40000;          // 消息数据
-  Plugin plugin = 40001;          // 消息插件
+  string desc = 40000;           // 消息描述
+  Plugin plugin = 40001;         // 消息插件
 }
 
 extend google.protobuf.FieldOptions {
-  Prop prop = 50000;              // 字段属性
-  Rule rule = 50001;              // 字段规则
+  Prop prop = 50000;             // 字段属性
+  Rule rule = 50001;             // 字段规则
 }
 

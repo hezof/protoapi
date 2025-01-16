@@ -1,4 +1,4 @@
-test/demo.pb.go
-test/demo_grpc.pb.go
-test/demo_protoapi.pb.go
-test/demo_protoapi.json
+../protogen/test/demo.pb.go
+../protogen/test/demo_grpc.pb.go
+../protogen/test/demo_protoapi.pb.go
+../protogen/test/demo_protoapi.json

@@ -8,6 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -39,51 +40,54 @@ func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 					tag.Deprecated = s.Deprecated
 				}
 
+				sse := m.Http.Result == Http_events
+
 				p := &OASv2Operation{Responses: make(OASv2ResponseMap)}
 				p.OperationId = m.FullName
 				p.Summary = NvlS(m.Http.Name, m.FullName)
 				p.Description = NvlS(m.Http.Desc, m.FullName)
 				p.Tags = Set(tag.Name, m.Http.Tags...)
-				p.Parameters = parameters(m.InputMessage)
+				p.Parameters = parameters(m.Http, m.InputMessage)
 				p.Responses = responses(m.Http, m.OutputMessage)
 				p.Deprecated = m.Deprecated
-				if err := doc.Paths.Add(http.MethodGet, m.Http.Get, p); err != nil {
+
+				if err := doc.Paths.Add(http.MethodGet, m.Http.Get, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodPut, m.Http.Put, p); err != nil {
+				if err := doc.Paths.Add(http.MethodPut, m.Http.Put, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodPost, m.Http.Post, p); err != nil {
+				if err := doc.Paths.Add(http.MethodPost, m.Http.Post, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodDelete, m.Http.Delete, p); err != nil {
+				if err := doc.Paths.Add(http.MethodDelete, m.Http.Delete, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodOptions, m.Http.Options, p); err != nil {
+				if err := doc.Paths.Add(http.MethodOptions, m.Http.Options, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodHead, m.Http.Head, p); err != nil {
+				if err := doc.Paths.Add(http.MethodHead, m.Http.Head, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodPatch, m.Http.Patch, p); err != nil {
+				if err := doc.Paths.Add(http.MethodPatch, m.Http.Patch, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodTrace, m.Http.Trace, p); err != nil {
+				if err := doc.Paths.Add(http.MethodTrace, m.Http.Trace, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(http.MethodConnect, m.Http.Connect, p); err != nil {
+				if err := doc.Paths.Add(http.MethodConnect, m.Http.Connect, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
-				if err := doc.Paths.Add(`websocket`, m.Http.Websocket, p); err != nil {
+				if err := doc.Paths.Add(`websocket`, m.Http.Websocket, *p, sse); err != nil {
 					gen.Error(fmt.Errorf(`%v http error %v`, m.FullName, err))
 					return
 				}
@@ -114,37 +118,182 @@ func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 
 func definition(m *MessageExt) *OASv2Schema {
 	s := &OASv2Schema{Properties: make(OASv2SchemaMap)}
+	s.Description = NvlS(m.Desc, m.FullName)
 	s.Type = `object`
-	var required []string
 	for _, f := range m.Fields {
 		// path参数都是必需的
 		if (f.Prop != nil && f.Prop.In == Prop_path) || (f.Rule != nil && f.Rule.Required != nil) {
-			required = append(required, f.Name)
+			s.Required = append(s.Required, f.Name)
 		}
-		p := new(OASv2Schema)
+		var p *OASv2Schema
 		switch {
 		case f.IsRepeated:
-			p.Type = `array`
-			p.Items = gpf(f)
+			p = &OASv2Schema{
+				Type:  `array`,
+				Items: field(f),
+			}
 		case f.IsMap:
+			p = &OASv2Schema{
+				Type:                 `object`,
+				AdditionalProperties: field(f.Message.Fields[1]),
+			}
 		default:
-
+			p = field(f)
 		}
-		s.Properties.Add(f.Name, p)
+		// 允许覆盖字段名称
+		s.Properties.Add(fname(f), p)
 	}
 	return s
 }
 
 func responses(h *Http, m *MessageExt) OASv2ResponseMap {
-
+	s := make(OASv2ResponseMap)
+	{
+		r := new(OASv2Response)
+		r.Description = `请求成功`
+		if h.Result == Http_simple {
+			r.Schema = &OASv2Schema{
+				Type:       `object`,
+				Properties: make(OASv2SchemaMap),
+			}
+			r.Schema.Properties.Add(`code`, &OASv2Schema{
+				Description: `0`,
+				Type:        `integer`,
+				Format:      `int32`,
+			})
+			r.Schema.Properties.Add(`data`, &OASv2Schema{
+				Description: `结果数据.`,
+				Ref:         ref(m.FullName),
+			})
+		} else {
+			r.Schema = &OASv2Schema{Ref: ref(m.FullName)}
+		}
+		s.Add(strconv.FormatUint(uint64(NvlI(h.Status, http.StatusOK)), 10), r)
+	}
+	{
+		for _, err := range h.Errors {
+			r := new(OASv2Response)
+			r.Description = err.Message
+			r.Schema = &OASv2Schema{
+				Type:       `object`,
+				Properties: make(OASv2SchemaMap),
+			}
+			if err.Code != 0 {
+				r.Schema.Properties.Add(`code`, &OASv2Schema{
+					Description: strconv.FormatUint(uint64(err.Code), 10),
+					Type:        `integer`,
+					Format:      `int32`,
+				})
+			}
+			if err.Name != `` {
+				r.Schema.Properties.Add(`name`, &OASv2Schema{
+					Description: err.Name,
+					Type:        `string`,
+				})
+			}
+			if err.Message != `` {
+				r.Schema.Properties.Add(`message`, &OASv2Schema{
+					Description: err.Message,
+					Type:        `string`,
+				})
+			}
+			s.Add(strconv.FormatUint(uint64(err.Status), 10), r)
+		}
+	}
+	{
+		r := new(OASv2Response)
+		r.Description = `请求错误`
+		r.Schema = &OASv2Schema{
+			Type:       `object`,
+			Properties: make(OASv2SchemaMap),
+		}
+		r.Schema.Properties.Add(`code`, &OASv2Schema{
+			Description: `错误代码. 约定0表示成功, 其他表示错误.`,
+			Type:        `integer`,
+			Format:      `int32`,
+		})
+		r.Schema.Properties.Add(`name`, &OASv2Schema{
+			Description: `错误名称.可选`,
+			Type:        `string`,
+		})
+		r.Schema.Properties.Add(`message`, &OASv2Schema{
+			Description: `错误消息.可选`,
+			Type:        `string`,
+		})
+		s.Add(`default`, r)
+	}
+	return s
 }
 
-func parameters(m *MessageExt) []*OASv2Parameter {
-
+func parameters(h *Http, m *MessageExt) []*OASv2Parameter {
+	ss := make([]*OASv2Parameter, 0, len(m.Fields))
+	{
+		// body处理
+		p := new(OASv2Parameter)
+		p.Name = `body`
+		p.In = `body`
+		p.Required = true // body参数必须的
+		p.Schema = &OASv2Schema{Properties: make(OASv2SchemaMap)}
+		for _, f := range m.Fields {
+			// 默认都是在body
+			if f.Prop == nil || f.Prop.In == Prop_body {
+				p.Schema.Properties.Add(fname(f), field(f))
+			}
+		}
+		// 包含body参数才添加
+		if len(p.Schema.Properties) > 0 {
+			ss = append(ss, p)
+		}
+	}
+	for _, f := range m.Fields {
+		// 默认都是在body
+		if f.Prop != nil && f.Prop.In != Prop_body {
+			p := new(OASv2Parameter)
+			p.Name = fname(f)
+			switch f.Prop.In {
+			case Prop_path:
+				p.In = `path`
+			case Prop_query:
+				p.In = `query`
+			case Prop_header:
+				p.In = `header`
+			case Prop_cookie:
+				p.In = `cookie`
+			}
+			p.OASv2Schema = field(f)
+			switch f.Prop.Style {
+			case Prop_simple:
+				p.Style = `simple`
+			case Prop_form:
+				p.Style = `form`
+			case Prop_json:
+				p.Style = `json`
+			}
+			p.Explode = true // 默认是true
+			p.Required = f.Rule != nil && f.Rule.Required != nil
+			if f.Prop.In == Prop_path {
+				p.Required = true // path参数必需的
+			}
+			p.Deprecated = f.Deprecated
+			ss = append(ss, p)
+		}
+	}
+	return ss
 }
 
-func gpf(f *FieldExt) *OASv2Schema {
+func fname(f *FieldExt) string {
+	if f.Prop != nil && f.Prop.Name != `` {
+		return f.Prop.Name
+	}
+	return f.Name
+}
+
+func field(f *FieldExt) *OASv2Schema {
 	s := new(OASv2Schema)
+	s.Description = f.FullName
+	if f.Prop != nil && f.Prop.Desc != `` {
+		s.Description = f.Prop.Desc
+	}
 	switch f.Kind {
 	case protoreflect.BoolKind:
 		s.Type = `boolean`
@@ -206,9 +355,9 @@ func gpf(f *FieldExt) *OASv2Schema {
 		s.Type = `string`
 		s.Format = `binary`
 	case protoreflect.MessageKind:
-		s.Ref = fmt.Sprintf(`"#/definitions/%s"`, f.Message.FullName)
+		s.Ref = ref(f.Message.FullName)
 	case protoreflect.GroupKind:
-		s.Ref = fmt.Sprintf(`"#/definitions/%s"`, f.Message.FullName)
+		s.Ref = ref(f.Message.FullName)
 	}
 	if f.Rule != nil {
 		if f.Rule.Minimum != nil {
@@ -232,104 +381,47 @@ func gpf(f *FieldExt) *OASv2Schema {
 			s.MaxItems = f.Rule.MaxItems.Val
 		}
 		if f.Rule.Enum != nil {
+			// 避免覆盖enum的枚举
 			if s.Enum == nil {
-				for _, v := range strings.Split(f.Rule.Enum.Val, `,`)
+				for _, v := range strings.Split(f.Rule.Enum.Val, `,`) {
+					v = strings.TrimSpace(v)
+					if v != `` {
+						s.Enum = append(s.Enum, v)
+					}
+				}
 			}
 		}
 		if f.Rule.Pattern != nil {
-
+			s.Pattern = f.Rule.Pattern.Val
 		}
 	}
 	s.Deprecated = f.Deprecated
+	return s
+}
+
+func ref(fullName string) string {
+	return fmt.Sprintf(`"#/definitions/%s"`, fullName)
 }
 
 /****************************************************************
  * swagger 2.0 数据结构及辅助结构
  ****************************************************************/
 
-type OASv2Doc struct {
-	Swagger     string         `yaml:"swagger,omitempty"`
-	Tags        []*OASv2Tag    `yaml:"tags,omitempty"`
-	Paths       OASv2PathMap   `yaml:"paths,omitempty"`
-	Definitions OASv2SchemaMap `yaml:"definitions,omitempty"`
-}
-
-type OASv2Tag struct {
-	Deprecated  bool   `yaml:"deprecated,omitempty"`
-	Name        string `yaml:"name,omitempty"`
-	Description string `yaml:"description,omitempty"`
-}
-
-type OASv2Path struct {
-	XOrder  int             `yaml:"x-order,omitempty"`
-	Get     *OASv2Operation `yaml:"get,omitempty"`
-	Put     *OASv2Operation `yaml:"put,omitempty"`
-	Post    *OASv2Operation `yaml:"post,omitempty"`
-	Delete  *OASv2Operation `yaml:"delete,omitempty"`
-	Options *OASv2Operation `yaml:"options,omitempty"`
-	Head    *OASv2Operation `yaml:"head,omitempty"`
-	Patch   *OASv2Operation `yaml:"patch,omitempty"`
-	Connect *OASv2Operation `yaml:"connect,omitempty"`
-	Trace   *OASv2Operation `yaml:"trace,omitempty"`
-}
-
-type OASv2Operation struct {
-	XOrder      int               `yaml:"x-order,omitempty"`
-	OperationId string            `yaml:"operationId,omitempty"`
-	Summary     string            `yaml:"summary,omitempty"`
-	Description string            `yaml:"description,omitempty"`
-	Tags        []string          `yaml:"tags,omitempty"`
-	Parameters  []*OASv2Parameter `yaml:"parameters,omitempty"`
-	Responses   OASv2ResponseMap  `yaml:"responses,omitempty"`
-	Deprecated  bool              `yaml:"deprecated,omitempty"`
-}
-
-type OASv2Parameter struct {
-	Name        string       `yaml:"name,omitempty"`
-	In          string       `yaml:"in,omitempty"`
-	Style       string       `yaml:"style,omitempty"`
-	Schema      *OASv2Schema `yaml:"schema,omitempty"`
-	Description string       `yaml:"description,omitempty"`
-	Required    bool         `yaml:"required,omitempty"`
-	Deprecated  bool         `yaml:"deprecated,omitempty"`
-}
-
-type OASv2Response struct {
-	XOrder      int          `yaml:"x-order,omitempty"`
-	Description string       `yaml:"description,omitempty"`
-	Schema      *OASv2Schema `yaml:"schema,omitempty"`
-}
-
-type OASv2Schema struct {
-	XOrder               int            `yaml:"x-order,omitempty"`
-	Ref                  string         `yaml:"$ref,omitempty"`
-	Type                 string         `yaml:"type,omitempty"`
-	Format               string         `yaml:"format,omitempty"`               // 当type为scalar类型时描述格式
-	Items                *OASv2Schema   `yaml:"items,omitempty"`                // 当type为array时描述元素
-	AdditionalProperties *OASv2Schema   `yaml:"additionalProperties,omitempty"` // 当type为object时描述元素类型(map)
-	Properties           OASv2SchemaMap `yaml:"properties,omitempty"`           // 当type为object时描述属性
-	Required             []string       `yaml:"required,omitempty"`
-	Maximum              float64        `yaml:"maximum,omitempty"`
-	ExclusiveMaximum     bool           `yaml:"exclusiveMaximum,omitempty"`
-	Minimum              float64        `yaml:"minimum,omitempty"`
-	ExclusiveMinimum     bool           `yaml:"exclusiveMinimum,omitempty"`
-	MaxLength            int64          `yaml:"maxLength,omitempty"`
-	MinLength            int64          `yaml:"minLength,omitempty"`
-	Pattern              string         `yaml:"pattern,omitempty"`
-	MaxItems             int64          `yaml:"maxItems,omitempty"`
-	MinItems             int64          `yaml:"minItems,omitempty"`
-	Enum                 []interface{}  `yaml:"enum,omitempty"`
-	Deprecated           bool           `yaml:"deprecated,omitempty"`
-}
-
 type OASv2PathMap map[string]*OASv2Path
 
 var OASv2PathOrder int
 
-func (m OASv2PathMap) Add(method, path string, op *OASv2Operation) error {
+func (m OASv2PathMap) Add(method, path string, op OASv2Operation, sse bool) error {
 
 	if path == `` {
 		return errors.New("path is empty")
+	}
+	method = strings.ToUpper(method)
+	// WEBSOCKET会自动忽略sse
+	if sse && method != `WEBSOCKET` {
+		op.Description = fmt.Sprintf(`%v %v [SSE]<br/><br/>%v`, method, path, op.Description)
+	} else {
+		op.Description = fmt.Sprintf(`%v %v<br/><br/>%v`, method, path, op.Description)
 	}
 
 	val := m[path]
@@ -339,57 +431,57 @@ func (m OASv2PathMap) Add(method, path string, op *OASv2Operation) error {
 			XOrder: OASv2PathOrder,
 		}
 	}
-	switch method := strings.ToLower(method); method {
-	case `get`:
+	switch method {
+	case http.MethodGet:
 		if val.Get != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Get = op
-	case `put`:
+		val.Get = &op
+	case http.MethodPut:
 		if val.Put != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Put = op
-	case `post`:
+		val.Put = &op
+	case http.MethodPost:
 		if val.Post != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Post = op
-	case `delete`:
+		val.Post = &op
+	case http.MethodDelete:
 		if val.Delete != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Delete = op
-	case `options`:
+		val.Delete = &op
+	case http.MethodOptions:
 		if val.Options != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Options = op
-	case `head`:
+		val.Options = &op
+	case http.MethodHead:
 		if val.Head != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Head = op
-	case `patch`:
+		val.Head = &op
+	case http.MethodPatch:
 		if val.Patch != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Patch = op
-	case `connect`:
+		val.Patch = &op
+	case http.MethodConnect:
 		if val.Connect != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Connect = op
-	case `trace`:
+		val.Connect = &op
+	case http.MethodTrace:
 		if val.Trace != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Trace = op
-	case `websocket`:
+		val.Trace = &op
+	case `WEBSOCKET`:
 		if val.Get != nil {
 			return fmt.Errorf(`%v %v duplicated`, method, path)
 		}
-		val.Get = op
+		val.Get = &op
 	}
 	m[path] = val
 	return nil
@@ -469,3 +561,80 @@ func (m OASv2ResponseMap) MarshalYAML() (interface{}, error) {
 }
 
 var _ yaml.Marshaler = OASv2ResponseMap{}
+
+type OASv2Doc struct {
+	Swagger     string         `yaml:"swagger,omitempty"`
+	Tags        []*OASv2Tag    `yaml:"tags,omitempty"`
+	Paths       OASv2PathMap   `yaml:"paths,omitempty"`
+	Definitions OASv2SchemaMap `yaml:"definitions,omitempty"`
+}
+
+type OASv2Tag struct {
+	Deprecated  bool   `yaml:"deprecated,omitempty"`
+	Name        string `yaml:"name,omitempty"`
+	Description string `yaml:"methodDescription,omitempty"`
+}
+
+type OASv2Path struct {
+	XOrder  int             `yaml:"x-order,omitempty"`
+	Get     *OASv2Operation `yaml:"get,omitempty"`
+	Put     *OASv2Operation `yaml:"put,omitempty"`
+	Post    *OASv2Operation `yaml:"post,omitempty"`
+	Delete  *OASv2Operation `yaml:"delete,omitempty"`
+	Options *OASv2Operation `yaml:"options,omitempty"`
+	Head    *OASv2Operation `yaml:"head,omitempty"`
+	Patch   *OASv2Operation `yaml:"patch,omitempty"`
+	Connect *OASv2Operation `yaml:"connect,omitempty"`
+	Trace   *OASv2Operation `yaml:"trace,omitempty"`
+}
+
+type OASv2Operation struct {
+	XOrder      int               `yaml:"x-order,omitempty"`
+	OperationId string            `yaml:"operationId,omitempty"`
+	Summary     string            `yaml:"summary,omitempty"`
+	Description string            `yaml:"methodDescription,omitempty"`
+	Tags        []string          `yaml:"tags,omitempty"`
+	Parameters  []*OASv2Parameter `yaml:"parameters,omitempty"`
+	Responses   OASv2ResponseMap  `yaml:"responses,omitempty"`
+	Deprecated  bool              `yaml:"deprecated,omitempty"`
+}
+
+type OASv2Parameter struct {
+	Name         string       `yaml:"name,omitempty"`
+	In           string       `yaml:"in,omitempty"`
+	Schema       *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
+	*OASv2Schema `yaml:",inline"`                       // if in is not "body"
+	Style        string       `yaml:"style,omitempty"`
+	Explode      bool         `yaml:"explode,omitempty"`
+	Required     bool         `yaml:"required,omitempty"`
+	Deprecated   bool         `yaml:"deprecated,omitempty"`
+}
+
+type OASv2Response struct {
+	XOrder      int          `yaml:"x-order,omitempty"`
+	Description string       `yaml:"methodDescription,omitempty"`
+	Schema      *OASv2Schema `yaml:"schema,omitempty"`
+}
+
+type OASv2Schema struct {
+	XOrder               int            `yaml:"x-order,omitempty"`
+	Ref                  string         `yaml:"$ref,omitempty"`
+	Type                 string         `yaml:"type,omitempty"`
+	Format               string         `yaml:"format,omitempty"`               // 当type为scalar类型时描述格式
+	Items                *OASv2Schema   `yaml:"items,omitempty"`                // 当type为array时描述元素
+	AdditionalProperties *OASv2Schema   `yaml:"additionalProperties,omitempty"` // 当type为object时描述元素类型(map)
+	Properties           OASv2SchemaMap `yaml:"properties,omitempty"`           // 当type为object时描述属性
+	Required             []string       `yaml:"required,omitempty"`
+	Maximum              float64        `yaml:"maximum,omitempty"`
+	ExclusiveMaximum     bool           `yaml:"exclusiveMaximum,omitempty"`
+	Minimum              float64        `yaml:"minimum,omitempty"`
+	ExclusiveMinimum     bool           `yaml:"exclusiveMinimum,omitempty"`
+	MaxLength            int64          `yaml:"maxLength,omitempty"`
+	MinLength            int64          `yaml:"minLength,omitempty"`
+	Pattern              string         `yaml:"pattern,omitempty"`
+	MaxItems             int64          `yaml:"maxItems,omitempty"`
+	MinItems             int64          `yaml:"minItems,omitempty"`
+	Enum                 []interface{}  `yaml:"enum,omitempty"`
+	Description          string         `yaml:"methodDescription,omitempty"`
+	Deprecated           bool           `yaml:"deprecated,omitempty"`
+}
