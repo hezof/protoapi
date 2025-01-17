@@ -74,7 +74,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.Kind = s.Desc.Kind()
 	v.IsMap = s.Desc.IsMap()
 	v.IsRepeated = s.Desc.IsList()
-	v.IsOptional = s.Desc.HasOptionalKeyword()
+	v.HasOptional = s.Desc.HasOptionalKeyword()
 	v.Message = extractMessage(file, s.Message)
 	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
 	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
@@ -153,19 +153,19 @@ func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 }
 
 type FieldExt struct {
-	Name       string
-	FullName   string
-	GoName     string
-	GoIdent    protogen.GoIdent
-	Kind       protoreflect.Kind
-	IsMap      bool
-	IsRepeated bool
-	IsOptional bool
-	Enum       *EnumExt
-	Message    *MessageExt
-	Prop       *Prop
-	Rule       *Rule
-	Deprecated bool
+	Name        string
+	FullName    string
+	GoName      string
+	GoIdent     protogen.GoIdent
+	Kind        protoreflect.Kind
+	IsMap       bool
+	IsRepeated  bool
+	HasOptional bool
+	Enum        *EnumExt
+	Message     *MessageExt
+	Prop        *Prop
+	Rule        *Rule
+	Deprecated  bool
 }
 
 type MessageExt struct {
