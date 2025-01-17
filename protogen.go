@@ -56,15 +56,6 @@ type MessagePlugin func(ctx context.Context, req any, plg *Plugin) error
 // FieldPlugin field校验插件
 type FieldPlugin func(ctx context.Context, key string, val any, plg *Plugin) error
 
-func Contains[V int32 | int64 | uint32 | uint64 | string](vs []V, v V) bool {
-	for _, vi := range vs {
-		if vi == v {
-			return true
-		}
-	}
-	return false
-}
-
 func AssertMessagePlugin(el string) MessagePlugin {
 	name, args := CompilePluginExpression(el)
 	if p := globalMessageValidatePluginProvider[name]; p != nil {

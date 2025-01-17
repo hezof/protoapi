@@ -95,7 +95,7 @@ message Maximum {
 
 message Enum {
   repeated string str = 1;        // 字串枚举值
-  repeated int32 int = 2;         // 整数枚举值
+  repeated int64 int = 2;         // 整数枚举值
   Error err = 3;                  // 错误定义
 }
 

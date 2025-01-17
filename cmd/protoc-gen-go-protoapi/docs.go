@@ -453,7 +453,7 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 		if f.Rule.Enum != nil {
 			// 避免覆盖enum的枚举
 			if s.Enum == nil {
-				s.Enum = enums(f.Kind, f.Rule.Enum.Val)
+				s.Enum = enums(f.Kind, f.Rule.Enum)
 			}
 		}
 		if f.Rule.Pattern != nil {
@@ -464,53 +464,15 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 	return s
 }
 
-func enums(k protoreflect.Kind, s string) []interface{} {
+func enums(k protoreflect.Kind, e *Enum) []interface{} {
 	var rt []interface{}
-	for _, v := range strings.Split(s, `,`) {
-		v = strings.TrimSpace(v)
-		if v != `` {
-			switch k {
-			case protoreflect.BoolKind:
-				rt = append(rt, v == `true`)
-			case protoreflect.Int32Kind:
-				vi, _ := strconv.ParseInt(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Sint32Kind:
-				vi, _ := strconv.ParseInt(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Uint32Kind:
-				vi, _ := strconv.ParseUint(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Int64Kind:
-				vi, _ := strconv.ParseInt(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Sint64Kind:
-				vi, _ := strconv.ParseInt(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Uint64Kind:
-				vi, _ := strconv.ParseUint(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Sfixed32Kind:
-				vi, _ := strconv.ParseInt(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Fixed32Kind:
-				vi, _ := strconv.ParseUint(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.FloatKind:
-				vi, _ := strconv.ParseFloat(v, 32)
-				rt = append(rt, vi)
-			case protoreflect.Sfixed64Kind:
-				vi, _ := strconv.ParseInt(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.Fixed64Kind:
-				vi, _ := strconv.ParseUint(v, 10, 64)
-				rt = append(rt, vi)
-			case protoreflect.DoubleKind:
-				vi, _ := strconv.ParseFloat(v, 64)
-				rt = append(rt, vi)
-			case protoreflect.StringKind:
-				rt = append(rt, v)
-			}
+	if k == protoreflect.StringKind {
+		for _, v := range e.Str {
+			rt = append(rt, v)
+		}
+	} else {
+		for _, v := range e.Int {
+			rt = append(rt, v)
 		}
 	}
 	return rt
