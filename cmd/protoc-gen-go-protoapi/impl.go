@@ -49,7 +49,20 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 }
 
 func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
+	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeJSON(r *protoapi.JsonDecoder) {")
+	g.P("protoapi.DecodeMessage(r, &x, func(r *protoapi.JsonDecoder, x *", g.QualifiedGoIdent(m.GoIdent), ", k string) {")
+	g.P("switch k {")
+	for _, f := range m.Fields {
+		g.P("case `", fname(f), "`:")
+		
+	}
+	g.P("}")  // switch
+	g.P("})") // protoapi.DecodeMessage
+	g.P("}")  // func
+	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") EncodeJSON(w *protoapi.JsonEncoder) {")
 
+	g.P("}")
 }
 
 func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
