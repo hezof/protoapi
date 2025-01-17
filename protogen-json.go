@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -44,10 +43,6 @@ func PutEncoder(enc *JsonEncoder) {
 }
 
 func DecodeJSON(in io.Reader, val any) error {
-	// 至少传个指针呀
-	if val == nil {
-		return errors.New("decode to nil")
-	}
 	// 加速实现JsonCodec
 	if jc, ok := val.(JsonCodec); ok {
 		dec := GetDecoder(in)
@@ -61,11 +56,6 @@ func DecodeJSON(in io.Reader, val any) error {
 }
 
 func DecodeAny(r *JsonDecoder, val any) {
-	// 至少传个指针呀
-	if val == nil {
-		r.reportError(errors.New("decode to nil"))
-		return
-	}
 	// 加速实现JsonCodec
 	if jc, ok := val.(JsonCodec); ok {
 		jc.DecodeJSON(r)

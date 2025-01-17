@@ -55,7 +55,151 @@ func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
 	g.P("switch k {")
 	for _, f := range m.Fields {
 		g.P("case `", fname(f), "`:")
+		switch f.Kind {
+		case protoreflect.BoolKind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeBoolOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeBoolRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeBoolMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeBool(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.EnumKind:
+			enumGoName := g.QualifiedGoIdent(f.Enum.GoIdent)
+			if f.Prop != nil && f.Prop.EnumName {
+				switch {
+				case f.HasOptional:
+					g.P("protoapi.DecodeEnumNameOptional(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				case f.IsRepeated:
+					g.P("protoapi.DecodeEnumNameRepeated(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				case f.IsMap:
+					g.P("protoapi.DecodeEnumNameMap(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				default:
+					g.P("protoapi.DecodeEnumName(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				}
+			} else {
+				switch {
+				case f.HasOptional:
+					g.P("protoapi.DecodeEnumOptional(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				case f.IsRepeated:
+					g.P("protoapi.DecodeEnumRepeated(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				case f.IsMap:
+					g.P("protoapi.DecodeEnumMap(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				default:
+					g.P("protoapi.DecodeEnum(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+				}
+			}
+		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeInt32Optional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeInt32Repeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeInt32Map(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeInt32(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.Uint32Kind, protoreflect.Fixed32Kind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeUint32Optional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeUint32Repeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeUint32Map(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeUint32(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeInt64Optional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeInt64Repeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeInt64Map(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeInt64(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeUint64Optional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeUint64Repeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeUint64Map(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeUint64(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.FloatKind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeFloatOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeFloatRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeFloatMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeFloat(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.DoubleKind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeDoubleOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeDoubleRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeDoubleMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeDouble(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.StringKind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeStringOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeStringRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeStringMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeString(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.BytesKind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeBytesOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeBytesRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeBytesMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeBytes(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.MessageKind:
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeBytesOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeBytesRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeBytesMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeAny(r, &x.", f.GoName, ")")
+			}
+		case protoreflect.GroupKind:
+			switch {
+			case f.HasOptional:
+			case f.IsRepeated:
+			case f.IsMap:
+			default:
 
+			}
+		}
 	}
 	g.P("}")  // switch
 	g.P("})") // protoapi.DecodeMessage
