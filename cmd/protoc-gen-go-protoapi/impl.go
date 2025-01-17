@@ -55,9 +55,9 @@ func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
 func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "context", GoImportPath: "context"})
-	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(set *protoapi.MethodSetting, ctx context.Context) error {")
+	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(set *protoapi.MethodSetting, ctx context.Context) *protoapi.Error {")
 	if m.Plugin != nil {
-		g.P("if err:=set.MessagePlugin(set, ctx, req); err != nil {")
+		g.P("if err:=set.MessagePlugin(ctx, x, set.Meta.MessagePlugin); err != nil {")
 		g.P("return err")
 		g.P("}")
 	}
@@ -91,7 +91,7 @@ func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 				validatePattern(g, i, f)
 			}
 			if r.Plugin != nil {
-				g.P("if err:=set.FieldPlugins[", i, "](`", f.Name, "`, x.", f.GoName, ", set.Meta.InputRules[", i, "].Plugin); err != nil {")
+				g.P("if err:=set.FieldPlugins[", i, "](ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.InputRules[", i, "].Plugin); err != nil {")
 				g.P("return err")
 				g.P("}")
 			}
@@ -103,7 +103,7 @@ func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 
 func validateRequired(g *protogen.GeneratedFile, i int, f *FieldExt) {
 	/*
-		required针对optional, repeated, map, message, bytes等零值为nil的类型. 其他非nil类型自动忽略required!
+		required的定义是各值非0值.
 	*/
 	switch {
 	case f.IsOptional:
@@ -124,8 +124,13 @@ func validateRequired(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
 		case protoreflect.FloatKind, protoreflect.DoubleKind:
 		case protoreflect.StringKind:
+			g.P("if x.", f.GoName, " == `` {")
+			g.P("return set.Meta.InputRules[", i, "].Required")
+			g.P("}")
 		case protoreflect.BytesKind:
-			fallthrough
+			g.P("if x.", f.GoName, " == nil {")
+			g.P("return set.Meta.InputRules[", i, "].Required")
+			g.P("}")
 		case protoreflect.MessageKind:
 			fallthrough
 		case protoreflect.GroupKind:
@@ -314,10 +319,16 @@ func validateMinLength(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
 		case protoreflect.FloatKind, protoreflect.DoubleKind:
 		case protoreflect.StringKind:
-			fallthrough
-		case protoreflect.BytesKind:
+			g.P("if x.", f.GoName, " != `` {")
 			g.P("if len(x.", f.GoName, ") < ", f.Rule.MinLength.Val, " {")
 			g.P("return set.Meta.InputRules[", i, "].MinLength.Err")
+			g.P("}")
+			g.P("}")
+		case protoreflect.BytesKind:
+			g.P("if x.", f.GoName, " != nil {")
+			g.P("if len(x.", f.GoName, ") < ", f.Rule.MinLength.Val, " {")
+			g.P("return set.Meta.InputRules[", i, "].MinLength.Err")
+			g.P("}")
 			g.P("}")
 		case protoreflect.MessageKind:
 		case protoreflect.GroupKind:
@@ -363,10 +374,16 @@ func validateMaxLength(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
 		case protoreflect.FloatKind, protoreflect.DoubleKind:
 		case protoreflect.StringKind:
-			fallthrough
-		case protoreflect.BytesKind:
+			g.P("if x.", f.GoName, " != `` {")
 			g.P("if len(x.", f.GoName, ") > ", f.Rule.MaxLength.Val, " {")
 			g.P("return set.Meta.InputRules[", i, "].MaxLength.Err")
+			g.P("}")
+			g.P("}")
+		case protoreflect.BytesKind:
+			g.P("if x.", f.GoName, " != nil {")
+			g.P("if len(x.", f.GoName, ") > ", f.Rule.MaxLength.Val, " {")
+			g.P("return set.Meta.InputRules[", i, "].MaxLength.Err")
+			g.P("}")
 			g.P("}")
 		case protoreflect.MessageKind:
 		case protoreflect.GroupKind:
@@ -478,8 +495,28 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 			fallthrough
 		case protoreflect.FloatKind, protoreflect.DoubleKind:
 			// 使用{...}隔离局部变量
-			if f.Rule.Enum.Int
+			if len(f.Rule.Enum.Int) > 0 {
+				g.P("if x.", f.GoName, " != nil {")
+				g.P("switch *x.", f.GoName, " {")
+				for _, v := range f.Rule.Enum.Int {
+					g.P(fmt.Sprintf(`case %v:`, v))
+				}
+				g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+				g.P("}")
+				g.P("}")
+			}
 		case protoreflect.StringKind:
+			// 使用{...}隔离局部变量
+			if len(f.Rule.Enum.Int) > 0 {
+				g.P("if x.", f.GoName, " != nil {")
+				g.P("switch *x.", f.GoName, " {")
+				for _, v := range f.Rule.Enum.Str {
+					g.P(fmt.Sprintf(`case %q:`, v)) // 不要简单地拼接"..."
+				}
+				g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+				g.P("}")
+				g.P("}")
+			}
 		case protoreflect.BytesKind:
 		case protoreflect.MessageKind:
 		case protoreflect.GroupKind:
@@ -495,7 +532,27 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind:
 		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
 		case protoreflect.FloatKind, protoreflect.DoubleKind:
+			// 使用{...}隔离局部变量
+			if len(f.Rule.Enum.Int) > 0 {
+				g.P("switch x.", f.GoName, " {")
+				for _, v := range f.Rule.Enum.Int {
+					g.P(fmt.Sprintf(`case %v:`, v))
+				}
+				g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+				g.P("}")
+			}
 		case protoreflect.StringKind:
+			// 使用{...}隔离局部变量
+			if len(f.Rule.Enum.Int) > 0 {
+				g.P("if x.", f.GoName, " != `` {")
+				g.P("switch x.", f.GoName, " {")
+				for _, v := range f.Rule.Enum.Str {
+					g.P(fmt.Sprintf(`case %q:`, v)) // 不要简单地拼接"..."
+				}
+				g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+				g.P("}")
+				g.P("}")
+			}
 		case protoreflect.BytesKind:
 		case protoreflect.MessageKind:
 		case protoreflect.GroupKind:
@@ -504,7 +561,63 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 }
 
 func validatePattern(g *protogen.GeneratedFile, i int, f *FieldExt) {
-
+	/*
+		pattern针对string/bytes类型. 其他类型自动忽略
+	*/
+	switch {
+	case f.IsOptional:
+		switch f.Kind {
+		case protoreflect.BoolKind:
+		case protoreflect.EnumKind:
+		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind:
+		case protoreflect.Uint32Kind, protoreflect.Fixed32Kind:
+		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind:
+		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
+		case protoreflect.FloatKind, protoreflect.DoubleKind:
+		case protoreflect.StringKind:
+			// 只比较非nil值, 否则nil算是上界, 还是下界? 扯开了难有定论
+			g.P("if x.", f.GoName, " != nil {")
+			g.P("if !set.FieldPatterns[", i, "].MatchString(*x.", f.GoName, ") {")
+			g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+			g.P("}")
+			g.P("}")
+		case protoreflect.BytesKind:
+			// 只比较非nil值, 否则nil算是上界, 还是下界? 扯开了难有定论
+			g.P("if x.", f.GoName, " != nil {")
+			g.P("if !set.FieldPatterns[", i, "].Match(*x.", f.GoName, ") {")
+			g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+			g.P("}")
+			g.P("}")
+		case protoreflect.MessageKind:
+		case protoreflect.GroupKind:
+		}
+	case f.IsRepeated:
+	case f.IsMap:
+	default:
+		switch f.Kind {
+		case protoreflect.BoolKind:
+		case protoreflect.EnumKind:
+		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind:
+		case protoreflect.Uint32Kind, protoreflect.Fixed32Kind:
+		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind:
+		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
+		case protoreflect.FloatKind, protoreflect.DoubleKind:
+		case protoreflect.StringKind:
+			g.P("if x.", f.GoName, " != `` {")
+			g.P("if !set.FieldPatterns[", i, "].MatchString(x.", f.GoName, ") {")
+			g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+			g.P("}")
+			g.P("}")
+		case protoreflect.BytesKind:
+			g.P("if x.", f.GoName, " != nil {")
+			g.P("if !set.FieldPatterns[", i, "].Match(x.", f.GoName, ") {")
+			g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+			g.P("}")
+			g.P("}")
+		case protoreflect.MessageKind:
+		case protoreflect.GroupKind:
+		}
+	}
 }
 
 func implementServiceRegistry(g *protogen.GeneratedFile, s *ServiceExt) {

@@ -47,14 +47,14 @@ type ServiceAspect interface {
 
 // MessageValidator 校验接口
 type MessageValidator interface {
-	Validate(set *MethodSetting, ctx context.Context) error
+	Validate(set *MethodSetting, ctx context.Context) *Error
 }
 
 // MessagePlugin message校验插件
-type MessagePlugin func(ctx context.Context, req any, plg *Plugin) error
+type MessagePlugin func(ctx context.Context, req any, plg *Plugin) *Error
 
 // FieldPlugin field校验插件
-type FieldPlugin func(ctx context.Context, key string, val any, plg *Plugin) error
+type FieldPlugin func(ctx context.Context, key string, val any, plg *Plugin) *Error
 
 func AssertMessagePlugin(el string) MessagePlugin {
 	name, args := CompilePluginExpression(el)
