@@ -17,21 +17,21 @@ type FieldCodec interface {
 }
 
 func DecodeAny(r *JsonDecoder, val any) {
-	// 加速实现JsonCodec
-	if jc, ok := val.(FieldCodec); ok {
-		r.readObject(jc)
-		return
-	}
-	// 其他仍用encoding/json
 	switch r.token {
 	case ObjectBegin:
-		err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), val)
-		if err != nil {
-			r.reportError(err)
+		if jc, ok := val.(FieldCodec); ok {
+			r.readObject(jc)
+		} else {
+			r.unreadByte()
+			err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), val)
+			if err != nil {
+				r.reportError(err)
+			}
 		}
 	case ObjectEnd:
 		r.invalidCharacterError()
 	case ArrayBegin:
+		r.unreadByte()
 		err := UnmarshalJSON(r.dumpObjectOrArray(ArrayBegin), val)
 		if err != nil {
 			r.reportError(err)
