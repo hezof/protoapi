@@ -29,6 +29,12 @@ type JsonEncoder struct {
 	firstError error    // 上下文错误
 }
 
+func (w *JsonEncoder) reportError(err error) {
+	if w.firstError == nil {
+		w.firstError = err
+	}
+}
+
 func (w *JsonEncoder) Write(p []byte) (int, error) {
 	n := len(p)
 	w.ensure(n)

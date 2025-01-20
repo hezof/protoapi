@@ -2,6 +2,7 @@ package protojson
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"math"
 	"strconv"
@@ -514,15 +515,24 @@ func EncodeEnum_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) 
 	message类型: WriteMessage_<empty>
  *************************************/
 
-func EncodeMessage[Message any](w *JsonEncoder, value *Message, f func(w *JsonEncoder, m *Message)) {
+func EncodeMessage[Message any](w *JsonEncoder, value *Message) {
 	if value != nil {
-		w.ensure(2)
-		w.buff = append(w.buff, leftBrace)
-		f(w, value)
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
+		if e, ok := any(value).(JsonCodec); ok {
+			w.ensure(2)
+			w.buff = append(w.buff, leftBrace)
+			e.EncodeJSON(w)
+			if last := len(w.buff) - 1; w.buff[last] == comma {
+				w.buff[last] = rightBrace
+			} else {
+				w.buff = append(w.buff, rightBrace)
+			}
 		} else {
-			w.buff = append(w.buff, rightBrace)
+			bs, err := json.Marshal(value)
+			if err != nil {
+				w.reportError(err)
+			} else {
+				_, _ = w.Write(bs)
+			}
 		}
 	} else {
 		w.ensure(4)
@@ -530,35 +540,25 @@ func EncodeMessage[Message any](w *JsonEncoder, value *Message, f func(w *JsonEn
 	}
 }
 
-func EncodeMessage_OmitEmpty[Message any](w *JsonEncoder, name string, value *Message, f func(w *JsonEncoder, m *Message)) {
+func EncodeMessage_OmitEmpty[Message any](w *JsonEncoder, name string, value *Message) {
 	if value != nil {
-		w.ensure(6 + len(name))
+		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		f(w, value)
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
+		w.buff = append(w.buff, quotes, colon)
+		EncodeMessage(w, value)
+		w.buff = append(w.buff, comma)
 	}
 }
 
-func EncodeMessage_WithEmpty[Message any](w *JsonEncoder, name string, value *Message, f func(w *JsonEncoder, m *Message)) {
+func EncodeMessage_WithEmpty[Message any](w *JsonEncoder, name string, value *Message) {
 	if value != nil {
-		w.ensure(6 + len(name))
+		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		f(w, value)
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
+		w.buff = append(w.buff, quotes, colon)
+		EncodeMessage(w, value)
+		w.buff = append(w.buff, comma)
 	} else {
 		w.ensure(8 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -567,19 +567,14 @@ func EncodeMessage_WithEmpty[Message any](w *JsonEncoder, name string, value *Me
 	}
 }
 
-func EncodeMessage_ConvEmpty[Message any](w *JsonEncoder, name string, value *Message, f func(w *JsonEncoder, m *Message)) {
+func EncodeMessage_ConvEmpty[Message any](w *JsonEncoder, name string, value *Message) {
 	if value != nil {
-		w.ensure(6 + len(name))
+		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		f(w, value)
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
+		w.buff = append(w.buff, quotes, colon)
+		EncodeMessage(w, value)
+		w.buff = append(w.buff, comma)
 	} else {
 		w.ensure(6 + len(name))
 		w.buff = append(w.buff, quotes)

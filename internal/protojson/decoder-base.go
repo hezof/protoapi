@@ -248,6 +248,7 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message) {
 			}
 		} else {
 			// 未实现JsonCodec使用encoding/std反射解码
+			r.unreadByte() // 回退"{"
 			err := json.Unmarshal(r.dumpObjectOrArray(ObjectBegin), *p)
 			if err != nil {
 				r.reportError(err)
