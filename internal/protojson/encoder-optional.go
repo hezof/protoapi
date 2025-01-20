@@ -542,7 +542,7 @@ func EncodeStringOptional_ConvEmpty(w *JsonEncoder, name string, value *string) 
 	}
 }
 
-func EncodeStringOptional_EscapeHtml(w *JsonEncoder, value *string) {
+func EncodeStringHtmlOptional(w *JsonEncoder, value *string) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -558,7 +558,7 @@ func EncodeStringOptional_EscapeHtml(w *JsonEncoder, value *string) {
 	}
 }
 
-func EncodeStringOptional_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value *string) {
+func EncodeStringHtmlOptional_OmitEmpty(w *JsonEncoder, name string, value *string) {
 	if value != nil && *value != "" {
 		w.ensure(6 + len(name) + len(*value))
 		w.buff = append(w.buff, quotes)
@@ -569,7 +569,7 @@ func EncodeStringOptional_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, valu
 	}
 }
 
-func EncodeStringOptional_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value *string) {
+func EncodeStringHtmlOptional_WithEmpty(w *JsonEncoder, name string, value *string) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -591,7 +591,7 @@ func EncodeStringOptional_EscapeHtml_WithEmpty(w *JsonEncoder, name string, valu
 	}
 }
 
-func EncodeStringOptional_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, value *string) {
+func EncodeStringHtmlOptional_ConvEmpty(w *JsonEncoder, name string, value *string) {
 	switch {
 	case value == nil || *value == "":
 		w.ensure(6 + len(name))

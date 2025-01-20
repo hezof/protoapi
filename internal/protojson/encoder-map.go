@@ -767,7 +767,7 @@ func EncodeDoubleMap_ConvEmpty(w *JsonEncoder, name string, value map[string]flo
 	string类型: MapStringMap_<escap_html>_<empty>
  *************************************/
 
-func EncodeEncodeString(w *JsonEncoder, value map[string]string) {
+func EncodeStringMap(w *JsonEncoder, value map[string]string) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -872,7 +872,7 @@ func EncodeStringMap_ConvEmpty(w *JsonEncoder, name string, value map[string]str
 	}
 }
 
-func EncodeEncodeString_EscapeHtml(w *JsonEncoder, value map[string]string) {
+func EncodeStringHtmlMap(w *JsonEncoder, value map[string]string) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -886,7 +886,7 @@ func EncodeEncodeString_EscapeHtml(w *JsonEncoder, value map[string]string) {
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -897,7 +897,7 @@ func EncodeEncodeString_EscapeHtml(w *JsonEncoder, value map[string]string) {
 	}
 }
 
-func EncodeStringMap_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value map[string]string) {
+func EncodeStringHtmlMap_OmitEmpty(w *JsonEncoder, name string, value map[string]string) {
 	if len(value) != 0 {
 		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
@@ -906,7 +906,7 @@ func EncodeStringMap_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -918,7 +918,7 @@ func EncodeStringMap_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value map
 	}
 }
 
-func EncodeStringMap_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value map[string]string) {
+func EncodeStringHtmlMap_WithEmpty(w *JsonEncoder, name string, value map[string]string) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -938,7 +938,7 @@ func EncodeStringMap_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -950,7 +950,7 @@ func EncodeStringMap_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value map
 	}
 }
 
-func EncodeStringMap_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, value map[string]string) {
+func EncodeStringHtmlMap_ConvEmpty(w *JsonEncoder, name string, value map[string]string) {
 	switch {
 	case value == nil || len(value) == 0:
 		w.ensure(6 + len(name))
@@ -965,7 +965,7 @@ func EncodeStringMap_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, value map
 		for k, v := range value {
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {

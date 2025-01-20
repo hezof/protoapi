@@ -351,7 +351,7 @@ func EncodeString_ConvEmpty(w *JsonEncoder, name string, value string) {
 	EncodeString_WithEmpty(w, name, value)
 }
 
-func EncodeString_EscapeHtml(w *JsonEncoder, value string) {
+func EncodeStringHtml(w *JsonEncoder, value string) {
 	if value != "" {
 		w.ensure(2 + len(value))
 		w.buff = append(w.buff, quotes)
@@ -363,7 +363,7 @@ func EncodeString_EscapeHtml(w *JsonEncoder, value string) {
 	}
 }
 
-func EncodeString_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value string) {
+func EncodeStringHtml_OmitEmpty(w *JsonEncoder, name string, value string) {
 	if value != "" {
 		w.ensure(6 + len(name) + len(value))
 		w.buff = append(w.buff, quotes)
@@ -374,7 +374,7 @@ func EncodeString_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value string
 	}
 }
 
-func EncodeString_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value string) {
+func EncodeStringHtml_WithEmpty(w *JsonEncoder, name string, value string) {
 	if value != "" {
 		w.ensure(6 + len(name) + len(value))
 		w.buff = append(w.buff, quotes)
@@ -390,8 +390,8 @@ func EncodeString_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value string
 	}
 }
 
-func EncodeString_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, value string) {
-	EncodeString_EscapeHtml_WithEmpty(w, name, value)
+func EncodeStringHtml_ConvEmpty(w *JsonEncoder, name string, value string) {
+	EncodeStringHtml_WithEmpty(w, name, value)
 }
 
 /*************************************

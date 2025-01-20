@@ -808,7 +808,7 @@ func EncodeStringRepeated_ConvEmpty(w *JsonEncoder, name string, value []string)
 	}
 }
 
-func EncodeStringRepeated_EscapeHtml(w *JsonEncoder, value []string) {
+func EncodeStringHtmlRepeated(w *JsonEncoder, value []string) {
 	switch {
 	case value == nil:
 		w.ensure(4)
@@ -820,7 +820,7 @@ func EncodeStringRepeated_EscapeHtml(w *JsonEncoder, value []string) {
 		w.ensure(2)
 		w.buff = append(w.buff, leftBracket)
 		for _, v := range value {
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -831,14 +831,14 @@ func EncodeStringRepeated_EscapeHtml(w *JsonEncoder, value []string) {
 	}
 }
 
-func EncodeStringRepeated_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, value []string) {
+func EncodeStringHtmlRepeated_OmitEmpty(w *JsonEncoder, name string, value []string) {
 	if len(value) != 0 {
 		w.ensure(4 + len(name))
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -850,7 +850,7 @@ func EncodeStringRepeated_EscapeHtml_OmitEmpty(w *JsonEncoder, name string, valu
 	}
 }
 
-func EncodeStringRepeated_EscapeHtml_WithEmpty(w *JsonEncoder, name string, value []string) {
+func EncodeStringHtmlRepeated_WithEmpty(w *JsonEncoder, name string, value []string) {
 	switch {
 	case value == nil:
 		w.ensure(8 + len(name))
@@ -868,7 +868,7 @@ func EncodeStringRepeated_EscapeHtml_WithEmpty(w *JsonEncoder, name string, valu
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
@@ -880,7 +880,7 @@ func EncodeStringRepeated_EscapeHtml_WithEmpty(w *JsonEncoder, name string, valu
 	}
 }
 
-func EncodeStringRepeated_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, value []string) {
+func EncodeStringHtmlRepeated_ConvEmpty(w *JsonEncoder, name string, value []string) {
 	switch {
 	case value == nil || len(value) == 0:
 		w.ensure(6 + len(name))
@@ -893,7 +893,7 @@ func EncodeStringRepeated_EscapeHtml_ConvEmpty(w *JsonEncoder, name string, valu
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
 		for _, v := range value {
-			EncodeString_EscapeHtml(w, v)
+			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {
