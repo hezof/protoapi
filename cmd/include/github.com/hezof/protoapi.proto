@@ -13,16 +13,16 @@ message Error {
 }
 
 message Tag {
-  string name = 1;                  // The name of the tag
-  string desc = 2;                  // A short description for the tag
+  string name = 1;                 // The name of the tag
+  string desc = 2;                 // A short description for the tag
 }
 
 message Http {
 
   enum Body {
-    json = 0;                       // 解析body使用application/json
-    form = 1;                       // 解析body使用multipart/form-data或application/x-www-form-urlencoded
-    omit = 2;                       // 忽略解析body
+    json = 0;                      // 解析body使用application/json
+    form = 1;                      // 解析body使用multipart/form-data或application/x-www-form-urlencoded
+    omit = 2;                      // 忽略解析body
   }
 
   enum Result {
@@ -31,29 +31,29 @@ message Http {
     events = 2;                    // 结果使用Server-Send-Events包裹
   }
 
-  string name = 1;                  // 概要信息
-  string desc = 2;                  // 描述信息
-  string get = 3;                   // GET请求
-  string put = 4;                   // PUT请求
-  string post = 5;                  // POST请求
-  string delete = 6;                // DELETE请求
-  string options = 7;               // OPTIONS请求
-  string head = 8;                  // HEAD请求
+  string name = 1;                 // 概要信息
+  string desc = 2;                 // 描述信息
+  string get = 3;                  // GET请求
+  string put = 4;                  // PUT请求
+  string post = 5;                 // POST请求
+  string delete = 6;               // DELETE请求
+  string options = 7;              // OPTIONS请求
+  string head = 8;                 // HEAD请求
   string patch = 9;                // PATCH请求
-  string trace = 10;                // TRACE请求
-  string connect = 11;              // CONNECT请求
-  string websocket = 12;            // WS请求(可能与GET冲突)
-  Body body = 13;                   // body解析方式. 默认json!
-  uint32 status = 14;               // 成功响应状态码
-  Result result = 15;               // 结果处理方式.
-  repeated Error errors = 16;       // 错误列表
-  repeated string tags = 17;        // 标签列表
+  string trace = 10;               // TRACE请求
+  string connect = 11;             // CONNECT请求
+  string websocket = 12;           // WS请求(可能与GET冲突)
+  Body body = 13;                  // body解析方式. 默认json!
+  uint32 status = 14;              // 成功响应状态码
+  Result result = 15;              // 结果处理方式.
+  repeated Error errors = 16;      // 错误列表
+  repeated string tags = 17;       // 标签列表
 }
 
 message Role {
-  uint64 code = 1;                  // 角色标识
-  string name = 2;                  // 角色名称
-  string desc = 3;                  // 角色描述
+  uint64 code = 1;                 // 角色标识
+  string name = 2;                 // 角色名称
+  string desc = 3;                 // 角色描述
 }
 
 message Plugin {
@@ -162,8 +162,8 @@ message Meta {
 }
 
 extend  google.protobuf.ServiceOptions {
-  Tag tag = 20000;                 // 服务标签
-  bool http_only = 20001;          // 仅仅http
+  Tag tag = 20000;                // 服务标签
+  bool http_only = 20001;         // 仅仅http
 }
 
 extend google.protobuf.MethodOptions {
@@ -172,11 +172,11 @@ extend google.protobuf.MethodOptions {
 }
 
 extend google.protobuf.MessageOptions {
-  string desc = 40000;           // 消息描述
-  Plugin plugin = 40001;         // 消息插件
+  string desc = 40000;            // 消息描述
+  Plugin plugin = 40001;          // 消息插件
 }
 
 extend google.protobuf.FieldOptions {
-  Prop prop = 50000;             // 字段属性
-  Rule rule = 50001;             // 字段规则
+  Prop prop = 50000;              // 字段属性
+  Rule rule = 50001;              // 字段规则
 }
