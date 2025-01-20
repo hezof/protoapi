@@ -63,7 +63,7 @@ func (r *JsonDecoder) Read(p []byte) (int, error) {
 
 var _ io.Reader = (*JsonDecoder)(nil)
 
-func (r *JsonDecoder) reset(in io.Reader) *JsonDecoder {
+func (r *JsonDecoder) Reset(in io.Reader) *JsonDecoder {
 	r.in = in
 	r.mark = 0
 	r.size = 0
@@ -74,7 +74,7 @@ func (r *JsonDecoder) reset(in io.Reader) *JsonDecoder {
 	return r
 }
 
-func (r *JsonDecoder) clean() *JsonDecoder {
+func (r *JsonDecoder) Clean() *JsonDecoder {
 	r.in = nil
 	r.firstError = nil
 	return r

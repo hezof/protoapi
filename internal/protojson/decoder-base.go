@@ -202,50 +202,9 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message) {
 		if *p == nil {
 			*p = new(Message)
 		}
-
-		if d, ok := any(*p).(JsonCodec); ok {
+		if jc, ok := any(*p).(JsonCodec); ok {
 			// 已实现JsonCodec使用protojson加速解码
-			r.token = 0 // 指示next()执行"step info"而不是"step over"
-			t := r.next()
-			if t == ObjectEnd {
-				return
-			}
-			for {
-				if t != String {
-					r.expectedTokenError(String)
-					return
-				}
-				k := r.readString()
-				if r.next() != Colon {
-					r.expectedTokenError(Colon)
-					return
-				}
-
-				switch r.next() {
-				case 0:
-					r.unexpectedEndError()
-					return
-				case Null:
-					r.skipNull()
-				default:
-					d.DecodeJSON(r, k)
-				}
-
-				t = r.next()
-				switch t {
-				case Comma:
-					t = r.next()
-					if t == ObjectEnd {
-						r.invalidCharacterError()
-						return
-					}
-				case ObjectEnd:
-					return
-				default:
-					r.invalidCharacterError()
-					return
-				}
-			}
+			jc.DecodeJSON(r)
 		} else {
 			// 未实现JsonCodec使用encoding/std反射解码
 			r.unreadByte() // 回退"{"
@@ -254,6 +213,7 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message) {
 				r.reportError(err)
 			}
 		}
+
 	case Null:
 		r.skipNull()
 	case 0:

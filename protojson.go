@@ -14,6 +14,14 @@ type (
 )
 
 var (
+	VisitObject         = protojson.VisitObject
+	DecodeAny           = protojson.DecodeAny
+	EncodeAny           = protojson.EncodeAny
+	EncodeAny_OmitEmpty = protojson.EncodeAny_OmitEmpty
+	EncodeAny_WithEmpty = protojson.EncodeAny_WithEmpty
+)
+
+var (
 	NewJsonDecoder         = protojson.NewJsonDecoder
 	NewJsonBuffer          = protojson.NewJsonBuffer
 	DecodeBool             = protojson.DecodeBool
@@ -284,19 +292,6 @@ var (
 	EncodeMessageMap_ConvEmpty    = protojson.EncodeMessageMap_ConvEmpty
 )
 
-func DecodeJSON(in io.Reader, val any) error {
-	// 加速实现JsonCodec
-	if jc, ok := val.(JsonCodec); ok {
-		dec := GetDecoder(in)
-		defer PutDecoder(dec)
-
-		DecodeMessage(dec, jc)
-		return dec.Close()
-	}
-	// 其他仍用encoding/json
-	return json.NewDecoder(in).Decode(val)
-}
-
 var decoders = sync.Pool{
 	New: func() interface{} {
 		return NewJsonDecoder(nil, profile.DecoderBufferSize)
@@ -310,17 +305,49 @@ var encoders = sync.Pool{
 }
 
 func GetDecoder(in io.Reader) *JsonDecoder {
-	return decoders.Get().(*JsonDecoder).reset(in)
+	return decoders.Get().(*JsonDecoder).Reset(in)
 }
 
 func PutDecoder(dec *JsonDecoder) {
-	decoders.Put(dec.clean())
+	decoders.Put(dec.Clean())
 }
 
 func GetEncoder(out io.Writer) *JsonEncoder {
-	return encoders.Get().(*JsonEncoder).reset(out)
+	return encoders.Get().(*JsonEncoder).Reset(out)
 }
 
 func PutEncoder(enc *JsonEncoder) {
-	encoders.Put(enc.clean())
+	encoders.Put(enc.Clean())
+}
+
+func DecodeJSON(in io.Reader, val any) error {
+	// 加速实现JsonCodec
+	d := GetDecoder(in)
+	defer PutDecoder(d)
+
+	DecodeAny(d, val)
+	return d.Close()
+}
+
+func EncodeJSON(out io.Writer, val any) error {
+	e := GetEncoder(out)
+	defer PutEncoder(e)
+
+	EncodeAny(e, val)
+	return e.Close()
+}
+
+// ToJson Json转换快捷方法
+func ToJson(v any) string {
+	if jc, ok := v.(JsonCodec); ok {
+		e := NewJsonEncoder(nil, 1024)
+		jc.EncodeJSON(e)
+		_ = e.Close()
+		return UnsafeString(e.Buffer())
+	} else {
+		bs, _ := json.Marshal(v)
+		return UnsafeString(bs)
+
+		json.NewEncoder()
+	}
 }

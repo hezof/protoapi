@@ -2,7 +2,6 @@ package protojson
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"math"
 	"strconv"
@@ -527,7 +526,7 @@ func EncodeMessage[Message any](w *JsonEncoder, value *Message) {
 				w.buff = append(w.buff, rightBrace)
 			}
 		} else {
-			bs, err := json.Marshal(value)
+			bs, err := marshalWithEncodingJson(value)
 			if err != nil {
 				w.reportError(err)
 			} else {

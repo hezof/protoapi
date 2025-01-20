@@ -44,13 +44,13 @@ func (w *JsonEncoder) Write(p []byte) (int, error) {
 
 var _ io.Writer = (*JsonEncoder)(nil)
 
-func (w *JsonEncoder) reset(out io.Writer) *JsonEncoder {
+func (w *JsonEncoder) Reset(out io.Writer) *JsonEncoder {
 	w.out = out
 	w.buff = w.buff[0:0]
 	return w
 }
 
-func (w *JsonEncoder) clean() *JsonEncoder {
+func (w *JsonEncoder) Clean() *JsonEncoder {
 	w.out = nil
 	w.firstError = nil
 	return w
