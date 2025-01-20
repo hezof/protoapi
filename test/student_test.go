@@ -45,25 +45,28 @@ func testStdData() *StdStudent {
 
 func _TestEncodeWithBuffer() []byte {
 	s := testData()
-	w := protoapi.NewJsonEncoder(nil, 1024)
+	w := protoapi.GetEncoder(nil)
+	defer protoapi.PutEncoder(w)
 	protoapi.EncodeMessage(w, s)
 	err := w.Close()
 	if err != nil {
 		panic(err)
 	}
-	return w.Buffer()
+	return append([]byte(nil), w.Buffer()...)
 }
 
 func _TestEncodeWithWriter() []byte {
 	s := testData()
 	out := bytes.NewBuffer(make([]byte, 0, 1024))
-	w := protoapi.NewJsonEncoder(out, 1024)
+	w := protoapi.GetEncoder(out)
+	defer protoapi.PutEncoder(w)
+
 	protoapi.EncodeMessage(w, s)
 	err := w.Close()
 	if err != nil {
 		panic(err)
 	}
-	return out.Bytes()
+	return append([]byte(nil), w.Buffer()...)
 }
 
 func _TestDecodeWithBuffer(bs []byte) *Student {
@@ -78,7 +81,9 @@ func _TestDecodeWithBuffer(bs []byte) *Student {
 }
 
 func _TestDecodeWithReader(in io.Reader) *Student {
-	r := protoapi.NewJsonDecoder(in, 1024)
+	r := protoapi.GetDecoder(in)
+	defer protoapi.PutDecoder(r)
+
 	var s *Student
 	protoapi.DecodeMessage(r, &s)
 	err := r.Close()

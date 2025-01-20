@@ -33,7 +33,7 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	// 2. 输出message(local)的JsonCodec及MessageValidator实现
 	for _, m := range meta.Messages.Vec {
 		if m.FilePath == meta.Path {
-			implementJsonCodec(g, m)
+			implementFieldCodec(g, m)
 			if shouldMessageValidator(m) {
 				implementMessageValidator(g, m)
 			}
@@ -48,12 +48,12 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	}
 }
 
-func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
+func implementFieldCodec(g *protogen.GeneratedFile, m *MessageExt) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
 
 	//
 
-	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeJSON(r *protoapi.JsonDecoder) {")
+	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeField(r *protoapi.JsonDecoder, f string) {")
 	g.P("protoapi.DecodeMessage(r, &x, func(r *protoapi.JsonDecoder, x *", g.QualifiedGoIdent(m.GoIdent), ", k string) {")
 	g.P("switch k {")
 	for _, f := range m.Fields {
