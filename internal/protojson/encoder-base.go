@@ -1,4 +1,4 @@
-package protoapi
+package protojson
 
 import (
 	"encoding/base64"
@@ -7,12 +7,8 @@ import (
 	"strconv"
 )
 
-/*
-	需要支持default的编码:
-*/
-
 /*************************************
-	bool类型: WriteBool_<empty>
+	bool类型: EncodeBool_<empty>
  *************************************/
 
 func EncodeBool(w *JsonEncoder, value bool) {

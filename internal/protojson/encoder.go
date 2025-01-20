@@ -1,9 +1,13 @@
-package protoapi
+package protojson
 
 import (
 	"io"
 	"unicode/utf8"
 )
+
+/*
+JsonEncoder 核心结构, 实现struct的编码.
+*/
 
 const MinimumBufferLength = 1024 // limit minimum length of buffer
 const MaximumErrorLength = 16    // limit maximum length of error

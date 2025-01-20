@@ -1,7 +1,8 @@
-package protoapi
+package protojson
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 )
 
@@ -195,52 +196,61 @@ func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, va
 	}
 }
 
-func DecodeMessage[Message any](r *JsonDecoder, p **Message, h func(r *JsonDecoder, m *Message, k string)) {
+func DecodeMessage[Message any](r *JsonDecoder, p **Message) {
 	switch r.token {
 	case ObjectBegin:
 		if *p == nil {
 			*p = new(Message)
 		}
 
-		r.token = 0 // 指示next()执行"step info"而不是"step over"
-		t := r.next()
-		if t == ObjectEnd {
-			return
-		}
-		for {
-			if t != String {
-				r.expectedTokenError(String)
+		if d, ok := any(*p).(JsonCodec); ok {
+			// 已实现JsonCodec使用protojson加速解码
+			r.token = 0 // 指示next()执行"step info"而不是"step over"
+			t := r.next()
+			if t == ObjectEnd {
 				return
 			}
-			k := r.readString()
-			if r.next() != Colon {
-				r.expectedTokenError(Colon)
-				return
-			}
+			for {
+				if t != String {
+					r.expectedTokenError(String)
+					return
+				}
+				k := r.readString()
+				if r.next() != Colon {
+					r.expectedTokenError(Colon)
+					return
+				}
 
-			switch r.next() {
-			case 0:
-				r.unexpectedEndError()
-				return
-			case Null:
-				r.skipNull()
-			default:
-				h(r, *p, k)
-			}
+				switch r.next() {
+				case 0:
+					r.unexpectedEndError()
+					return
+				case Null:
+					r.skipNull()
+				default:
+					d.DecodeJSON(r, k)
+				}
 
-			t = r.next()
-			switch t {
-			case Comma:
 				t = r.next()
-				if t == ObjectEnd {
+				switch t {
+				case Comma:
+					t = r.next()
+					if t == ObjectEnd {
+						r.invalidCharacterError()
+						return
+					}
+				case ObjectEnd:
+					return
+				default:
 					r.invalidCharacterError()
 					return
 				}
-			case ObjectEnd:
-				return
-			default:
-				r.invalidCharacterError()
-				return
+			}
+		} else {
+			// 未实现JsonCodec使用encoding/std反射解码
+			err := json.Unmarshal(r.dumpObjectOrArray(ObjectBegin), *p)
+			if err != nil {
+				r.reportError(err)
 			}
 		}
 	case Null:

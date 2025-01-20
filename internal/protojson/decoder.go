@@ -1,4 +1,4 @@
-package protoapi
+package protojson
 
 import (
 	"fmt"
@@ -8,6 +8,10 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 )
+
+/*
+JsonDecoder 核心结构, 实现struct的解码.
+*/
 
 const MaximumNestingDepth = 256 // limit maximum depth of nesting, as allowed by https://tools.ietf.org/html/rfc7159#section-9
 
@@ -713,10 +717,10 @@ func (r *JsonDecoder) skipNull() {
 }
 
 // dumpData, dump数据
-func (r *JsonDecoder) dumpObjectOrArray() []byte {
+func (r *JsonDecoder) dumpObjectOrArray(token JsonToken) []byte {
 
 	var start, end byte
-	switch r.token {
+	switch token {
 	case ObjectBegin:
 		start, end = '{', '}'
 	case ArrayBegin:

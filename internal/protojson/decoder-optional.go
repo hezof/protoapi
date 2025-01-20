@@ -1,4 +1,4 @@
-package protoapi
+package protojson
 
 import "fmt"
 
@@ -194,6 +194,6 @@ func DecodeEnumOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int32]s
 	}
 }
 
-func DecodeMessageOptional[Message any](r *JsonDecoder, p **Message, h func(r *JsonDecoder, m *Message, k string)) {
-	DecodeMessage(r, p, h)
+func DecodeMessageOptional[Message any](r *JsonDecoder, p **Message) {
+	DecodeMessage(r, p)
 }

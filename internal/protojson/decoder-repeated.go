@@ -1,4 +1,4 @@
-package protoapi
+package protojson
 
 func DecodeBoolRepeated(r *JsonDecoder, p *[]bool) {
 	switch r.token {
@@ -451,7 +451,7 @@ func DecodeEnumRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[int32]
 	}
 }
 
-func DecodeMessageRepeated[Message any](r *JsonDecoder, p *[]*Message, h func(r *JsonDecoder, m *Message, f string)) {
+func DecodeMessageRepeated[Message any](r *JsonDecoder, p *[]*Message) {
 	switch r.token {
 	case ArrayBegin:
 		if *p == nil {
@@ -466,7 +466,7 @@ func DecodeMessageRepeated[Message any](r *JsonDecoder, p *[]*Message, h func(r 
 		}
 		for {
 			var v *Message
-			DecodeMessage(r, &v, h)
+			DecodeMessage(r, &v)
 			*p = append(*p, v)
 
 			switch r.next() {

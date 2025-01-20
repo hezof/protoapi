@@ -1,4 +1,4 @@
-package protoapi
+package protojson
 
 func DecodeBoolMap(r *JsonDecoder, p *map[string]bool) {
 	switch r.token {
@@ -583,7 +583,7 @@ func DecodeEnumMap[Enum ~int32](r *JsonDecoder, p *map[string]Enum, names map[in
 	}
 }
 
-func DecodeMessageMap[Message any](r *JsonDecoder, p *map[string]*Message, h func(r *JsonDecoder, m *Message, f string)) {
+func DecodeMessageMap[Message any](r *JsonDecoder, p *map[string]*Message) {
 	switch r.token {
 	case ObjectBegin:
 		if *p == nil {
@@ -608,7 +608,7 @@ func DecodeMessageMap[Message any](r *JsonDecoder, p *map[string]*Message, h fun
 			r.next()
 
 			var v *Message
-			DecodeMessage(r, &v, h)
+			DecodeMessage(r, &v)
 			(*p)[k] = v
 
 			t = r.next()

@@ -50,6 +50,9 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 
 func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
+
+	//
+
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeJSON(r *protoapi.JsonDecoder) {")
 	g.P("protoapi.DecodeMessage(r, &x, func(r *protoapi.JsonDecoder, x *", g.QualifiedGoIdent(m.GoIdent), ", k string) {")
 	g.P("switch k {")
@@ -183,7 +186,7 @@ func implementJsonCodec(g *protogen.GeneratedFile, m *MessageExt) {
 		case protoreflect.MessageKind:
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.DecodeBytesOptional(r, &x.", f.GoName, ")")
+				g.P("protoapi.DecodeAny(r, &x.", f.GoName, ")")
 			case f.IsRepeated:
 				g.P("protoapi.DecodeBytesRepeated(r, &x.", f.GoName, ")")
 			case f.IsMap:

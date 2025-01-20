@@ -107,58 +107,58 @@ message Pattern {
 message Prop {
 
   enum In {
-    body = 0;                       // 位于body
-    path = 1;                       // 位于path
-    query = 2;                      // 位于query
-    header = 3;                     // 位于header
-    cookie = 4;                     // 位于cookie
+    body = 0;                      // 位于body
+    path = 1;                      // 位于path
+    query = 2;                     // 位于query
+    header = 3;                    // 位于header
+    cookie = 4;                    // 位于cookie
   }
 
   enum Style {
-    simple = 0;                     // ARRAY(blue,black,brown), OBJECT(R=100,G=200,B=150)
-    form = 1;                       // ARRAY(color=blue&color=black&color=brown), OBJECT(R=100&G=200&B=150)
-    json = 2;                       // json
+    simple = 0;                    // ARRAY(blue,black,brown), OBJECT(R=100,G=200,B=150)
+    form = 1;                      // ARRAY(color=blue&color=black&color=brown), OBJECT(R=100&G=200&B=150)
+    json = 2;                      // json
   }
 
   enum Empty {
-    omit_empty = 0;                 // 忽略空值, 即omitempty
-    with_empty = 1;                 // 携带空值, 即忽略omitempty
-    conv_empty = 2;                 // 转换空值: 对于slice/map,会将null转为[]或{}.
+    omit_empty = 0;                // 忽略空值, 即omitempty
+    with_empty = 1;                // 携带空值, 即忽略omitempty
+    conv_empty = 2;                // 转换空值: 对于slice/map,会将null转为[]或{}.
   }
 
-  string name = 1;                  // 概要信息
-  string desc = 2;                  // 描述信息
-  Empty empty = 3;                  // 值处理策略
-  bool escape_html = 4;             // 是否转义html特殊字符.
-  bool enum_name = 5;               // 是否使用枚举名称.
-  In in = 6;                        // 数据位置. 同openapi的in.
-  Style style = 7;                  // 数据式样. 同openapi的style. 用于非json array或object!
-  string format = 8;                // 数据格式. 仅用于swagger文档提示.
+  string name = 1;                 // 概要信息
+  string desc = 2;                 // 描述信息
+  Empty empty = 3;                 // 值处理策略
+  bool escape_html = 4;            // 是否转义html特殊字符.
+  bool enum_name = 5;              // 是否使用枚举名称.
+  In in = 6;                       // 数据位置. 同openapi的in.
+  Style style = 7;                 // 数据式样. 同openapi的style. 用于非json array或object!
+  string format = 8;               // 数据格式. 仅用于swagger文档提示.
 }
 
 message Rule {
-  Error required = 1;               // 是否必需. 必须声明optional!
-  Maximum minimum = 2;       // 最小数值
-  Maximum maximum = 3;       // 最大数值
-  MinLength min_length = 4;             // 最小长度
-  MaxLength max_length = 5;             // 最大长度
-  MinItems min_items = 6;              // 最小数量
-  MaxItems max_items = 7;              // 最大数量
-  Enum enum = 8;                    // 枚举列表
-  Pattern pattern = 9;              // 正则匹配
-  Plugin plugin = 10;               // 插件校验
+  Error required = 1;              // 是否必需. 必须声明optional!
+  Maximum minimum = 2;             // 最小数值
+  Maximum maximum = 3;             // 最大数值
+  MinLength min_length = 4;        // 最小长度
+  MaxLength max_length = 5;        // 最大长度
+  MinItems min_items = 6;          // 最小数量
+  MaxItems max_items = 7;          // 最大数量
+  Enum enum = 8;                   // 枚举列表
+  Pattern pattern = 9;             // 正则匹配
+  Plugin plugin = 10;              // 插件校验
 }
 
 message Meta {
-  string Package = 1;            // 元数据package
-  string Service = 2;            // 元数据service
-  string Method = 3;             // 元数据method
-  bool ClientStreaming = 4;      // 元数据client streaming
-  bool ServerStreaming = 5;      // 元数据server streaming
-  Http Http = 6;                 // 元数据Http
-  Role Role = 7;                 // 元数据Role
-  Plugin InputPlugin = 8;        // 元数据message plugin
-  repeated Rule InputRules = 9;  // 元数据field rules
+  string Package = 1;              // 元数据package
+  string Service = 2;              // 元数据service
+  string Method = 3;               // 元数据method
+  bool ClientStreaming = 4;        // 元数据client streaming
+  bool ServerStreaming = 5;        // 元数据server streaming
+  Http Http = 6;                   // 元数据Http
+  Role Role = 7;                   // 元数据Role
+  Plugin InputPlugin = 8;          // 元数据message plugin
+  repeated Rule InputRules = 9;    // 元数据field rules
 }
 
 extend  google.protobuf.ServiceOptions {
