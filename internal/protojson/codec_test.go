@@ -8,7 +8,7 @@ import (
 func TestDecoder(t *testing.T) {
 	var s *JsonDecoder
 	if js, ok := any(s).(JsonCodec); ok {
-		js.DecodeJSON(nil, "a")
+		js.DecodeJSON(nil)
 	} else {
 		fmt.Println("not")
 	}
