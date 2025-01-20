@@ -2,83 +2,37 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/protoapi/internal/encoding/json" // 处理escapeHtml的问题
 	"io"
 	"reflect"
 	"sync"
 )
 
 /*
-JsonCodec 核心接口, 实现struct的解码与编码.
+FieldCodec 核心接口, 实现Message的解码与编码.
 该接口用于加速proto.Message的JSON解码/编码速度.
 */
-type JsonCodec interface {
-	DecodeJSON(r *JsonDecoder)
-	EncodeJSON(w *JsonEncoder)
-}
-
-// VisitObject 用于DecodeJSON内部遍历的辅助函数
-func VisitObject(r *JsonDecoder, f func(r *JsonDecoder, k string)) {
-	r.token = 0 // 指示next()执行"step info"而不是"step over"
-	t := r.next()
-	if t == ObjectEnd {
-		return
-	}
-	for {
-		if t != String {
-			r.expectedTokenError(String)
-			return
-		}
-		k := r.readString()
-		if r.next() != Colon {
-			r.expectedTokenError(Colon)
-			return
-		}
-
-		switch r.next() {
-		case 0:
-			r.unexpectedEndError()
-			return
-		case Null:
-			r.skipNull()
-		default:
-			f(r, k)
-		}
-
-		t = r.next()
-		switch t {
-		case Comma:
-			t = r.next()
-			if t == ObjectEnd {
-				r.invalidCharacterError()
-				return
-			}
-		case ObjectEnd:
-			return
-		default:
-			r.invalidCharacterError()
-			return
-		}
-	}
+type FieldCodec interface {
+	DecodeField(r *JsonDecoder, f string)
+	EncodeField(w *JsonEncoder)
 }
 
 func DecodeAny(r *JsonDecoder, val any) {
 	// 加速实现JsonCodec
-	if jc, ok := val.(JsonCodec); ok {
-		jc.DecodeJSON(r)
+	if jc, ok := val.(FieldCodec); ok {
+		r.readObject(jc)
 		return
 	}
 	// 其他仍用encoding/json
 	switch r.token {
 	case ObjectBegin:
-		err := json.Unmarshal(r.dumpObjectOrArray(ObjectBegin), val)
+		err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), val)
 		if err != nil {
 			r.reportError(err)
 		}
 	case ObjectEnd:
 		r.invalidCharacterError()
 	case ArrayBegin:
-		err := json.Unmarshal(r.dumpObjectOrArray(ArrayBegin), val)
+		err := UnmarshalJSON(r.dumpObjectOrArray(ArrayBegin), val)
 		if err != nil {
 			r.reportError(err)
 		}
@@ -187,11 +141,19 @@ func DecodeAny(r *JsonDecoder, val any) {
 
 }
 
+// EncodeAny 与EncodeMessage很相似, 但后者是泛型方法.
 func EncodeAny(w *JsonEncoder, val any) {
-	if jc, ok := val.(JsonCodec); ok {
-		jc.EncodeJSON(w)
+	if jc, ok := val.(FieldCodec); ok {
+		w.ensure(2)
+		w.buff = append(w.buff, leftBrace)
+		jc.EncodeField(w)
+		if last := len(w.buff) - 1; w.buff[last] == comma {
+			w.buff[last] = rightBrace
+		} else {
+			w.buff = append(w.buff, rightBrace)
+		}
 	} else {
-		bs, err := json.Marshal(val)
+		bs, err := MarshalJSON(val)
 		if err != nil {
 			w.reportError(err)
 		}
@@ -273,13 +235,13 @@ func EncodeJSON(out io.Writer, val any) error {
 
 // ToJson Json转换快捷方法
 func ToJson(v any) string {
-	if jc, ok := v.(JsonCodec); ok {
-		e := NewJsonEncoder(nil, 1024)
-		jc.EncodeJSON(e)
-		_ = e.Close()
-		return UnsafeString(e.Buffer())
+	if fc, ok := v.(FieldCodec); ok {
+		w := NewJsonEncoder(nil, 1024)
+		EncodeAny(w, fc)
+		_ = w.Close()
+		return UnsafeString(w.buff)
 	} else {
-		bs, _ := json.Marshal(v)
+		bs, _ := MarshalJSON(v)
 		return UnsafeString(bs)
 	}
 }

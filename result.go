@@ -25,31 +25,27 @@ type StatusResult struct {
 	Data    any    `json:"data,omitempty"`    // 结果数据
 }
 
-func (sr *StatusResult) DecodeJSON(r *JsonDecoder) {
-	DecodeMessage(r, &sr, func(r *JsonDecoder, sr *StatusResult, k string) {
-		switch k {
-		case profile.ResultCodeField:
-			DecodeUint32(r, &sr.Code)
-		case profile.ResultNameField:
-			DecodeString(r, &sr.Name)
-		case profile.ResultMessageField:
-			DecodeString(r, &sr.Message)
-		case profile.ResultDataField:
-			DecodeAny(r, &sr.Data)
-		}
-	})
+func (sr *StatusResult) DecodeField(r *JsonDecoder, f string) {
+	switch f {
+	case profile.ResultCodeField:
+		DecodeUint32(r, &sr.Code)
+	case profile.ResultNameField:
+		DecodeString(r, &sr.Name)
+	case profile.ResultMessageField:
+		DecodeString(r, &sr.Message)
+	case profile.ResultDataField:
+		DecodeAny(r, &sr.Data)
+	}
 }
 
-func (sr *StatusResult) EncodeJSON(w *JsonEncoder) {
-	EncodeMessage(w, sr, func(w *JsonEncoder, r *StatusResult) {
-		EncodeUint32_WithEmpty(w, profile.ResultCodeField, r.Code)
-		EncodeString_OmitEmpty(w, profile.ResultNameField, r.Name)
-		EncodeString_OmitEmpty(w, profile.ResultMessageField, r.Message)
-		EncodeAny_OmitEmpty(w, profile.ResultDataField, r.Data)
-	})
+func (sr *StatusResult) EncodeField(w *JsonEncoder) {
+	EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
+	EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
+	EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
+	EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
 }
 
-var _ JsonCodec = (*StatusResult)(nil)
+var _ FieldCodec = (*StatusResult)(nil)
 
 func (sr *StatusResult) Error() string {
 	return ToJson(sr)

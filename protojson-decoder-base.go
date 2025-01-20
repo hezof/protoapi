@@ -202,9 +202,9 @@ func DecodeMessage[Message any](r *JsonDecoder, p **Message) {
 		if *p == nil {
 			*p = new(Message)
 		}
-		if jc, ok := any(*p).(JsonCodec); ok {
+		if fc, ok := any(*p).(FieldCodec); ok {
 			// 已实现JsonCodec使用protojson加速解码
-			jc.DecodeJSON(r)
+			r.readObject(fc)
 		} else {
 			// 未实现JsonCodec使用encoding/std反射解码
 			r.unreadByte() // 回退"{"

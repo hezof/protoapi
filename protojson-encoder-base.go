@@ -472,12 +472,23 @@ func EncodeEnum_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, value Enum) 
 	message类型: WriteMessage_<empty>
  *************************************/
 
+func EncodeMessage_OmitEmpty[Message any](w *JsonEncoder, name string, value *Message) {
+	if value != nil {
+		w.ensure(4 + len(name))
+		w.buff = append(w.buff, quotes)
+		w.buff = append(w.buff, name...)
+		w.buff = append(w.buff, quotes, colon)
+		EncodeMessage(w, value)
+		w.buff = append(w.buff, comma)
+	}
+}
+
 func EncodeMessage[Message any](w *JsonEncoder, value *Message) {
 	if value != nil {
-		if e, ok := any(value).(JsonCodec); ok {
+		if e, ok := any(value).(FieldCodec); ok {
 			w.ensure(2)
 			w.buff = append(w.buff, leftBrace)
-			e.EncodeJSON(w)
+			e.EncodeField(w)
 			if last := len(w.buff) - 1; w.buff[last] == comma {
 				w.buff[last] = rightBrace
 			} else {
@@ -494,17 +505,6 @@ func EncodeMessage[Message any](w *JsonEncoder, value *Message) {
 	} else {
 		w.ensure(4)
 		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
-	}
-}
-
-func EncodeMessage_OmitEmpty[Message any](w *JsonEncoder, name string, value *Message) {
-	if value != nil {
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon)
-		EncodeMessage(w, value)
-		w.buff = append(w.buff, comma)
 	}
 }
 

@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -170,7 +169,7 @@ func (ctx *Context) writeErrorResult(out io.Writer, result *StatusResult) error 
 	w := GetEncoder(out)
 	defer PutEncoder(w)
 
-	result.EncodeJSON(w)
+	EncodeMessage(w, result)
 	return w.Close()
 }
 
@@ -195,24 +194,17 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 
 		ctx.result.Code = ctx.Handler.Setting.Meta.Http.Status
 		ctx.result.Data = val
-		ctx.result.EncodeJSON(w)
+		EncodeMessage(w, &ctx.result)
 
 		return w.Close()
 
 	case Http_unwrap:
 
-		if jc, ok := val.(JsonCodec); ok {
-			w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
-			defer PutEncoder(w)
+		w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
+		defer PutEncoder(w)
 
-			jc.EncodeJSON(w)
-			return w.Close()
-		} else {
-			w := json.NewEncoder(ctx.ResponseWriter.ResponseWriter)
-			w.SetEscapeHTML(false)
-			return w.Encode(val)
-		}
-
+		EncodeAny(w, val)
+		return w.Close()
 	}
 	return fmt.Errorf("unsupport result catalog: %v", ctx.Handler.Setting.Meta.Http.Result)
 }

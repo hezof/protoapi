@@ -282,9 +282,52 @@ func (r *JsonDecoder) next() JsonToken {
 	}
 }
 
+func (r *JsonDecoder) readObject(fc FieldCodec) {
+	r.token = 0 // 指示next()执行"step info"而不是"step over"
+	t := r.next()
+	if t == ObjectEnd {
+		return
+	}
+	for {
+		if t != String {
+			r.expectedTokenError(String)
+			return
+		}
+		k := r.readString()
+		if r.next() != Colon {
+			r.expectedTokenError(Colon)
+			return
+		}
+
+		switch r.next() {
+		case 0:
+			r.unexpectedEndError()
+			return
+		case Null:
+			r.skipNull()
+		default:
+			fc.DecodeField(r, k)
+		}
+
+		t = r.next()
+		switch t {
+		case Comma:
+			t = r.next()
+			if t == ObjectEnd {
+				r.invalidCharacterError()
+				return
+			}
+		case ObjectEnd:
+			return
+		default:
+			r.invalidCharacterError()
+			return
+		}
+	}
+}
+
 func (r *JsonDecoder) skipObject() {
 	r.token = 0
-
 	token := r.next()
 	for token != ObjectEnd {
 		if token != String {
