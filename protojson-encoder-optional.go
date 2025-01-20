@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 import "strconv"
 
@@ -487,7 +487,7 @@ func EncodeStringOptional(w *JsonEncoder, value *string) {
 	default:
 		w.ensure(2 + len(*value))
 		w.buff = append(w.buff, quotes)
-		w.escape(*value, &noEscapeHtmlTable)
+		w.escape(*value)
 		w.buff = append(w.buff, quotes)
 	}
 }
@@ -498,7 +498,7 @@ func EncodeStringOptional_OmitEmpty(w *JsonEncoder, name string, value *string) 
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(*value, &noEscapeHtmlTable)
+		w.escape(*value)
 		w.buff = append(w.buff, quotes, comma)
 	}
 }
@@ -520,7 +520,7 @@ func EncodeStringOptional_WithEmpty(w *JsonEncoder, name string, value *string) 
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(*value, &noEscapeHtmlTable)
+		w.escape(*value)
 		w.buff = append(w.buff, quotes, comma)
 	}
 }
@@ -537,73 +537,7 @@ func EncodeStringOptional_ConvEmpty(w *JsonEncoder, name string, value *string) 
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(*value, &noEscapeHtmlTable)
-		w.buff = append(w.buff, quotes, comma)
-	}
-}
-
-func EncodeStringHtmlOptional(w *JsonEncoder, value *string) {
-	switch {
-	case value == nil:
-		w.ensure(4)
-		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
-	case *value == "":
-		w.ensure(2)
-		w.buff = append(w.buff, quotes, quotes)
-	default:
-		w.ensure(2 + len(*value))
-		w.buff = append(w.buff, quotes)
-		w.escape(*value, &escapeHtmlTable)
-		w.buff = append(w.buff, quotes)
-	}
-}
-
-func EncodeStringHtmlOptional_OmitEmpty(w *JsonEncoder, name string, value *string) {
-	if value != nil && *value != "" {
-		w.ensure(6 + len(name) + len(*value))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(*value, &escapeHtmlTable)
-		w.buff = append(w.buff, quotes, comma)
-	}
-}
-
-func EncodeStringHtmlOptional_WithEmpty(w *JsonEncoder, name string, value *string) {
-	switch {
-	case value == nil:
-		w.ensure(8 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
-	case *value == "":
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
-	default:
-		w.ensure(6 + len(name) + len(*value))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(*value, &escapeHtmlTable)
-		w.buff = append(w.buff, quotes, comma)
-	}
-}
-
-func EncodeStringHtmlOptional_ConvEmpty(w *JsonEncoder, name string, value *string) {
-	switch {
-	case value == nil || *value == "":
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
-	default:
-		w.ensure(6 + len(name) + len(*value))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(*value, &escapeHtmlTable)
+		w.escape(*value)
 		w.buff = append(w.buff, quotes, comma)
 	}
 }

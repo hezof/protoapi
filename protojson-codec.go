@@ -1,9 +1,11 @@
-package protojson
+package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/protoapi/internal/json" // 处理escapeHtml的问题
+	"github.com/hezof/protoapi/internal/encoding/json" // 处理escapeHtml的问题
+	"io"
 	"reflect"
+	"sync"
 )
 
 /*
@@ -221,5 +223,63 @@ func EncodeAny_WithEmpty(w *JsonEncoder, name string, val any) {
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
+	}
+}
+
+var decoders = sync.Pool{
+	New: func() interface{} {
+		return NewJsonDecoder(nil, profile.DecoderBufferSize)
+	},
+}
+
+var encoders = sync.Pool{
+	New: func() interface{} {
+		return NewJsonEncoder(nil, profile.EncoderBufferSize)
+	},
+}
+
+func GetDecoder(in io.Reader) *JsonDecoder {
+	return decoders.Get().(*JsonDecoder).Reset(in)
+}
+
+func PutDecoder(dec *JsonDecoder) {
+	decoders.Put(dec.Clean())
+}
+
+func GetEncoder(out io.Writer) *JsonEncoder {
+	return encoders.Get().(*JsonEncoder).Reset(out)
+}
+
+func PutEncoder(enc *JsonEncoder) {
+	encoders.Put(enc.Clean())
+}
+
+func DecodeJSON(in io.Reader, val any) error {
+	// 加速实现JsonCodec
+	d := GetDecoder(in)
+	defer PutDecoder(d)
+
+	DecodeAny(d, val)
+	return d.Close()
+}
+
+func EncodeJSON(out io.Writer, val any) error {
+	e := GetEncoder(out)
+	defer PutEncoder(e)
+
+	EncodeAny(e, val)
+	return e.Close()
+}
+
+// ToJson Json转换快捷方法
+func ToJson(v any) string {
+	if jc, ok := v.(JsonCodec); ok {
+		e := NewJsonEncoder(nil, 1024)
+		jc.EncodeJSON(e)
+		_ = e.Close()
+		return UnsafeString(e.Buffer())
+	} else {
+		bs, _ := json.Marshal(v)
+		return UnsafeString(bs)
 	}
 }

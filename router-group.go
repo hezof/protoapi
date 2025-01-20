@@ -47,10 +47,7 @@ func (rc *_group) HandleFunc(method string, path string, hs ...HandleFunc) *_gro
 }
 
 func (rc *_group) Handle(hd *Handler) *_group {
-	// 注意: 每个Handler必须保证Meta/Method/Path非空!!!
-	if hd.Meta == nil {
-		hd.Meta = Meta(profile.DefaultApplyStatus, Http_simple)
-	}
+
 	setting, ok := rc.settings[hd.Method]
 	if !ok {
 		setting = make(map[string]*RequestSetting)

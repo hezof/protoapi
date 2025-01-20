@@ -21,7 +21,7 @@ type Handler struct {
 func RestfulHandleFunc(ctx *Context) {
 
 	// 业务处理(前置校验).
-	rsp, err := ctx.Handler.Meta.Call(ctx, ctx.Request.Body)
+	rsp, err := ctx.Handler.Setting.Call(ctx, ctx.Request.Body)
 
 	// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
 	if err != nil {
@@ -71,7 +71,7 @@ func WebsocketHandleFunc(ctx *Context) {
 			return // 结束当前ws链接
 		}
 		// 业务逻辑(前置校验)
-		rsp, err := ctx.Handler.Meta.Call(ctx, in)
+		rsp, err := ctx.Handler.Setting.Call(ctx, in)
 
 		// 结果处理
 		if err != nil {

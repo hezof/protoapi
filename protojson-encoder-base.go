@@ -1,9 +1,9 @@
-package protojson
+package protoapi
 
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/hezof/protoapi/internal/json"
+	"github.com/hezof/protoapi/internal/encoding/json"
 	"math"
 	"strconv"
 )
@@ -312,7 +312,7 @@ func EncodeString(w *JsonEncoder, value string) {
 	if value != "" {
 		w.ensure(2 + len(value))
 		w.buff = append(w.buff, quotes)
-		w.escape(value, &noEscapeHtmlTable)
+		w.escape(value)
 		w.buff = append(w.buff, quotes)
 	} else {
 		w.ensure(2)
@@ -326,7 +326,7 @@ func EncodeString_OmitEmpty(w *JsonEncoder, name string, value string) {
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(value, &noEscapeHtmlTable)
+		w.escape(value)
 		w.buff = append(w.buff, quotes, comma)
 	}
 }
@@ -337,7 +337,7 @@ func EncodeString_WithEmpty(w *JsonEncoder, name string, value string) {
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(value, &noEscapeHtmlTable)
+		w.escape(value)
 		w.buff = append(w.buff, quotes, comma)
 	} else {
 		w.ensure(6 + len(name))
@@ -349,49 +349,6 @@ func EncodeString_WithEmpty(w *JsonEncoder, name string, value string) {
 
 func EncodeString_ConvEmpty(w *JsonEncoder, name string, value string) {
 	EncodeString_WithEmpty(w, name, value)
-}
-
-func EncodeStringHtml(w *JsonEncoder, value string) {
-	if value != "" {
-		w.ensure(2 + len(value))
-		w.buff = append(w.buff, quotes)
-		w.escape(value, &escapeHtmlTable)
-		w.buff = append(w.buff, quotes)
-	} else {
-		w.ensure(2)
-		w.buff = append(w.buff, quotes, quotes)
-	}
-}
-
-func EncodeStringHtml_OmitEmpty(w *JsonEncoder, name string, value string) {
-	if value != "" {
-		w.ensure(6 + len(name) + len(value))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(value, &escapeHtmlTable)
-		w.buff = append(w.buff, quotes, comma)
-	}
-}
-
-func EncodeStringHtml_WithEmpty(w *JsonEncoder, name string, value string) {
-	if value != "" {
-		w.ensure(6 + len(name) + len(value))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes)
-		w.escape(value, &escapeHtmlTable)
-		w.buff = append(w.buff, quotes, comma)
-	} else {
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
-	}
-}
-
-func EncodeStringHtml_ConvEmpty(w *JsonEncoder, name string, value string) {
-	EncodeStringHtml_WithEmpty(w, name, value)
 }
 
 /*************************************

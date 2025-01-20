@@ -182,18 +182,18 @@ func (ctx *Context) WriteApplyResult(val any) error {
 	// 设置内容类型
 	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
 	// 写出状态与结果
-	ctx.ResponseWriter.WriteStatus(ctx.Handler.Meta.Status)
+	ctx.ResponseWriter.WriteStatus(ctx.Handler.Setting.Meta.Http.Status)
 	return ctx.writeApplyResult(ctx.ResponseWriter.ResponseWriter, val)
 }
 
 func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
-	switch ctx.Handler.Meta.Result {
+	switch ctx.Handler.Setting.Meta.Http.Result {
 	case Http_simple:
 
 		w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
 		defer PutEncoder(w)
 
-		ctx.result.Code = ctx.Handler.Meta.Status
+		ctx.result.Code = ctx.Handler.Setting.Meta.Http.Status
 		ctx.result.Data = val
 		ctx.result.EncodeJSON(w)
 
@@ -214,7 +214,7 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 		}
 
 	}
-	return fmt.Errorf("unsupport result catalog: %v", ctx.Handler.Meta.Result)
+	return fmt.Errorf("unsupport result catalog: %v", ctx.Handler.Setting.Meta.Http.Result)
 }
 
 func (ctx *Context) WritePlain(status int, data string) error {

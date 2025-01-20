@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 /*************************************
 	bool类型: EncodeBoolRepeated_<empty>
@@ -797,103 +797,6 @@ func EncodeStringRepeated_ConvEmpty(w *JsonEncoder, name string, value []string)
 		w.buff = append(w.buff, quotes, colon, leftBracket, comma)
 		for _, v := range value {
 			EncodeString(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBracket
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBracket, comma)
-		}
-	}
-}
-
-func EncodeStringHtmlRepeated(w *JsonEncoder, value []string) {
-	switch {
-	case value == nil:
-		w.ensure(4)
-		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
-	case len(value) == 0:
-		w.ensure(2)
-		w.buff = append(w.buff, leftBracket, rightBracket)
-	default:
-		w.ensure(2)
-		w.buff = append(w.buff, leftBracket)
-		for _, v := range value {
-			EncodeStringHtml(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBracket
-		} else {
-			w.buff = append(w.buff, rightBracket)
-		}
-	}
-}
-
-func EncodeStringHtmlRepeated_OmitEmpty(w *JsonEncoder, name string, value []string) {
-	if len(value) != 0 {
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBracket)
-		for _, v := range value {
-			EncodeStringHtml(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBracket
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBracket, comma)
-		}
-	}
-}
-
-func EncodeStringHtmlRepeated_WithEmpty(w *JsonEncoder, name string, value []string) {
-	switch {
-	case value == nil:
-		w.ensure(8 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
-	case len(value) == 0:
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBracket, rightBracket, comma)
-	default:
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBracket)
-		for _, v := range value {
-			EncodeStringHtml(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBracket
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBracket, comma)
-		}
-	}
-}
-
-func EncodeStringHtmlRepeated_ConvEmpty(w *JsonEncoder, name string, value []string) {
-	switch {
-	case value == nil || len(value) == 0:
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBracket, rightBracket, comma)
-	default:
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBracket)
-		for _, v := range value {
-			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {

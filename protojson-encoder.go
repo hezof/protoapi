@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 import (
 	"io"
@@ -85,7 +85,7 @@ func (w *JsonEncoder) Buffer() []byte {
 	return w.buff
 }
 
-func (w *JsonEncoder) escape(s string, escapeTable *[128]bool) {
+func (w *JsonEncoder) escape(s string) {
 
 	// Portions of the string that contain no escapes are appended as
 	// byte slices.
@@ -96,7 +96,7 @@ func (w *JsonEncoder) escape(s string, escapeTable *[128]bool) {
 		c := s[i]
 
 		if c < utf8.RuneSelf {
-			if escapeTable[c] {
+			if noEscapeHtmlTable[c] {
 				// single-width character, no escaping is required
 				i++
 				continue
@@ -208,6 +208,6 @@ func table(falseValues ...int) [128]bool {
 }
 
 var (
-	escapeHtmlTable   = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '&', '<', '>', '\\')
+	//escapeHtmlTable   = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '&', '<', '>', '\\')
 	noEscapeHtmlTable = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '\\')
 )

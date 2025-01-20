@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 /*************************************
 	bool类型: MapBoolMap_<empty>
@@ -861,111 +861,6 @@ func EncodeStringMap_ConvEmpty(w *JsonEncoder, name string, value map[string]str
 			EncodeString(w, k)
 			w.buff = append(w.buff, colon)
 			EncodeString(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
-	}
-}
-
-func EncodeStringHtmlMap(w *JsonEncoder, value map[string]string) {
-	switch {
-	case value == nil:
-		w.ensure(4)
-		w.buff = append(w.buff, 'n', 'u', 'l', 'l')
-	case len(value) == 0:
-		w.ensure(2)
-		w.buff = append(w.buff, leftBrace, rightBrace)
-	default:
-		w.ensure(2)
-		w.buff = append(w.buff, leftBrace)
-		for k, v := range value {
-			EncodeString(w, k)
-			w.buff = append(w.buff, colon)
-			EncodeStringHtml(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-		} else {
-			w.buff = append(w.buff, rightBrace)
-		}
-	}
-}
-
-func EncodeStringHtmlMap_OmitEmpty(w *JsonEncoder, name string, value map[string]string) {
-	if len(value) != 0 {
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		for k, v := range value {
-			EncodeString(w, k)
-			w.buff = append(w.buff, colon)
-			EncodeStringHtml(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
-	}
-}
-
-func EncodeStringHtmlMap_WithEmpty(w *JsonEncoder, name string, value map[string]string) {
-	switch {
-	case value == nil:
-		w.ensure(8 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
-	case len(value) == 0:
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace, rightBrace, comma)
-	default:
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		for k, v := range value {
-			EncodeString(w, k)
-			w.buff = append(w.buff, colon)
-			EncodeStringHtml(w, v)
-			w.buff = append(w.buff, comma)
-		}
-		if last := len(w.buff) - 1; w.buff[last] == comma {
-			w.buff[last] = rightBrace
-			w.buff = append(w.buff, comma)
-		} else {
-			w.buff = append(w.buff, rightBrace, comma)
-		}
-	}
-}
-
-func EncodeStringHtmlMap_ConvEmpty(w *JsonEncoder, name string, value map[string]string) {
-	switch {
-	case value == nil || len(value) == 0:
-		w.ensure(6 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace, rightBrace, comma)
-	default:
-		w.ensure(4 + len(name))
-		w.buff = append(w.buff, quotes)
-		w.buff = append(w.buff, name...)
-		w.buff = append(w.buff, quotes, colon, leftBrace)
-		for k, v := range value {
-			EncodeString(w, k)
-			w.buff = append(w.buff, colon)
-			EncodeStringHtml(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		if last := len(w.buff) - 1; w.buff[last] == comma {

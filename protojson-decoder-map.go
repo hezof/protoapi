@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 func DecodeBoolMap(r *JsonDecoder, p *map[string]bool) {
 	switch r.token {

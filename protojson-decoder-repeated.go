@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 func DecodeBoolRepeated(r *JsonDecoder, p *[]bool) {
 	switch r.token {

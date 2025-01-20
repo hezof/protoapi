@@ -1,4 +1,4 @@
-package protojson
+package protoapi
 
 import (
 	"fmt"
