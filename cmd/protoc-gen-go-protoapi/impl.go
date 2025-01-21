@@ -218,8 +218,157 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 	g.P("}") // switch
 	g.P("}") // func
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") EncodeJSON(w *protoapi.JsonEncoder) {")
-
-	g.P("}")
+	for _, f := range m.Fields {
+		switch {
+		case IsKind(f, protoreflect.BoolKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeBoolOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeBoolRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeBoolMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeBool(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.EnumKind):
+			enumGoName := g.QualifiedGoIdent(f.Enum.GoIdent)
+			if f.Prop != nil && f.Prop.EnumName {
+				switch {
+				case f.HasOptional:
+					g.P("protoapi.EncodeEnumNameOptional(w, x.", f.GoName, ", ", enumGoName, "_name)")
+				case f.IsRepeated:
+					g.P("protoapi.EncodeEnumNameRepeated(w, x.", f.GoName, ", ", enumGoName, "_name)")
+				case f.IsMap:
+					g.P("protoapi.EncodeEnumNameMap(w, x.", f.GoName, ", ", enumGoName, "_name)")
+				default:
+					g.P("protoapi.EncodeEnumName(w, x.", f.GoName, ", ", enumGoName, "_name)")
+				}
+			} else {
+				switch {
+				case f.HasOptional:
+					g.P("protoapi.EncodeEnumOptional(w, x.", f.GoName, ")")
+				case f.IsRepeated:
+					g.P("protoapi.EncodeEnumRepeated(w, x.", f.GoName, ")")
+				case f.IsMap:
+					g.P("protoapi.EncodeEnumMap(w, x.", f.GoName, ")")
+				default:
+					g.P("protoapi.EncodeEnum(w, x.", f.GoName, ")")
+				}
+			}
+		case IsKind(f, protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeInt32Optional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeInt32Repeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeInt32Map(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeInt32(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.Uint32Kind, protoreflect.Fixed32Kind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeUint32Optional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeUint32Repeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeUint32Map(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeUint32(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeInt64Optional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeInt64Repeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeInt64Map(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeInt64(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.Uint64Kind, protoreflect.Fixed64Kind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeUint64Optional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeUint64Repeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeUint64Map(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeUint64(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.FloatKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeFloatOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeFloatRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeFloatMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeFloat(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.DoubleKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeDoubleOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeDoubleRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeDoubleMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeDouble(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.StringKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeStringOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeStringRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeStringMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeString(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.BytesKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeBytesOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeBytesRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeBytesMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeBytes(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.MessageKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeMessageOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeMessageRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeMessageMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeMessage(w, x.", f.GoName, ")")
+			}
+		case IsKind(f, protoreflect.GroupKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.EncodeMessageOptional(w, x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.EncodeMessageRepeated(w, x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.EncodeMessageMap(w, x.", f.GoName, ")")
+			default:
+				g.P("protoapi.EncodeMessage(w, x.", f.GoName, ")")
+			}
+		}
+	}
+	g.P("}") // func
 }
 
 func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
@@ -679,7 +828,37 @@ func validatePattern(g *protogen.GeneratedFile, i int, f *FieldExt) {
 }
 
 func implementServiceRegistry(g *protogen.GeneratedFile, s *ServiceExt) {
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "io", GoImportPath: "io"})
 
+	g.P("func ", s.GoName, "Registry(impl interface{}, aspects []protoapi.ServiceAspect) *protoapi.ServiceSetting {")
+	g.P("ret := new(protoapi.ServiceSetting)")
+	g.P("ret.Impl = impl")
+	g.P("ret.Desc = &", s.GoName, "_ServiceDesc") // FIXBUG: protoc-gen-go-grpc@v1.1.0后变成public类型
+	g.P("ret.HttpOnly = ", s.HttpOnly)
+	g.P("ret.Aspects = aspects")
+	for _, m := range s.Methods {
+		g.P("ret.Methods = append(ret.Method, &protoapi.MethodSetting{")
+		g.P("Meta: protoapi.AssertDecodeMeta(`", AssertEncodeMeta(ToMeta(s, m)), "`),")
+		g.P("Call: func(ctx *protoapi.Context, in io.Reader) (interface{}, error) {")
+		g.P("req := new(", g.QualifiedGoIdent(m.InputMessage.GoIdent), ")")
+
+		// 1. 根据body解码request
+
+		// 2. 执行aspects的before advice
+
+		// 3. 执行message validator(如果有的话)
+
+		// 4. 执行service调用
+
+		// 5. 执行aspects的after advice
+
+		// 6. 返回response
+
+		g.P("},") // call
+		g.P("})") // append
+	}
+	g.P("}")
 }
 
 func shouldMessageValidator(m *MessageExt) bool {

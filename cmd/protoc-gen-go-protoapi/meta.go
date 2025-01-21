@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
@@ -253,4 +254,31 @@ func (m *IdxVec[V]) Add(k string, v V) (V, bool) {
 	m.Idx[k] = v
 	m.Vec = append(m.Vec, v)
 	return v, true
+}
+
+func ToMeta(s *ServiceExt, m *MethodExt) *Meta {
+
+}
+
+// AssertEncodeMeta 断言编码. 用于protogen传值
+func AssertEncodeMeta(meta *Meta) string {
+	bs, err := proto.Marshal(meta)
+	if err != nil {
+		panic(fmt.Errorf("ecnode meta error: %v", err))
+	}
+	return base64.StdEncoding.EncodeToString(bs)
+}
+
+// AssertDecodeMeta 断言解码. 用于protogen传值
+func AssertDecodeMeta(b64 string) *Meta {
+	bs, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		panic(fmt.Errorf("decode meta error: %v", err))
+	}
+	meta := new(Meta)
+	err = proto.Unmarshal(bs, meta)
+	if err != nil {
+		panic(fmt.Errorf("decode meta error: %v", err))
+	}
+	return meta
 }

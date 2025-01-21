@@ -11,7 +11,7 @@ import (
 )
 
 // Call 每个service的method生成一个相应的HttpFunc闭包, 用于适配restful/websocket/sse等
-type Call func(ctx *Context, in io.Reader) (any, error)
+type Call func(ctx *Context, in io.Reader) (interface{}, error)
 
 // MethodSetting 对应Service.Method的元数据
 type MethodSetting struct {
@@ -28,8 +28,8 @@ type ServiceSetting struct {
 	Impl     any               // service实现
 	Desc     *grpc.ServiceDesc // service描述
 	HttpOnly bool              // 是否仅用于HTTP
-	Methods  []*MethodSetting  // methods设置
 	Aspects  []ServiceAspect   // aop切面列表
+	Methods  []*MethodSetting  // methods设置
 }
 
 // ServiceRegistry 由protoc-go-gen-protoapi生成的注册器. 专供Server.RegisterService()使用.
@@ -72,23 +72,25 @@ func AssertFieldPlugin(el string) FieldPlugin {
 	panic(fmt.Sprintf("assert field validate plugin failed: %s", el))
 }
 
-// AssertEncode 断言编码. 用于protogen传值
-func AssertEncode(msg proto.Message) string {
-	bs, err := proto.Marshal(msg)
+// AssertEncodeMeta 断言编码. 用于protogen传值
+func AssertEncodeMeta(meta *Meta) string {
+	bs, err := proto.Marshal(meta)
 	if err != nil {
-		panic(fmt.Errorf("assert ecnode error: %v", err))
+		panic(fmt.Errorf("ecnode meta error: %v", err))
 	}
 	return base64.StdEncoding.EncodeToString(bs)
 }
 
-// AssertDecode 断言解码. 用于protogen传值
-func AssertDecode(b64 string, msg proto.Message) {
+// AssertDecodeMeta 断言解码. 用于protogen传值
+func AssertDecodeMeta(b64 string) *Meta {
 	bs, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
-		panic(fmt.Errorf("assert decode error: %v", err))
+		panic(fmt.Errorf("decode meta error: %v", err))
 	}
-	err = proto.Unmarshal(bs, msg)
+	meta := new(Meta)
+	err = proto.Unmarshal(bs, meta)
 	if err != nil {
-		panic(fmt.Errorf("assert decode error: %v", err))
+		panic(fmt.Errorf("decode meta error: %v", err))
 	}
+	return meta
 }
