@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -14,17 +13,6 @@ const ProtoapiModule = `github.com/hezof/protoapi`
 func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) {
 
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.pb.go`, file.GoImportPath)
-
-	bs, err := json.MarshalIndent(meta, ``, `	`)
-	if err != nil {
-		gen.Error(err)
-		return
-	}
-	_, err = g.Write(bs)
-	if err != nil {
-		gen.Error(err)
-		return
-	}
 
 	// 1. 输出头部
 	protocVersion := "(unknown)"
@@ -60,6 +48,15 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	}
 }
 
+func IsKind(f *FieldExt, ks ...protoreflect.Kind) bool {
+	for _, k := range ks {
+		if f.Kind == k || (f.IsMap && f.Message.Fields[1].Kind == k) {
+			return true
+		}
+	}
+	return false
+}
+
 func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *MessageExt) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
 
@@ -69,8 +66,8 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 	g.P("switch k {")
 	for _, f := range m.Fields {
 		g.P("case `", fname(f), "`:")
-		switch f.Kind {
-		case protoreflect.BoolKind:
+		switch {
+		case IsKind(f, protoreflect.BoolKind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeBoolOptional(r, &x.", f.GoName, ")")
@@ -81,7 +78,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeBool(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.EnumKind:
+		case IsKind(f, protoreflect.EnumKind):
 			enumGoName := g.QualifiedGoIdent(f.Enum.GoIdent)
 			if f.Prop != nil && f.Prop.EnumName {
 				switch {
@@ -106,7 +103,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 					g.P("protoapi.DecodeEnum(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
 				}
 			}
-		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind:
+		case IsKind(f, protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeInt32Optional(r, &x.", f.GoName, ")")
@@ -117,7 +114,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeInt32(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.Uint32Kind, protoreflect.Fixed32Kind:
+		case IsKind(f, protoreflect.Uint32Kind, protoreflect.Fixed32Kind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeUint32Optional(r, &x.", f.GoName, ")")
@@ -128,7 +125,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeUint32(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind:
+		case IsKind(f, protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeInt64Optional(r, &x.", f.GoName, ")")
@@ -139,7 +136,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeInt64(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind:
+		case IsKind(f, protoreflect.Uint64Kind, protoreflect.Fixed64Kind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeUint64Optional(r, &x.", f.GoName, ")")
@@ -150,7 +147,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeUint64(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.FloatKind:
+		case IsKind(f, protoreflect.FloatKind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeFloatOptional(r, &x.", f.GoName, ")")
@@ -161,7 +158,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeFloat(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.DoubleKind:
+		case IsKind(f, protoreflect.DoubleKind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeDoubleOptional(r, &x.", f.GoName, ")")
@@ -172,7 +169,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeDouble(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.StringKind:
+		case IsKind(f, protoreflect.StringKind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeStringOptional(r, &x.", f.GoName, ")")
@@ -183,7 +180,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeString(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.BytesKind:
+		case IsKind(f, protoreflect.BytesKind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeBytesOptional(r, &x.", f.GoName, ")")
@@ -194,7 +191,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeBytes(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.MessageKind:
+		case IsKind(f, protoreflect.MessageKind):
 			switch {
 			case f.HasOptional:
 				g.P("protoapi.DecodeMessageOptional(r, &x.", f.GoName, ")")
@@ -205,8 +202,17 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			default:
 				g.P("protoapi.DecodeMessage(r, &x.", f.GoName, ")")
 			}
-		case protoreflect.GroupKind:
-			gen.Error(fmt.Errorf("unsupported field kind: group"))
+		case IsKind(f, protoreflect.GroupKind):
+			switch {
+			case f.HasOptional:
+				g.P("protoapi.DecodeMessageOptional(r, &x.", f.GoName, ")")
+			case f.IsRepeated:
+				g.P("protoapi.DecodeMessageRepeated(r, &x.", f.GoName, ")")
+			case f.IsMap:
+				g.P("protoapi.DecodeMessageMap(r, &x.", f.GoName, ")")
+			default:
+				g.P("protoapi.DecodeMessage(r, &x.", f.GoName, ")")
+			}
 		}
 	}
 	g.P("}") // switch

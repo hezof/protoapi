@@ -150,7 +150,6 @@ message Req {
     (protoapi.prop) = {
       name: "id",
       desc: "主键字段",
-      escape_html: true,
       in: path,
       style: simple,
     },
@@ -166,13 +165,12 @@ message Req {
     (protoapi.prop) = {
       name: "name",
       desc: "名称字段",
-      escape_html: true,
       in: body,
       style: simple,
     },
     (protoapi.rule) = {
       enum: {
-        val: 'a,b,c',
+        str: ["a", "b", "c"],
         err: {
           status: 403,
           code: 1001,
@@ -185,13 +183,12 @@ message Req {
     (protoapi.prop) = {
       name: "class",
       desc: "班级ID",
-      escape_html: true,
       in: body,
       style: simple,
     },
     (protoapi.rule) = {
       enum: {
-        val: '1,2,3',
+        int: [1, 2, 3],
         err: {
           status: 403,
           code: 1001,
@@ -201,6 +198,7 @@ message Req {
       }
     }];
   map<string, int32> scores = 4;
+  optional Rsp rsps = 5;
 }
 
 enum Sex{

@@ -44,7 +44,10 @@ func main() {
 func generateFile(gen *protogen.Plugin, file *protogen.File) {
 
 	// 1. 提取数据
-	meta := extractFile(file)
+	meta := extractFile(gen, file)
+	if meta == nil {
+		return
+	}
 
 	// 2. 生成实现文件: *_pb.go
 	generateImplFile(gen, file, meta)

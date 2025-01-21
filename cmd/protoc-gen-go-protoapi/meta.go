@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-func extractFile(f *protogen.File) *FileExt {
+func extractFile(gen *protogen.Plugin, f *protogen.File) *FileExt {
 	file := new(FileExt)
 	file.Path = f.Desc.Path()
 	file.Package = string(f.Desc.Package())
@@ -19,11 +20,18 @@ func extractFile(f *protogen.File) *FileExt {
 	}
 
 	for _, s := range f.Messages {
-		extractMessage(file, s)
+		m := extractMessage(file, s)
+		for _, v := range m.Fields {
+			if v.IsMap && v.Message.Fields[0].Kind != protoreflect.StringKind {
+				gen.Error(fmt.Errorf("invalid map key type %v", v.Message.Fields[0].Kind))
+				return nil
+			}
+		}
 	}
 
 	for _, s := range f.Services {
 		extractService(file, s)
+		// TODO: 校验method合法性
 	}
 
 	return file
