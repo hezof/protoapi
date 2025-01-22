@@ -140,21 +140,13 @@ func DecodeBytes(r *JsonDecoder, p *[]byte) {
 	}
 }
 
-func DecodeEnumName[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumName[Enum ~int32](r *JsonDecoder, p *Enum, values map[string]int32) {
 	switch r.token {
 	case String:
 		s := r.readString()
 		v, ok := values[s]
 		if !ok {
 			r.reportError(fmt.Errorf("invalid enum: %v", s))
-			return
-		}
-		*p = Enum(v)
-	case Number:
-		v := int32(r.readInt64())
-		_, ok := names[v]
-		if !ok {
-			r.reportError(fmt.Errorf("invalid enum: %v", v))
 			return
 		}
 		*p = Enum(v)
@@ -168,23 +160,10 @@ func DecodeEnumName[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string
 	}
 }
 
-func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum) {
 	switch r.token {
 	case Number:
 		v := int32(r.readInt64())
-		_, ok := names[v]
-		if !ok {
-			r.reportError(fmt.Errorf("invalid enum: %v", v))
-			return
-		}
-		*p = Enum(v)
-	case String:
-		s := r.readString()
-		v, ok := values[s]
-		if !ok {
-			r.reportError(fmt.Errorf("invalid enum: %v", s))
-			return
-		}
 		*p = Enum(v)
 	case Null:
 		r.skipNull()

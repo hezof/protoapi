@@ -108,3 +108,190 @@ func JsonBody(in io.Reader, req any) error {
 	}
 	return r.Close()
 }
+
+/*************************************************
+* bool
+**************************************************/
+
+func ParamBool(f func(key string) string, key string, ptr *bool) error {
+	return nil
+}
+func ParamBoolOptional(f func(key string) string, key string, ptr **bool) error {
+	return nil
+}
+func ParamBoolRepeated(f func(key string) []string, key string, ptr *[]bool) error {
+	return nil
+}
+func ParamBoolMap(f func(key string) map[string]string, key string, ptr *map[string]bool) error {
+	return nil
+}
+
+/*************************************************
+* int32
+**************************************************/
+
+func ParamInt32(f func(key string) string, key string, ptr *int32) error {
+	return nil
+}
+func ParamInt32Optional(f func(key string) string, key string, ptr **int32) error {
+	return nil
+}
+func ParamInt32Repeated(f func(key string) []string, key string, ptr *[]int32) error {
+	return nil
+}
+func ParamInt32Map(f func(key string) map[string]string, key string, ptr *map[string]int32) error {
+	return nil
+}
+
+/*************************************************
+* int64
+**************************************************/
+
+func ParamInt64(f func(key string) string, key string, ptr *int64) error {
+	return nil
+}
+func ParamInt64Optional(f func(key string) string, key string, ptr **int64) error {
+	return nil
+}
+func ParamInt64Repeated(f func(key string) []string, key string, ptr *[]int64) error {
+	return nil
+}
+func ParamInt64Map(f func(key string) map[string]string, key string, ptr *map[string]int64) error {
+	return nil
+}
+
+/*************************************************
+* uint32
+**************************************************/
+
+func ParamUint32(f func(key string) string, key string, ptr *uint32) error {
+	return nil
+}
+func ParamUint32Optional(f func(key string) string, key string, ptr **uint32) error {
+	return nil
+}
+func ParamUint32Repeated(f func(key string) []string, key string, ptr *[]uint32) error {
+	return nil
+}
+func ParamUint32Map(f func(key string) map[string]string, key string, ptr *map[string]uint32) error {
+	return nil
+}
+
+/*************************************************
+* uint64
+**************************************************/
+
+func ParamUint64(f func(key string) string, key string, ptr *uint64) error {
+	return nil
+}
+func ParamUint64Optional(f func(key string) string, key string, ptr **uint64) error {
+	return nil
+}
+func ParamUint64Repeated(f func(key string) []string, key string, ptr *[]uint64) error {
+	return nil
+}
+func ParamUint64Map(f func(key string) map[string]string, key string, ptr *map[string]uint64) error {
+	return nil
+}
+
+/*************************************************
+* float
+**************************************************/
+
+func ParamFloat(f func(key string) string, key string, ptr *float32) error {
+	return nil
+}
+func ParamFloatOptional(f func(key string) string, key string, ptr **float32) error {
+	return nil
+}
+func ParamFloatRepeated(f func(key string) []string, key string, ptr *[]float32) error {
+	return nil
+}
+func ParamFloatMap(f func(key string) map[string]string, key string, ptr *map[string]float32) error {
+	return nil
+}
+
+/*************************************************
+* double
+**************************************************/
+
+func ParamDouble(f func(key string) string, key string, ptr *float64) error {
+	return nil
+}
+func ParamDoubleOptional(f func(key string) string, key string, ptr **float64) error {
+	return nil
+}
+func ParamDoubleRepeated(f func(key string) []string, key string, ptr *[]float64) error {
+	return nil
+}
+func ParamDoubleMap(f func(key string) map[string]string, key string, ptr *map[string]float64) error {
+	return nil
+}
+
+/*************************************************
+* string
+**************************************************/
+
+func ParamString(f func(key string) string, key string, ptr *string) error {
+	return nil
+}
+func ParamStringOptional(f func(key string) string, key string, ptr **string) error {
+	return nil
+}
+func ParamStringRepeated(f func(key string) []string, key string, ptr *[]string) error {
+	return nil
+}
+func ParamStringMap(f func(key string) map[string]string, key string, ptr *map[string]string) error {
+	return nil
+}
+
+/*************************************************
+* bytes
+**************************************************/
+
+func ParamBytes(f func(key string) string, key string, ptr *[]byte) error {
+	return nil
+}
+func ParamBytesOptional(f func(key string) string, key string, ptr *[]byte) error {
+	return nil
+}
+func ParamBytesRepeated(f func(key string) []string, key string, ptr *[][]byte) error {
+	return nil
+}
+func ParamBytesMap(f func(key string) map[string]string, key string, ptr *map[string][]byte) error {
+	return nil
+}
+
+/*************************************************
+* enum
+**************************************************/
+
+func ParamEnum[Enum ~int32](f func(key string) string, key string, ptr *Enum, names map[int32]string) error {
+	return nil
+}
+func ParamEnumOptional[Enum ~int32](f func(key string) string, key string, ptr **Enum, names map[int32]string) error {
+	return nil
+}
+func ParamEnumRepeated[Enum ~int32](f func(key string) []string, key string, ptr *[]Enum, names map[int32]string) error {
+	return nil
+}
+func ParamEnumMap[Enum ~int32](f func(key string) map[string]string, key string, ptr *map[string]Enum, names map[int32]string) error {
+	return nil
+}
+
+/*************************************************
+* enum_name
+**************************************************/
+
+func ParamEnumName[Enum ~int32](f func(key string) string, key string, ptr *Enum, values map[string]int32) error {
+	return nil
+}
+func ParamEnumNameOptional[Enum ~int32](f func(key string) string, key string, ptr **Enum, values map[string]int32) error {
+	return nil
+}
+func ParamEnumNameRepeated[Enum ~int32](f func(key string) []string, key string, ptr *[]Enum, values map[string]int32) error {
+	return nil
+}
+func ParamEnumNameMap[Enum ~int32](f func(key string) map[string]string, key string, ptr *map[string]Enum, values map[string]int32) error {
+	return nil
+}
