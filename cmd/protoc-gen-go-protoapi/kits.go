@@ -50,3 +50,11 @@ func (m *IdxVec[V]) Add(k string, v V) (V, bool) {
 	m.Vec = append(m.Vec, v)
 	return v, true
 }
+
+func If[V any](c bool, v1, v2 V) V {
+	if c {
+		return v1
+	} else {
+		return v2
+	}
+}

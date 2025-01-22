@@ -264,28 +264,21 @@ func parameters(h *Http, m *MessageExt) []*OASv2Parameter {
 				switch {
 				case f.IsRepeated:
 					p.OASv2Schema = OASv2Schema{
-						Type:        `array`,
-						Description: fieldDescription(f),
-						Items:       field(f, true),
+						Type:             `array`,
+						Description:      fieldDescription(f),
+						Items:            field(f, true),
+						CollectionFormat: If(f.Prop.Explode, `multi`, `csv`),
 					}
 				case f.IsMap:
 					p.OASv2Schema = OASv2Schema{
 						Type:                 `object`,
 						Description:          fieldDescription(f),
 						AdditionalProperties: field(f.Message.Fields[1], true),
+						CollectionFormat:     If(f.Prop.Explode, `multi`, `csv`),
 					}
 				default:
 					p.OASv2Schema = *field(f, false)
 				}
-				switch f.Prop.Style {
-				case Prop_simple:
-					p.Style = `simple`
-				case Prop_form:
-					p.Style = `form`
-				case Prop_json:
-					p.Style = `json`
-				}
-				p.Explode = true // 默认是true
 				p.Required = f.Rule != nil && f.Rule.Required != nil
 				if f.Prop.In == Prop_path {
 					p.Required = true // path参数必需的
@@ -348,11 +341,11 @@ func fname(f *FieldExt) string {
 	return f.Name
 }
 
-func style(f *FieldExt) protoreflect.EnumNumber {
-	if f.Prop == nil {
-		return Prop_simple.Number()
+func explode(f *FieldExt) bool {
+	if f.Prop != nil && f.Prop.Explode {
+		return true
 	}
-	return f.Prop.Style.Number()
+	return false
 }
 
 func field(f *FieldExt, sub bool) *OASv2Schema {
@@ -414,9 +407,6 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 		s.Format = `double`
 	case protoreflect.StringKind:
 		s.Type = `string`
-		if f.Prop != nil {
-			s.Format = f.Prop.Format
-		}
 	case protoreflect.BytesKind:
 		s.Type = `string`
 		s.Format = `binary`
@@ -425,16 +415,12 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 		if f.IsMap {
 			s.Type = `object`
 			s.AdditionalProperties = field(f.Message.Fields[1], true)
+			s.CollectionFormat = If(f.Prop.Explode, `multi`, `csv`)
 		} else {
 			s.Ref = ref(f.Message.FullName)
 		}
 	case protoreflect.GroupKind:
-		if f.IsMap {
-			s.Type = `object`
-			s.AdditionalProperties = field(f.Message.Fields[1], true)
-		} else {
-			s.Ref = ref(f.Message.FullName)
-		}
+		panic(fmt.Sprintf("invalid kind of %v: group", f.Name))
 	}
 	if f.Rule != nil {
 		if f.Rule.Minimum != nil {
@@ -717,13 +703,11 @@ type OASv2Operation struct {
 }
 
 type OASv2Parameter struct {
-	Name        string           `yaml:"name,omitempty"`
-	In          string           `yaml:"in,omitempty"`
-	Schema      *OASv2Schema     `yaml:"schema,omitempty"` // If in is "body":
-	OASv2Schema `yaml:",inline"` // if in is not "body"
-	Style       string           `yaml:"style,omitempty"`
-	Explode     bool             `yaml:"explode,omitempty"`
-	Required    bool             `yaml:"required,omitempty"`
+	Name        string       `yaml:"name,omitempty"`
+	In          string       `yaml:"in,omitempty"`
+	Schema      *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
+	OASv2Schema `yaml:",inline"`                       // if in is not "body"
+	Required    bool         `yaml:"required,omitempty"`
 }
 
 type OASv2Response struct {
@@ -736,8 +720,9 @@ type OASv2Schema struct {
 	XOrder               int            `yaml:"x-order,omitempty"`
 	Ref                  string         `yaml:"$ref,omitempty"`
 	Type                 string         `yaml:"type,omitempty"`
-	Format               string         `yaml:"format,omitempty"`               // 当type为scalar类型时描述格式
+	Format               string         `yaml:"format,omitempty"`               // 当type为scalar时的解析方式
 	Items                *OASv2Schema   `yaml:"items,omitempty"`                // 当type为array时描述元素
+	CollectionFormat     string         `yaml:"collectionFormat,omitempty"`     // 当type为array时的解析方式
 	AdditionalProperties *OASv2Schema   `yaml:"additionalProperties,omitempty"` // 当type为object时描述元素类型(map)
 	Properties           OASv2SchemaMap `yaml:"properties,omitempty"`           // 当type为object时描述属性
 	Maximum              float64        `yaml:"maximum,omitempty"`

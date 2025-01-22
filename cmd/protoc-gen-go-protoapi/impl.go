@@ -884,11 +884,11 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 						case IsKind(f, protoreflect.BoolKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathBoolOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.ParamBoolOptional(ctx.FormBool, `", fname(f), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathBoolRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.ParamBoolRepeated(ctx.FormBoolSlice, `", fname(f), "`, &req.", f.GoName, ", ); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
@@ -896,7 +896,7 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathBool(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.ParamBool(ctx.FormBool, `", fname(f), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
