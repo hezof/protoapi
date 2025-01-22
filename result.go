@@ -84,8 +84,8 @@ func (sr *StatusResult) GRPCStatus() *status.Status {
 }
 
 // StatusError 创建StatusResult错误实例. 要求:
-// - status 取值范围(0,1023]
-// - code 取值范围(0,)
+// - status 取值范围(0,1024)
+// - code 取值范围(0,4194304)
 func StatusError(status uint32, code uint32, message string, details ...interface{}) *StatusResult {
 
 	status &= _StatusMask
