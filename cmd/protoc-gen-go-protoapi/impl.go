@@ -839,7 +839,7 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 	g.P("ret.Aspects = aspects")
 	for _, method := range service.Methods {
 		g.P("ret.Methods = append(ret.Method, &protoapi.MethodSetting{")
-		g.P("Meta: protoapi.DecodeMeta(`", EncodeMeta(ToMeta(file, service, method)), "`),")
+		g.P("Meta: protoapi.DecodeMeta(`", EncodeMeta(CreateMeta(file, service, method)), "`),")
 		if method.Http != nil {
 
 			var (

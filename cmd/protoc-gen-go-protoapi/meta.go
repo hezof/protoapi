@@ -239,24 +239,7 @@ type FileExt struct {
 	Enums        IdxVec[*EnumExt]    /*展开成平面*/
 }
 
-type IdxVec[V any] struct {
-	Idx map[string]V `json:"-"`
-	Vec []V
-}
-
-func (m *IdxVec[V]) Add(k string, v V) (V, bool) {
-	if m.Idx == nil {
-		m.Idx = make(map[string]V)
-	}
-	if vl, ok := m.Idx[k]; ok {
-		return vl, false
-	}
-	m.Idx[k] = v
-	m.Vec = append(m.Vec, v)
-	return v, true
-}
-
-func ToMeta(f *FileExt, s *ServiceExt, m *MethodExt) *Meta {
+func CreateMeta(f *FileExt, s *ServiceExt, m *MethodExt) *Meta {
 	meta := new(Meta)
 	meta.Package = f.Package
 	meta.Service = s.Name

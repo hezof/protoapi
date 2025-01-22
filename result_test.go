@@ -3,6 +3,7 @@ package protoapi
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"strings"
 	"testing"
@@ -65,9 +66,16 @@ func TestType(t *testing.T) {
 }
 
 func TestUnmarshal(t *testing.T) {
-	var v ***int
-	err := json.Unmarshal([]byte(`123`), v)
-	if err != nil {
-		panic(err)
-	}
+	//var v ***int
+	//err := json.Unmarshal([]byte(`123`), v)
+	//if err != nil {
+	//	panic(err)
+	//}
+	var code int32 = 100011
+	var status int32 = 1023
+	var statusCode = (status << 22) | code
+	fmt.Println(statusCode)
+	fmt.Println(uint32(statusCode) >> 22)
+	fmt.Println(uint32(statusCode) << 10 >> 10)
+	fmt.Println(int32(math.Pow(2, 22)))
 }
