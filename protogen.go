@@ -56,24 +56,8 @@ type MessagePlugin func(ctx context.Context, req any, plg *Plugin) *Error
 // FieldPlugin field校验插件
 type FieldPlugin func(ctx context.Context, key string, val any, plg *Plugin) *Error
 
-func AssertMessagePlugin(el string) MessagePlugin {
-	name, args := CompilePluginExpression(el)
-	if p := globalMessageValidatePluginProvider[name]; p != nil {
-		return p(args)
-	}
-	panic(fmt.Sprintf("assert message validate plugin failed: %s", el))
-}
-
-func AssertFieldPlugin(el string) FieldPlugin {
-	name, args := CompilePluginExpression(el)
-	if p := globalFieldValidatePluginProvider[name]; p != nil {
-		return p(args)
-	}
-	panic(fmt.Sprintf("assert field validate plugin failed: %s", el))
-}
-
-// AssertEncodeMeta 断言编码. 用于protogen传值
-func AssertEncodeMeta(meta *Meta) string {
+// EncodeMeta 断言编码. 用于protogen传值
+func EncodeMeta(meta *Meta) string {
 	bs, err := proto.Marshal(meta)
 	if err != nil {
 		panic(fmt.Errorf("ecnode meta error: %v", err))
@@ -81,8 +65,8 @@ func AssertEncodeMeta(meta *Meta) string {
 	return base64.StdEncoding.EncodeToString(bs)
 }
 
-// AssertDecodeMeta 断言解码. 用于protogen传值
-func AssertDecodeMeta(b64 string) *Meta {
+// DecodeMeta 断言解码. 用于protogen传值
+func DecodeMeta(b64 string) *Meta {
 	bs, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
 		panic(fmt.Errorf("decode meta error: %v", err))
@@ -93,4 +77,34 @@ func AssertDecodeMeta(b64 string) *Meta {
 		panic(fmt.Errorf("decode meta error: %v", err))
 	}
 	return meta
+}
+
+// JsonBody 解码请求对象. 与EncodeMessage()很相似, 但细节不同!
+func JsonBody(in io.Reader, req any) error {
+	r := GetDecoder(in)
+	defer PutDecoder(r)
+
+	switch r.token {
+	case ObjectBegin:
+		if fc, ok := req.(FieldCodec); ok {
+			// 已实现JsonCodec使用protojson加速解码
+			r.readObject(fc)
+		} else {
+			// 未实现JsonCodec使用encoding/std反射解码
+			r.unreadByte() // 回退"{"
+			err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), req)
+			if err != nil {
+				r.reportError(err)
+			}
+		}
+
+	case Null:
+		r.skipNull()
+	case 0:
+		r.unexpectedEndError()
+	case -1:
+	default:
+		r.expectedTokenError(ObjectBegin)
+	}
+	return r.Close()
 }

@@ -3,7 +3,6 @@ package protoapi
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/hezof/protoapi/internal/encoding/json"
 	"math"
 	"strconv"
 )
@@ -495,7 +494,7 @@ func EncodeMessage[Message any](w *JsonEncoder, value *Message) {
 				w.buff = append(w.buff, rightBrace)
 			}
 		} else {
-			bs, err := json.Marshal(value)
+			bs, err := MarshalJSON(value)
 			if err != nil {
 				w.reportError(err)
 			} else {

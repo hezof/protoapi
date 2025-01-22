@@ -256,12 +256,25 @@ func (m *IdxVec[V]) Add(k string, v V) (V, bool) {
 	return v, true
 }
 
-func ToMeta(s *ServiceExt, m *MethodExt) *Meta {
-
+func ToMeta(f *FileExt, s *ServiceExt, m *MethodExt) *Meta {
+	meta := new(Meta)
+	meta.Package = f.Package
+	meta.Service = s.Name
+	meta.Method = m.Name
+	meta.ClientStreaming = m.IsStreamingClient
+	meta.ServerStreaming = m.IsStreamingServer
+	meta.Http = m.Http
+	meta.Role = m.Role
+	meta.InputPlugin = m.InputMessage.Plugin
+	meta.InputRules = make([]*Rule, len(m.InputMessage.Fields))
+	for i, v := range m.InputMessage.Fields {
+		meta.InputRules[i] = v.Rule
+	}
+	return meta
 }
 
-// AssertEncodeMeta 断言编码. 用于protogen传值
-func AssertEncodeMeta(meta *Meta) string {
+// EncodeMeta 断言编码. 用于protogen传值
+func EncodeMeta(meta *Meta) string {
 	bs, err := proto.Marshal(meta)
 	if err != nil {
 		panic(fmt.Errorf("ecnode meta error: %v", err))
@@ -269,8 +282,8 @@ func AssertEncodeMeta(meta *Meta) string {
 	return base64.StdEncoding.EncodeToString(bs)
 }
 
-// AssertDecodeMeta 断言解码. 用于protogen传值
-func AssertDecodeMeta(b64 string) *Meta {
+// DecodeMeta 断言解码. 用于protogen传值
+func DecodeMeta(b64 string) *Meta {
 	bs, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
 		panic(fmt.Errorf("decode meta error: %v", err))

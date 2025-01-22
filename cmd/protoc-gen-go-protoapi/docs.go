@@ -348,6 +348,13 @@ func fname(f *FieldExt) string {
 	return f.Name
 }
 
+func style(f *FieldExt) protoreflect.EnumNumber {
+	if f.Prop == nil {
+		return Prop_simple.Number()
+	}
+	return f.Prop.Style.Number()
+}
+
 func field(f *FieldExt, sub bool) *OASv2Schema {
 	s := new(OASv2Schema)
 	if !sub {

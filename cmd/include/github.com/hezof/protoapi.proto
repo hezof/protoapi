@@ -104,35 +104,35 @@ message Pattern {
   Error err = 2;                  // 错误定义
 }
 
+// 对于in为body/form, path, query, header, cookie的参数, 按照OAS 3.0规范解析:
+// body/form: style=form, explode=?{false|true}
+// path: style=simple, explode=?{false|true}
+// query: style=form, explode=?{false|true}
+// header: style=simple, explode=?{false|true}
+// cookie: style=form, explode=?{false|true}
+// 详细内容参考: https://swagger.io/docs/specification/v3_0/serialization
 message Prop {
 
   enum In {
     body = 0;                      // 位于body
-    path = 1;                      // 位于path
-    query = 2;                     // 位于query
-    header = 3;                    // 位于header
-    cookie = 4;                    // 位于cookie
+    path = 1;                      // 位于path. 对应style=simple及explode=true. 例如: array(blue,black,brown), object(R=100,G=200,B=150)
+    query = 2;                     // 位于query. 对应style=form及explode=true. 例如: array(color=blue&color=black&color=brown), object(R=100&G=200&B=150)
+    header = 3;                    // 位于header. 对应style=simple及explode=true. 例如: array(blue,black,brown), object(R=100,G=200,B=150)
+    cookie = 4;                    // 位于cookie. 对应style=form及explode=true. 例如: array(color=blue&color=black&color=brown), object(R=100&G=200&B=150)
   }
 
-  enum Style {
-    simple = 0;                    // ARRAY(blue,black,brown), OBJECT(R=100,G=200,B=150)
-    form = 1;                      // ARRAY(color=blue&color=black&color=brown), OBJECT(R=100&G=200&B=150)
-    json = 2;                      // json
-  }
-
-  enum Empty {
+  enum Zero {
     omit_empty = 0;                // 忽略空值, 即omitempty
-    with_empty = 1;                // 携带空值, 即忽略omitempty
+    with_empty = 1;                // 保留空值, 即忽略omitempty
     conv_empty = 2;                // 转换空值: 对于slice/map,会将null转为[]或{}.
   }
 
   string name = 1;                 // 概要信息
   string desc = 2;                 // 描述信息
-  Empty empty = 3;                 // 值处理策略
-  bool enum_name = 4;              // 是否使用枚举名称.
-  In in = 5;                       // 数据位置. 同openapi的in.
-  Style style = 6;                 // 数据式样. 同openapi的style. 用于非json array或object!
-  string format = 7;               // 数据格式. 仅用于swagger文档提示.
+  Zero zero = 3;                   // 值处理策略
+  bool enum_name = 4;              // 使用枚举名称而非枚举值.
+  In in = 5;                       // 数据位置. body(json, form), path, query, header, cookie
+  bool explode = 6;                // 解析方式. primitive类型忽略, array/object类型规则.
 }
 
 message Rule {

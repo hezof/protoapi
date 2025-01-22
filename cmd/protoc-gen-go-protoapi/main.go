@@ -41,20 +41,20 @@ func main() {
 	})
 }
 
-func generateFile(gen *protogen.Plugin, file *protogen.File) {
+func generateFile(gen *protogen.Plugin, src *protogen.File) {
 
 	// 1. 提取数据
-	meta := extractFile(gen, file)
-	if meta == nil {
+	file := extractFile(gen, src)
+	if file == nil {
 		return
 	}
 
 	// 2. 生成实现文件: *_pb.go
-	generateImplFile(gen, file, meta)
+	generateImplFile(gen, src, file)
 
 	// 3. 生成文档文件: *_json
-	generateDocsFile(gen, file, meta)
+	generateDocsFile(gen, src, file)
 
 	// 4. 生成代码文件: *_code
-	generateCodeFile(gen, file, meta)
+	generateCodeFile(gen, src, file)
 }
