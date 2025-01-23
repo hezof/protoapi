@@ -109,6 +109,15 @@ func DecodeRequest(in io.Reader, req any) error {
 	return r.Close()
 }
 
+// EncodeResponse 编码请求对象
+func EncodeResponse(out io.Writer, rsp any) error {
+	w := GetEncoder(out)
+	defer PutEncoder(w)
+
+	encodeObject(w, rsp)
+	return w.Close()
+}
+
 /*************************************************
 * bool
 **************************************************/

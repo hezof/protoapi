@@ -57,6 +57,7 @@ type resources struct {
 var (
 	allResMap = make(map[string]map[uint32]*resource)
 	defResMap = make(map[uint32]*resource)
+	hasResMap = false // 标记是否存在资源文件, 用于快速判断
 )
 
 func InitResourceBundle(resDir, defLang string) error {
@@ -94,6 +95,7 @@ func InitResourceBundle(resDir, defLang string) error {
 	})
 	if err == nil {
 		defResMap = allResMap[defLang]
+		hasResMap = len(allResMap) > 0
 	}
 	return err
 }

@@ -15,10 +15,10 @@ type Data struct {
 }
 
 var sr = &StatusResult{
-	Code:    1111,
-	Name:    "1111",
-	Message: "消息",
-	Data: &Data{
+	code:    1111,
+	name:    "1111",
+	message: "消息",
+	data: &Data{
 		Name: "myname",
 		Age:  40,
 	},
@@ -37,13 +37,13 @@ var bs = `{"code":1111,"name":"1111","message":"消息","data":{"name":"myname",
 
 func TestStatusResult_DecodeJSON(t *testing.T) {
 	sr := new(StatusResult)
-	sr.Data = "abc"
+	sr.data = "abc"
 	in := strings.NewReader(bs)
 	err := DecodeJSON(in, sr)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(sr.Data)
+	fmt.Println(sr.data)
 }
 
 func TestType(t *testing.T) {
