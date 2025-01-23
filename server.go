@@ -194,6 +194,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodGet,
 					Path:        ms.Meta.Http.Get,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -202,6 +204,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodPut,
 					Path:        ms.Meta.Http.Put,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -210,6 +214,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodPost,
 					Path:        ms.Meta.Http.Post,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -218,6 +224,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodDelete,
 					Path:        ms.Meta.Http.Delete,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -226,6 +234,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodOptions,
 					Path:        ms.Meta.Http.Options,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -234,6 +244,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodHead,
 					Path:        ms.Meta.Http.Head,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -242,6 +254,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodPatch,
 					Path:        ms.Meta.Http.Patch,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -250,6 +264,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodTrace,
 					Path:        ms.Meta.Http.Trace,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -258,6 +274,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:     ms,
 					Method:      http.MethodConnect,
 					Path:        ms.Meta.Http.Connect,
+					Status:      ms.Meta.Http.Status,
+					Result:      ms.Meta.Http.Result,
 					HandleChain: []HandleFunc{RestfulHandleFunc},
 				})
 			}
@@ -269,6 +287,8 @@ func (s *Server) ListenAndServe() (err error) {
 					Setting:      ms,
 					Method:       http.MethodGet,
 					Path:         ms.Meta.Http.Websocket,
+					Status:       ms.Meta.Http.Status,
+					Result:       ms.Meta.Http.Result,
 					HandleChain:  []HandleFunc{WebsocketHandleFunc},
 					BodyMaxBytes: -1, // 如果是Websocket长链接则自动忽略BodyMaxBytes参数
 				})

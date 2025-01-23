@@ -15,9 +15,9 @@ type Handler struct {
 	Path          string         // http请求路径
 	Status        uint32         // http请求状态
 	Result        Http_Result    // http请求结果
+	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
 	BodyMaxBytes  int64          // http请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
 	FormMaxMemory int64          // http表单内存部分最大字节数. 默认 32 << 20
-	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
 }
 
 // RestfulHandleFunc 使用call生成restful的HandleFunc
