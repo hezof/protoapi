@@ -134,22 +134,13 @@ func DecodeBytesOptional(r *JsonDecoder, p *[]byte) {
 	DecodeBytes(r, p)
 }
 
-func DecodeEnumNameOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumNameOptional[Enum ~int32](r *JsonDecoder, p **Enum, values map[string]int32) {
 	switch r.token {
 	case String:
 		s := r.readString()
 		v, ok := values[s]
 		if !ok {
 			r.reportError(fmt.Errorf("invalid enum: %v", s))
-			return
-		}
-		e := Enum(v)
-		*p = &e
-	case Number:
-		v := int32(r.readInt64())
-		_, ok := names[v]
-		if !ok {
-			r.reportError(fmt.Errorf("invalid enum: %v", v))
 			return
 		}
 		e := Enum(v)
@@ -164,25 +155,10 @@ func DecodeEnumNameOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int
 	}
 }
 
-func DecodeEnumOptional[Enum ~int32](r *JsonDecoder, p **Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumOptional[Enum ~int32](r *JsonDecoder, p **Enum) {
 	switch r.token {
 	case Number:
-		v := int32(r.readInt64())
-		_, ok := names[v]
-		if !ok {
-			r.reportError(fmt.Errorf("invalid enum: %v", v))
-			return
-		}
-		e := Enum(v)
-		*p = &e
-	case String:
-		s := r.readString()
-		v, ok := values[s]
-		if !ok {
-			r.reportError(fmt.Errorf("invalid enum: %v", s))
-			return
-		}
-		e := Enum(v)
+		e := Enum(r.readInt64())
 		*p = &e
 	case Null:
 		r.skipNull()

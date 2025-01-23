@@ -163,8 +163,7 @@ func DecodeEnumName[Enum ~int32](r *JsonDecoder, p *Enum, values map[string]int3
 func DecodeEnum[Enum ~int32](r *JsonDecoder, p *Enum) {
 	switch r.token {
 	case Number:
-		v := int32(r.readInt64())
-		*p = Enum(v)
+		*p = Enum(r.readInt64())
 	case Null:
 		r.skipNull()
 	case 0:

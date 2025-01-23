@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"io"
 	"regexp"
+	"strconv"
 )
 
 // Call 每个service的method生成一个相应的HttpFunc闭包, 用于适配restful/websocket/sse等
@@ -122,17 +123,52 @@ func EncodeResponse(out io.Writer, rsp any) error {
 * bool:
 **************************************************/
 
-func ParamBool(f func(key string) string, key string, ptr *bool) error {
-	*ptr = f(key) == "true"
+func ParamBool(f func(string) (string, error), key string, ptr *bool) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	*ptr = val == "true"
 	return nil
 }
-func ParamBoolOptional(f func(key string) string, key string, ptr **bool) error {
+func ParamBoolOptional(f func(string) (string, error), key string, ptr **bool) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	if val == "true" {
+		*ptr = &_true
+	} else {
+		*ptr = &_false
+	}
 	return nil
 }
-func ParamBoolRepeated(f func(key string) []string, key string, ptr *[]bool) error {
+func ParamBoolRepeated(f func(string, bool) ([]string, error), key string, ptr *[]bool, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]bool, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		*ptr = append(*ptr, v == "true")
+	}
 	return nil
 }
-func ParamBoolMap(f func(key string) map[string]string, key string, ptr *map[string]bool) error {
+func ParamBoolMap(f func(string, bool) (map[string]string, error), key string, ptr *map[string]bool, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]bool)
+	}
+	for k, v := range val {
+		(*ptr)[k] = v == "true"
+	}
 	return nil
 }
 
@@ -140,16 +176,65 @@ func ParamBoolMap(f func(key string) map[string]string, key string, ptr *map[str
 * int32
 **************************************************/
 
-func ParamInt32(f func(key string) string, key string, ptr *int32) error {
+func ParamInt32(f func(string) (string, error), key string, ptr *int32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseInt(val, 10, 32)
+	if err != nil {
+		return err
+	}
+	*ptr = int32(tmp)
 	return nil
 }
-func ParamInt32Optional(f func(key string) string, key string, ptr **int32) error {
+func ParamInt32Optional(f func(string) (string, error), key string, ptr **int32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseInt(val, 10, 32)
+	if err != nil {
+		return err
+	}
+	ret := int32(tmp)
+	*ptr = &ret
 	return nil
 }
-func ParamInt32Repeated(f func(key string) []string, key string, ptr *[]int32) error {
+func ParamInt32Repeated(f func(string, bool) ([]string, error), key string, ptr *[]int32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]int32, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseInt(v, 10, 32)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, int32(tmp))
+	}
 	return nil
 }
-func ParamInt32Map(f func(key string) map[string]string, key string, ptr *map[string]int32) error {
+func ParamInt32Map(f func(string, bool) (map[string]string, error), key string, ptr *map[string]int32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]int32)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseInt(v, 10, 32)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = int32(tmp)
+	}
 	return nil
 }
 
@@ -157,16 +242,64 @@ func ParamInt32Map(f func(key string) map[string]string, key string, ptr *map[st
 * int64
 **************************************************/
 
-func ParamInt64(f func(key string) string, key string, ptr *int64) error {
+func ParamInt64(f func(string) (string, error), key string, ptr *int64) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return err
+	}
+	*ptr = tmp
 	return nil
 }
-func ParamInt64Optional(f func(key string) string, key string, ptr **int64) error {
+func ParamInt64Optional(f func(string) (string, error), key string, ptr **int64) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return err
+	}
+	*ptr = &tmp
 	return nil
 }
-func ParamInt64Repeated(f func(key string) []string, key string, ptr *[]int64) error {
+func ParamInt64Repeated(f func(string, bool) ([]string, error), key string, ptr *[]int64, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]int64, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, tmp)
+	}
 	return nil
 }
-func ParamInt64Map(f func(key string) map[string]string, key string, ptr *map[string]int64) error {
+func ParamInt64Map(f func(string, bool) (map[string]string, error), key string, ptr *map[string]int64, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]int64)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = tmp
+	}
 	return nil
 }
 
@@ -174,16 +307,65 @@ func ParamInt64Map(f func(key string) map[string]string, key string, ptr *map[st
 * uint32
 **************************************************/
 
-func ParamUint32(f func(key string) string, key string, ptr *uint32) error {
+func ParamUint32(f func(string) (string, error), key string, ptr *uint32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseUint(val, 10, 32)
+	if err != nil {
+		return err
+	}
+	*ptr = uint32(tmp)
 	return nil
 }
-func ParamUint32Optional(f func(key string) string, key string, ptr **uint32) error {
+func ParamUint32Optional(f func(string) (string, error), key string, ptr **uint32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseUint(val, 10, 32)
+	if err != nil {
+		return err
+	}
+	ret := uint32(tmp)
+	*ptr = &ret
 	return nil
 }
-func ParamUint32Repeated(f func(key string) []string, key string, ptr *[]uint32) error {
+func ParamUint32Repeated(f func(string, bool) ([]string, error), key string, ptr *[]uint32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]uint32, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseUint(v, 10, 32)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, uint32(tmp))
+	}
 	return nil
 }
-func ParamUint32Map(f func(key string) map[string]string, key string, ptr *map[string]uint32) error {
+func ParamUint32Map(f func(string, bool) (map[string]string, error), key string, ptr *map[string]uint32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]uint32)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseUint(v, 10, 32)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = uint32(tmp)
+	}
 	return nil
 }
 
@@ -191,16 +373,64 @@ func ParamUint32Map(f func(key string) map[string]string, key string, ptr *map[s
 * uint64
 **************************************************/
 
-func ParamUint64(f func(key string) string, key string, ptr *uint64) error {
+func ParamUint64(f func(string) (string, error), key string, ptr *uint64) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseUint(val, 10, 64)
+	if err != nil {
+		return err
+	}
+	*ptr = tmp
 	return nil
 }
-func ParamUint64Optional(f func(key string) string, key string, ptr **uint64) error {
+func ParamUint64Optional(f func(string) (string, error), key string, ptr **uint64) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseUint(val, 10, 64)
+	if err != nil {
+		return err
+	}
+	*ptr = &tmp
 	return nil
 }
-func ParamUint64Repeated(f func(key string) []string, key string, ptr *[]uint64) error {
+func ParamUint64Repeated(f func(string, bool) ([]string, error), key string, ptr *[]uint64, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]uint64, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseUint(v, 10, 64)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, tmp)
+	}
 	return nil
 }
-func ParamUint64Map(f func(key string) map[string]string, key string, ptr *map[string]uint64) error {
+func ParamUint64Map(f func(string, bool) (map[string]string, error), key string, ptr *map[string]uint64, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]uint64)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseUint(v, 10, 64)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = tmp
+	}
 	return nil
 }
 
@@ -208,16 +438,65 @@ func ParamUint64Map(f func(key string) map[string]string, key string, ptr *map[s
 * float
 **************************************************/
 
-func ParamFloat(f func(key string) string, key string, ptr *float32) error {
+func ParamFloat(f func(string) (string, error), key string, ptr *float32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseFloat(val, 32)
+	if err != nil {
+		return err
+	}
+	*ptr = float32(tmp)
 	return nil
 }
-func ParamFloatOptional(f func(key string) string, key string, ptr **float32) error {
+func ParamFloatOptional(f func(string) (string, error), key string, ptr **float32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseFloat(val, 32)
+	if err != nil {
+		return err
+	}
+	ret := float32(tmp)
+	*ptr = &ret
 	return nil
 }
-func ParamFloatRepeated(f func(key string) []string, key string, ptr *[]float32) error {
+func ParamFloatRepeated(f func(string, bool) ([]string, error), key string, ptr *[]float32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]float32, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseFloat(v, 32)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, float32(tmp))
+	}
 	return nil
 }
-func ParamFloatMap(f func(key string) map[string]string, key string, ptr *map[string]float32) error {
+func ParamFloatMap(f func(string, bool) (map[string]string, error), key string, ptr *map[string]float32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]float32)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseFloat(v, 32)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = float32(tmp)
+	}
 	return nil
 }
 
@@ -225,16 +504,64 @@ func ParamFloatMap(f func(key string) map[string]string, key string, ptr *map[st
 * double
 **************************************************/
 
-func ParamDouble(f func(key string) string, key string, ptr *float64) error {
+func ParamDouble(f func(string) (string, error), key string, ptr *float64) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return err
+	}
+	*ptr = tmp
 	return nil
 }
-func ParamDoubleOptional(f func(key string) string, key string, ptr **float64) error {
+func ParamDoubleOptional(f func(string) (string, error), key string, ptr **float64) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return err
+	}
+	*ptr = &tmp
 	return nil
 }
-func ParamDoubleRepeated(f func(key string) []string, key string, ptr *[]float64) error {
+func ParamDoubleRepeated(f func(string, bool) ([]string, error), key string, ptr *[]float64, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]float64, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, tmp)
+	}
 	return nil
 }
-func ParamDoubleMap(f func(key string) map[string]string, key string, ptr *map[string]float64) error {
+func ParamDoubleMap(f func(string, bool) (map[string]string, error), key string, ptr *map[string]float64, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]float64)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = tmp
+	}
 	return nil
 }
 
@@ -242,16 +569,36 @@ func ParamDoubleMap(f func(key string) map[string]string, key string, ptr *map[s
 * string
 **************************************************/
 
-func ParamString(f func(key string) string, key string, ptr *string) error {
+func ParamString(f func(string) (string, error), key string, ptr *string) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	*ptr = val
 	return nil
 }
-func ParamStringOptional(f func(key string) string, key string, ptr **string) error {
+func ParamStringOptional(f func(string) (string, error), key string, ptr **string) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	*ptr = &val
 	return nil
 }
-func ParamStringRepeated(f func(key string) []string, key string, ptr *[]string) error {
+func ParamStringRepeated(f func(string, bool) ([]string, error), key string, ptr *[]string, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	*ptr = val
 	return nil
 }
-func ParamStringMap(f func(key string) map[string]string, key string, ptr *map[string]string) error {
+func ParamStringMap(f func(string, bool) (map[string]string, error), key string, ptr *map[string]string, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	*ptr = val
 	return nil
 }
 
@@ -259,16 +606,55 @@ func ParamStringMap(f func(key string) map[string]string, key string, ptr *map[s
 * bytes
 **************************************************/
 
-func ParamBytes(f func(key string) string, key string, ptr *[]byte) error {
+func ParamBytes(f func(string) (string, error), key string, ptr *[]byte) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	*ptr, err = base64.StdEncoding.DecodeString(val)
+	return err
+}
+func ParamBytesOptional(f func(string) (string, error), key string, ptr *[]byte) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	*ptr, err = base64.StdEncoding.DecodeString(val)
+	return err
+}
+func ParamBytesRepeated(f func(string, bool) ([]string, error), key string, ptr *[][]byte, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([][]byte, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, tmp)
+	}
 	return nil
 }
-func ParamBytesOptional(f func(key string) string, key string, ptr *[]byte) error {
-	return nil
-}
-func ParamBytesRepeated(f func(key string) []string, key string, ptr *[][]byte) error {
-	return nil
-}
-func ParamBytesMap(f func(key string) map[string]string, key string, ptr *map[string][]byte) error {
+func ParamBytesMap(f func(string, bool) (map[string]string, error), key string, ptr *map[string][]byte, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string][]byte)
+	}
+	for k, v := range val {
+		(*ptr)[k], err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -276,16 +662,65 @@ func ParamBytesMap(f func(key string) map[string]string, key string, ptr *map[st
 * enum
 **************************************************/
 
-func ParamEnum[Enum ~int32](f func(key string) string, key string, ptr *Enum, names map[int32]string) error {
+func ParamEnum[Enum ~int32](f func(string) (string, error), key string, ptr *Enum) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseInt(val, 10, 32)
+	if err != nil {
+		return err
+	}
+	*ptr = Enum(tmp)
 	return nil
 }
-func ParamEnumOptional[Enum ~int32](f func(key string) string, key string, ptr **Enum, names map[int32]string) error {
+func ParamEnumOptional[Enum ~int32](f func(string) (string, error), key string, ptr **Enum) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	tmp, err := strconv.ParseInt(val, 10, 32)
+	if err != nil {
+		return err
+	}
+	ret := Enum(tmp)
+	*ptr = &ret
 	return nil
 }
-func ParamEnumRepeated[Enum ~int32](f func(key string) []string, key string, ptr *[]Enum, names map[int32]string) error {
+func ParamEnumRepeated[Enum ~int32](f func(string, bool) ([]string, error), key string, ptr *[]Enum, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]Enum, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		tmp, err := strconv.ParseInt(v, 10, 32)
+		if err != nil {
+			return err
+		}
+		*ptr = append(*ptr, Enum(tmp))
+	}
 	return nil
 }
-func ParamEnumMap[Enum ~int32](f func(key string) map[string]string, key string, ptr *map[string]Enum, names map[int32]string) error {
+func ParamEnumMap[Enum ~int32](f func(string, bool) (map[string]string, error), key string, ptr *map[string]Enum, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]Enum)
+	}
+	for k, v := range val {
+		tmp, err := strconv.ParseInt(v, 10, 32)
+		if err != nil {
+			return err
+		}
+		(*ptr)[k] = Enum(tmp)
+	}
 	return nil
 }
 
@@ -293,15 +728,48 @@ func ParamEnumMap[Enum ~int32](f func(key string) map[string]string, key string,
 * enum_name
 **************************************************/
 
-func ParamEnumName[Enum ~int32](f func(key string) string, key string, ptr *Enum, values map[string]int32) error {
+func ParamEnumName[Enum ~int32](f func(string) (string, error), key string, ptr *Enum, values map[string]int32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	*ptr = Enum(values[val])
 	return nil
 }
-func ParamEnumNameOptional[Enum ~int32](f func(key string) string, key string, ptr **Enum, values map[string]int32) error {
+func ParamEnumNameOptional[Enum ~int32](f func(string) (string, error), key string, ptr **Enum, values map[string]int32) error {
+	val, err := f(key)
+	if err != nil {
+		return err
+	}
+	ret := Enum(values[val])
+	*ptr = &ret
 	return nil
 }
-func ParamEnumNameRepeated[Enum ~int32](f func(key string) []string, key string, ptr *[]Enum, values map[string]int32) error {
+func ParamEnumNameRepeated[Enum ~int32](f func(string, bool) ([]string, error), key string, ptr *[]Enum, values map[string]int32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make([]Enum, 0, len(val))
+	} else {
+		*ptr = (*ptr)[0:0]
+	}
+	for _, v := range val {
+		*ptr = append(*ptr, Enum(values[v]))
+	}
 	return nil
 }
-func ParamEnumNameMap[Enum ~int32](f func(key string) map[string]string, key string, ptr *map[string]Enum, values map[string]int32) error {
+func ParamEnumNameMap[Enum ~int32](f func(string, bool) (map[string]string, error), key string, ptr *map[string]Enum, values map[string]int32, explode bool) error {
+	val, err := f(key, explode)
+	if err != nil {
+		return err
+	}
+	if *ptr == nil {
+		*ptr = make(map[string]Enum)
+	}
+	for k, v := range val {
+		(*ptr)[k] = Enum(values[v])
+	}
 	return nil
 }

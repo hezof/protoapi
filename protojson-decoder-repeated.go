@@ -369,7 +369,7 @@ func DecodeBytesRepeated(r *JsonDecoder, p *[][]byte) {
 	}
 }
 
-func DecodeEnumNameRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumNameRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, values map[string]int32) {
 	switch r.token {
 	case ArrayBegin:
 		if *p == nil {
@@ -384,7 +384,7 @@ func DecodeEnumNameRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[in
 		}
 		for {
 			var v Enum
-			DecodeEnum(r, &v, names, values)
+			DecodeEnumName(r, &v, values)
 			*p = append(*p, v)
 
 			switch r.next() {
@@ -410,7 +410,7 @@ func DecodeEnumNameRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[in
 	}
 }
 
-func DecodeEnumRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[int32]string, values map[string]int32) {
+func DecodeEnumRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum) {
 	switch r.token {
 	case ArrayBegin:
 		if *p == nil {
@@ -425,7 +425,7 @@ func DecodeEnumRepeated[Enum ~int32](r *JsonDecoder, p *[]Enum, names map[int32]
 		}
 		for {
 			var v Enum
-			DecodeEnum(r, &v, names, values)
+			DecodeEnum(r, &v)
 			*p = append(*p, v)
 
 			switch r.next() {
