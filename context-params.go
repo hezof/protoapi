@@ -1,71 +1,288 @@
 package protoapi
 
-/****************************************
-*	form
-****************************************/
+import (
+	"ksogit.kingsoft.net/kgo/log"
+	"net/url"
+	"strings"
+)
 
-func (ctx *Context) FormValue(key string) string {
-	return ""
-}
-func (ctx *Context) FormValueSlice(key string, explode bool) []string {
-	return nil
-}
-func (ctx *Context) FormValueMap(key string, explode bool) map[string]string {
-	return nil
-}
-
-/****************************************
-*	path
-****************************************/
-
-func (ctx *Context) PathValue(key string) string {
-	return ""
-}
-func (ctx *Context) PathValueSlice(key string, explode bool) []string {
-	return nil
-}
-func (ctx *Context) PathValueMap(key string, explode bool) map[string]string {
-	return nil
-}
+// 对于in为body/form, path, query, header, cookie的参数, 按照OAS 3.0规范解析:
+// body/form: style=form, explode=?{false|true}
+// path: style=simple, explode=?{false|true}
+// query: style=form, explode=?{false|true}
+// header: style=simple, explode=?{false|true}
+// cookie: style=form, explode=?{false|true}
+// 详细内容参考: https://swagger.io/docs/specification/v3_0/serialization
 
 /****************************************
-*	query
+*	form: style=form, explode=?
 ****************************************/
 
-func (ctx *Context) QueryValue(key string) string {
+// FormValue 获取首个form参数
+func (ctx *Context) FormValue(name string) string {
+	if ctx.Request.PostForm == nil {
+		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
+		if err != nil {
+			log.Error("parse form error: %v", err)
+		}
+	}
+	if vs := ctx.Request.PostForm[name]; len(vs) > 0 {
+		return vs[0]
+	}
 	return ""
 }
-func (ctx *Context) QueryValueSlice(key string, explode bool) []string {
+
+// FormValueSlice 根据explode解析form array参数
+func (ctx *Context) FormValueSlice(name string, explode bool) []string {
+	if ctx.Request.PostForm == nil {
+		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
+		if err != nil {
+			log.Error("parse form error: %v", err)
+		}
+	}
+	if explode {
+		// collectFormat=multi(style=form, explode=true)
+		return ctx.Request.PostForm[name]
+	} else {
+		// collectFormat=csv(style=form, explode=false)
+		if vs := ctx.Request.PostForm[name]; len(vs) > 0 {
+			return strings.Split(vs[0], ",")
+		}
+		return nil
+	}
+}
+
+// FormValueMap 根据explode解析form object参数
+func (ctx *Context) FormValueMap(name string, explode bool) map[string]string {
+	if ctx.Request.PostForm == nil {
+		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
+		if err != nil {
+			log.Error("parse form error: %v", err)
+		}
+	}
+	if explode {
+		// collectFormat=multi(style=form, explode=true)
+		rt := make(map[string]string)
+		for _, kv := range ctx.Request.PostForm[name] {
+			if ps := strings.IndexByte(kv, '='); ps != -1 {
+				rt[kv[:ps]] = kv[ps+1:]
+			}
+		}
+		return rt
+	} else {
+		// collectFormat=csv(style=form, explode=false)
+		if vs := ctx.Request.PostForm[name]; len(vs) > 0 {
+			rt := make(map[string]string)
+			ss := strings.Split(vs[0], ",")
+			for i, n := 1, len(ss); i < n; i += 2 {
+				rt[ss[i-1]] = ss[i]
+			}
+			return rt
+		}
+		return nil
+	}
+}
+
+/****************************************
+*	path: style=simple, explode=?
+****************************************/
+
+// PathValue 获取首个path参数
+func (ctx *Context) PathValue(name string) string {
+	for _, pm := range ctx.params {
+		if pm.Key == name {
+			return pm.Value
+		}
+	}
+	return ""
+}
+
+// PathValueSlice 根据explode解析path array参数
+func (ctx *Context) PathValueSlice(name string, explode bool) []string {
+	for _, pm := range ctx.params {
+		if pm.Key == name {
+			// path的explode情形都相同, 所以可以忽略
+			return strings.Split(pm.Value, ",")
+		}
+	}
 	return nil
 }
-func (ctx *Context) QueryValueMap(key string, explode bool) map[string]string {
+
+// PathValueMap 根据explode解析path object参数
+func (ctx *Context) PathValueMap(name string, explode bool) map[string]string {
+	for _, pm := range ctx.params {
+		if pm.Key == name {
+			if explode {
+				rt := make(map[string]string)
+				for _, kv := range strings.Split(pm.Value, ",") {
+					if ps := strings.IndexByte(kv, '='); ps != -1 {
+						rt[kv[:ps]] = kv[ps+1:]
+					}
+				}
+				return rt
+			} else {
+				rt := make(map[string]string)
+				ss := strings.Split(pm.Value, ",")
+				for i, n := 1, len(ss); i < n; i += 2 {
+					rt[ss[i-1]] = ss[i]
+				}
+				return rt
+			}
+		}
+	}
 	return nil
 }
 
 /****************************************
-*	header
+*	query: style=form, explode=?
 ****************************************/
 
-func (ctx *Context) HeaderValue(key string) string {
+func (ctx *Context) QueryValue(name string) string {
+	if ctx.query == nil {
+		var err error
+		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
+		if err != nil {
+			log.Error("parse query error: %v", err)
+		}
+	}
+	if vs, _ := ctx.query[name]; len(vs) > 0 {
+		return vs[0]
+	}
 	return ""
 }
-func (ctx *Context) HeaderValueSlice(key string, explode bool) []string {
-	return nil
+func (ctx *Context) QueryValueSlice(name string, explode bool) []string {
+	if ctx.query == nil {
+		var err error
+		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
+		if err != nil {
+			log.Error("parse query error: %v", err)
+		}
+	}
+	if explode {
+		return ctx.query[name]
+	} else {
+		if vs := ctx.query[name]; len(vs) > 0 {
+			return strings.Split(vs[0], ",")
+		}
+		return nil
+	}
 }
-func (ctx *Context) HeaderValueMap(key string, explode bool) map[string]string {
-	return nil
+func (ctx *Context) QueryValueMap(name string, explode bool) map[string]string {
+	if ctx.query == nil {
+		var err error
+		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
+		if err != nil {
+			log.Error("parse query error: %v", err)
+		}
+	}
+	if explode {
+		// collectFormat=multi(style=form, explode=true)
+		rt := make(map[string]string)
+		for _, kv := range ctx.query[name] {
+			if ps := strings.IndexByte(kv, '='); ps != -1 {
+				rt[kv[:ps]] = kv[ps+1:]
+			}
+		}
+		return rt
+	} else {
+		// collectFormat=csv(style=form, explode=false)
+		if vs := ctx.query[name]; len(vs) > 0 {
+			rt := make(map[string]string)
+			ss := strings.Split(vs[0], ",")
+			for i, n := 1, len(ss); i < n; i += 2 {
+				rt[ss[i-1]] = ss[i]
+			}
+			return rt
+		}
+		return nil
+	}
+}
+
+/****************************************
+*	header: style=simple, explode=?
+****************************************/
+
+func (ctx *Context) HeaderValue(name string) string {
+	return ctx.Request.Header.Get(name)
+}
+func (ctx *Context) HeaderValueSlice(name string, explode bool) []string {
+	if explode {
+		return ctx.Request.Header.Values(name)
+	} else {
+		return strings.Split(ctx.Request.Header.Get(name), ",")
+	}
+}
+func (ctx *Context) HeaderValueMap(name string, explode bool) map[string]string {
+	if explode {
+		rt := make(map[string]string)
+		for _, kv := range ctx.Request.Header.Values(name) {
+			if ps := strings.IndexByte(kv, '='); ps != -1 {
+				rt[kv[:ps]] = kv[ps+1:]
+			}
+		}
+		return rt
+	} else {
+		rt := make(map[string]string)
+		ss := strings.Split(ctx.Request.Header.Get(name), ",")
+		for i, n := 1, len(ss); i < n; i += 2 {
+			rt[ss[i-1]] = ss[i]
+		}
+		return rt
+	}
 }
 
 /****************************************
 *	cookie
 ****************************************/
 
-func (ctx *Context) CookieValue(key string) string {
+func (ctx *Context) CookieValue(name string) string {
+	for _, ck := range ctx.Request.Cookies() {
+		if ck.Name == name {
+			return ck.Value
+		}
+	}
 	return ""
 }
-func (ctx *Context) CookieValueSlice(key string, explode bool) []string {
-	return nil
+func (ctx *Context) CookieValueSlice(name string, explode bool) []string {
+	if explode {
+		rt := make([]string, 0, 4)
+		for _, ck := range ctx.Request.Cookies() {
+			if ck.Name == name {
+				rt = append(rt, ck.Value)
+			}
+		}
+		return rt
+	} else {
+		for _, ck := range ctx.Request.Cookies() {
+			if ck.Name == name {
+				return strings.Split(ck.Value, ",")
+			}
+		}
+		return nil
+	}
 }
-func (ctx *Context) CookieValueMap(key string, explode bool) map[string]string {
-	return nil
+func (ctx *Context) CookieValueMap(name string, explode bool) map[string]string {
+	if explode {
+		rt := make(map[string]string)
+		for _, ck := range ctx.Request.Cookies() {
+			if ck.Name == name {
+				if ps := strings.IndexByte(ck.Value, '='); ps != -1 {
+					rt[ck.Value[:ps]] = ck.Value[ps+1:]
+				}
+			}
+		}
+		return rt
+	} else {
+		for _, ck := range ctx.Request.Cookies() {
+			if ck.Name == name {
+				rt := make(map[string]string)
+				vs := strings.Split(ck.Value, ",")
+				for i, n := 1, len(vs); i < n; i += 2 {
+					rt[vs[i-1]] = vs[i]
+				}
+				return rt
+			}
+		}
+		return nil
+	}
 }
