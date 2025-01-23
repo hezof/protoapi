@@ -79,8 +79,8 @@ func DecodeMeta(b64 string) *Meta {
 	return meta
 }
 
-// JsonBody 解码请求对象. 与EncodeMessage()很相似, 但不支持泛型!
-func JsonBody(in io.Reader, req any) error {
+// DecodeRequest 解码请求对象. DecodeMessage()很相似, 但不支持泛型!
+func DecodeRequest(in io.Reader, req any) error {
 	r := GetDecoder(in)
 	defer PutDecoder(r)
 

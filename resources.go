@@ -6,6 +6,7 @@ xml语法:
 	<!ELEMENT resource (code, message, status-code)>
 	<!ATTLIST accept-language CDATA "">
 	<!ELEMENT code (#PCDATA)>
+	<!ELEMENT name (#PCDATA)>
 	<!ELEMENT message (#PCDATA)>
 	<!ELEMENT status-code (#PCDATA)>
 
@@ -16,9 +17,11 @@ xml语法:
 	<resource>
 	    <!-- 必需: 错误代码 -->
 	    <code>1001</code>
-	    <!-- 必需: 错误消息 -->
+	    <!-- 可选: 错误名称 -->
+		<name>test</name>
+	    <!-- 可选: 错误消息 -->
 	    <message>测试%v</message>
-	    <!-- 可选: 状态码, 默认210 -->
+	    <!-- 可选: 状态码 -->
 	    <status-code>403</status-code>
 	</resource>
 
@@ -38,6 +41,7 @@ import (
 type resource struct {
 	Status  uint32 `xml:"status"`
 	Code    uint32 `xml:"code"`
+	Name    string `xml:"name"`
 	Message string `xml:"message"`
 }
 
@@ -112,18 +116,18 @@ func ReadResourceConfig(path string) (langs []string, bundle map[uint32]*resourc
 	return
 }
 
-func LoadResourceBundle(code uint32, languages ...string) (uint32, string, bool) {
+func LoadResourceBundle(code uint32, languages ...string) (uint32, string, string, bool) {
 	for _, l := range languages {
 		if bds := allResMap[l]; bds != nil {
 			if bd := bds[code]; bd != nil {
-				return bd.Status, bd.Message, true
+				return bd.Status, bd.Name, bd.Message, true
 			}
 		}
 	}
 	if bd := defResMap[code]; bd != nil {
-		return bd.Status, bd.Message, true
+		return bd.Status, bd.Name, bd.Message, true
 	}
-	return 0, "", false
+	return 0, "", "", false
 }
 
 // 根据Accept-Language快速获取(从左到右,不按q排序). 该方法性能优于parseAcceptLanguage!

@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -23,8 +24,7 @@ const (
 	_StatusMask = 2 << (_StatusBits - 1)
 )
 
-// 对于protoapi.required的全局默认设置,调用者可在server启动前修改设置!
-
+// StatusResult 带状态的结果. 必须注意status与code的约定取值范围!
 type StatusResult struct {
 	status  uint32 // 状态代码(http).
 	code    uint32 // 错误代码. 0表示成功
@@ -32,6 +32,21 @@ type StatusResult struct {
 	message string // 错误消息.
 	details []any  // 错误参数.
 	data    any    // 结果数据
+}
+
+func (sr *StatusResult) SetStatus(status uint32) {
+	sr.status = status
+}
+
+func (sr *StatusResult) SetName(name string) {
+	sr.name = name
+}
+
+func (sr *StatusResult) SetMessage(message string) {
+	if len(sr.details) > 0 {
+		message = fmt.Sprintf(message, sr.details)
+	}
+	sr.message = message
 }
 
 func (sr *StatusResult) GetStatus() uint32 {
@@ -83,7 +98,7 @@ func (sr *StatusResult) GRPCStatus() *status.Status {
 	return status.New(codes.Code(sr.status<<_CodeBits|sr.code), sr.message)
 }
 
-// StatusError 创建StatusResult错误实例. 要求:
+// StatusError 创建StatusResult错误实例. 必须注意status与code的取值范围:
 // - status 取值范围(0,1024)
 // - code 取值范围(0,4194304)
 func StatusError(status uint32, code uint32, message string, details ...interface{}) *StatusResult {
@@ -92,7 +107,7 @@ func StatusError(status uint32, code uint32, message string, details ...interfac
 	code &= _CodeMask
 
 	if len(details) > 0 {
-		message = Sprintf(message, details...)
+		message = fmt.Sprintf(message, details...)
 	}
 	return &StatusResult{
 		status:  status,

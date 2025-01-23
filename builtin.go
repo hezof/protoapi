@@ -1,7 +1,6 @@
 package protoapi
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,51 +22,6 @@ func UnsafeBytes(s string) []byte {
 // For more details, see https://github.com/golang/go/issues/53003#issuecomment-1140276077.
 func UnsafeString(b []byte) string {
 	return unsafe.String(unsafe.SliceData(b), len(b))
-}
-
-// Sprintf 用于规避标fmt.Sprintf()的异常问题
-func Sprintf(format string, args ...interface{}) string {
-
-	// 没有参数
-	argc := len(args)
-	if argc == 0 {
-		return format
-	}
-
-	// 扫描参数
-	wild := 0 // 通配符%数量(%%除外)
-	mark := false
-	for _, c := range format {
-		if c == '%' {
-			if mark {
-				mark = false // 上一字符是%
-			} else {
-				mark = true // 上一字符不是%
-			}
-		} else {
-			if mark { //上一字符是%
-				wild++
-				mark = false
-			}
-		}
-	}
-
-	// 适配处理
-	if wild == 0 {
-		return format
-	}
-	if argc == wild {
-		// 参数数量相同
-		return fmt.Sprintf(format, args...)
-	} else if wild < argc {
-		// 参数数量有多
-		return fmt.Sprintf(format, args[0:wild]...)
-	} else {
-		// 参数数量不足
-		temp := make([]interface{}, wild)
-		copy(temp, args)
-		return fmt.Sprintf(format, temp...)
-	}
 }
 
 // StackTrace 打印堆栈追踪信息,如果是"/src/runtime/"自动跳过!

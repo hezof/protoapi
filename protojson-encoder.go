@@ -1,7 +1,9 @@
 package protoapi
 
 import (
+	"encoding/base64"
 	"io"
+	"strconv"
 	"unicode/utf8"
 )
 
@@ -178,36 +180,286 @@ func (w *JsonEncoder) base64(in []byte) {
 	}
 }
 
-const (
-	leftBrace    byte = '{'
-	rightBrace   byte = '}'
-	leftBracket  byte = '['
-	rightBracket byte = ']'
-	comma        byte = ','
-	colon        byte = ':'
-	quotes       byte = '"'
-)
+/**************************************************
+* 复用方法
+**************************************************/
 
-const encode = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-const padChar = '='
-
-const chars = "0123456789abcdef"
-
-func table(falseValues ...int) [128]bool {
-	ret := [128]bool{}
-
-	for i := 0; i < 128; i++ {
-		ret[i] = true
-	}
-
-	for _, v := range falseValues {
-		ret[v] = false
-	}
-
-	return ret
+func encodeNull(w *JsonEncoder) {
+	w.ensure(4)
+	w.buff = append(w.buff, 'n', 'u', 'l', 'l')
 }
 
-var (
-	//escapeHtmlTable   = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '&', '<', '>', '\\')
-	noEscapeHtmlTable = table(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, '"', '\\')
-)
+func encodeTrue(w *JsonEncoder) {
+	w.ensure(4)
+	w.buff = append(w.buff, 't', 'r', 'u', 'e')
+}
+
+func encodeFalse(w *JsonEncoder) {
+	w.ensure(5)
+	w.buff = append(w.buff, 'f', 'a', 'l', 's', 'e')
+}
+
+func encodeZero(w *JsonEncoder) {
+	w.ensure(1)
+	w.buff = append(w.buff, '0')
+}
+
+func encodeInt32(w *JsonEncoder, value int32) {
+	w.ensure(11)
+	w.buff = append(w.buff, strconv.AppendInt(w.number[0:0], int64(value), 10)...)
+}
+
+func encodeInt64(w *JsonEncoder, value int64) {
+	w.ensure(21)
+	w.buff = append(w.buff, strconv.AppendInt(w.number[0:0], value, 10)...)
+}
+
+func encodeUint32(w *JsonEncoder, value uint32) {
+	w.ensure(11)
+	w.buff = append(w.buff, strconv.AppendUint(w.number[0:0], uint64(value), 10)...)
+}
+
+func encodeUint64(w *JsonEncoder, value uint64) {
+	w.ensure(21)
+	w.buff = append(w.buff, strconv.AppendUint(w.number[0:0], value, 10)...)
+}
+
+func encodeFloat(w *JsonEncoder, value float32) {
+	w.ensure(21)
+	w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], float64(value), 'g', -1, 32)...)
+}
+
+func encodeDouble(w *JsonEncoder, value float64) {
+	w.ensure(21)
+	w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], value, 'g', -1, 64)...)
+}
+
+func encodeString(w *JsonEncoder, value string) {
+	w.ensure(2 + len(value))
+	w.buff = append(w.buff, quotes)
+	w.escape(value)
+	w.buff = append(w.buff, quotes)
+}
+
+func encodeBytes(w *JsonEncoder, value []byte) {
+	w.ensure(2 + base64.StdEncoding.EncodedLen(len(value)))
+	w.buff = append(w.buff, quotes)
+	w.base64(value)
+	w.buff = append(w.buff, quotes)
+}
+
+func encodeStringEmpty(w *JsonEncoder) {
+	w.ensure(2)
+	w.buff = append(w.buff, quotes, quotes)
+}
+
+func encodeArrayEmpty(w *JsonEncoder) {
+	w.ensure(2)
+	w.buff = append(w.buff, leftBracket, rightBracket)
+}
+
+func encodeObject(w *JsonEncoder, value any) {
+	if e, ok := any(value).(FieldCodec); ok {
+		w.ensure(2)
+		w.buff = append(w.buff, leftBrace)
+		e.EncodeField(w)
+		if last := len(w.buff) - 1; w.buff[last] == comma {
+			w.buff[last] = rightBrace
+		} else {
+			w.buff = append(w.buff, rightBrace)
+		}
+	} else {
+		bs, err := MarshalJSON(value)
+		if err != nil {
+			w.reportError(err)
+		} else {
+			_, _ = w.Write(bs)
+		}
+	}
+
+}
+
+func encodeObjectEmpty(w *JsonEncoder) {
+	w.ensure(2)
+	w.buff = append(w.buff, leftBrace, rightBrace)
+}
+
+func encodeNullMember(w *JsonEncoder, name string) {
+	w.ensure(8 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, 'n', 'u', 'l', 'l', comma)
+}
+
+func encodeTrueMember(w *JsonEncoder, name string) {
+	w.ensure(8 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, 't', 'r', 'u', 'e', comma)
+}
+
+func encodeFalseMember(w *JsonEncoder, name string) {
+	w.ensure(9 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, 'f', 'a', 'l', 's', 'e', comma)
+}
+
+func encodeZeroMember(w *JsonEncoder, name string) {
+	w.ensure(5 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, '0', comma)
+}
+
+func encodeInt32Member(w *JsonEncoder, name string, value int32) {
+	w.ensure(15 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	w.buff = append(w.buff, strconv.AppendInt(w.number[0:0], int64(value), 10)...)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeInt64Member(w *JsonEncoder, name string, value int64) {
+	w.ensure(25 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	w.buff = append(w.buff, strconv.AppendInt(w.number[0:0], value, 10)...)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeUint32Member(w *JsonEncoder, name string, value uint32) {
+	w.ensure(15 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	w.buff = append(w.buff, strconv.AppendUint(w.number[0:0], uint64(value), 10)...)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeUint64Member(w *JsonEncoder, name string, value uint64) {
+	w.ensure(25 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	w.buff = append(w.buff, strconv.AppendUint(w.number[0:0], value, 10)...)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeFloatMember(w *JsonEncoder, name string, value float32) {
+	w.ensure(25 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], float64(value), 'g', -1, 32)...)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeDoubleMember(w *JsonEncoder, name string, value float64) {
+	w.ensure(25 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	w.buff = append(w.buff, strconv.AppendFloat(w.number[0:0], value, 'g', -1, 64)...)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeStringMember(w *JsonEncoder, name string, value string) {
+	w.ensure(4 + len(name) + len(value))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, quotes)
+	w.escape(value)
+	w.buff = append(w.buff, quotes, comma)
+}
+
+func encodeStringEmptyMember(w *JsonEncoder, name string) {
+	w.ensure(6 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, quotes, quotes, comma)
+}
+
+func encodeBytesMember(w *JsonEncoder, name string, value []byte) {
+	w.ensure(6 + len(name) + base64.StdEncoding.EncodedLen(len(value)))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, quotes)
+	w.base64(value)
+	w.buff = append(w.buff, quotes, comma)
+}
+
+func encodeArrayEmptyMember(w *JsonEncoder, name string) {
+	w.ensure(6 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, leftBracket, rightBracket, comma)
+}
+
+func encodeObjectMember(w *JsonEncoder, name string, value any) {
+	w.ensure(4 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon)
+	encodeObject(w, value)
+	w.buff = append(w.buff, comma)
+}
+
+func encodeObjectEmptyMember(w *JsonEncoder, name string) {
+	w.ensure(6 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, leftBrace, rightBrace, comma)
+}
+
+func encodeObjectWith[V any](w *JsonEncoder, value map[string]V, enc func(w *JsonEncoder, v V)) {
+	w.ensure(2)
+	w.buff = append(w.buff, leftBrace)
+	for k, v := range value {
+		encodeString(w, k)
+		w.buff = append(w.buff, colon)
+		enc(w, v)
+		w.buff = append(w.buff, comma)
+	}
+	w.buff[len(w.buff)-1] = rightBrace
+}
+
+func encodeObjectMemberWith[V any](w *JsonEncoder, name string, value map[string]V, enc func(w *JsonEncoder, v V)) {
+	w.ensure(4 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, leftBrace)
+	for k, v := range value {
+		encodeString(w, k)
+		w.buff = append(w.buff, colon)
+		enc(w, v)
+		w.buff = append(w.buff, comma)
+	}
+	w.buff[len(w.buff)-1] = rightBrace
+	w.buff = append(w.buff, comma)
+}
+
+func encodeArrayWith[V any](w *JsonEncoder, value []V, enc func(w *JsonEncoder, v V)) {
+	w.ensure(2)
+	w.buff = append(w.buff, leftBracket)
+	for _, v := range value {
+		enc(w, v)
+		w.buff = append(w.buff, comma)
+	}
+	w.buff[len(w.buff)-1] = rightBracket
+}
+
+func encodeArrayMemberWith[V any](w *JsonEncoder, name string, value []V, enc func(w *JsonEncoder, v V)) {
+	w.ensure(4 + len(name))
+	w.buff = append(w.buff, quotes)
+	w.buff = append(w.buff, name...)
+	w.buff = append(w.buff, quotes, colon, leftBracket)
+	for _, v := range value {
+		enc(w, v)
+		w.buff = append(w.buff, comma)
+	}
+	w.buff[len(w.buff)-1] = rightBracket
+	w.buff = append(w.buff, comma)
+}

@@ -5,6 +5,9 @@ import (
 	"ksogit.kingsoft.net/kgo/log"
 )
 
+// HandleFunc 处理逻辑函数
+type HandleFunc func(ctx *Context)
+
 // Handler 处理句柄.
 type Handler struct {
 	Setting       *MethodSetting // protobuf的method的handler
@@ -25,7 +28,7 @@ func RestfulHandleFunc(ctx *Context) {
 
 	// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
 	if err != nil {
-		if xrr := ctx.WriteErrorResult(StatusErrorFrom(err, profile.DefaultErrorStatus)); xrr != nil {
+		if xrr := ctx.WriteErrorResult(StatusErrorFrom(err)); xrr != nil {
 			log.Error("write error result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, xrr)
 		}
 	} else if ctx.ResponseWriter.statusCode == 0 {
