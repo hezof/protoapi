@@ -119,10 +119,11 @@ func EncodeResponse(out io.Writer, rsp any) error {
 }
 
 /*************************************************
-* bool
+* bool:
 **************************************************/
 
 func ParamBool(f func(key string) string, key string, ptr *bool) error {
+	*ptr = f(key) == "true"
 	return nil
 }
 func ParamBoolOptional(f func(key string) string, key string, ptr **bool) error {

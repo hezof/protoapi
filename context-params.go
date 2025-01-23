@@ -1,7 +1,6 @@
 package protoapi
 
 import (
-	"ksogit.kingsoft.net/kgo/log"
 	"net/url"
 	"strings"
 )
@@ -19,45 +18,45 @@ import (
 ****************************************/
 
 // FormValue 获取首个form参数
-func (ctx *Context) FormValue(name string) string {
+func (ctx *Context) FormValue(name string) (string, error) {
 	if ctx.Request.PostForm == nil {
 		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
 		if err != nil {
-			log.Error("parse form error: %v", err)
+			return "", err
 		}
 	}
 	if vs := ctx.Request.PostForm[name]; len(vs) > 0 {
-		return vs[0]
+		return vs[0], nil
 	}
-	return ""
+	return "", nil
 }
 
 // FormValueSlice 根据explode解析form array参数
-func (ctx *Context) FormValueSlice(name string, explode bool) []string {
+func (ctx *Context) FormValueSlice(name string, explode bool) ([]string, error) {
 	if ctx.Request.PostForm == nil {
 		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
 		if err != nil {
-			log.Error("parse form error: %v", err)
+			return nil, err
 		}
 	}
 	if explode {
 		// collectFormat=multi(style=form, explode=true)
-		return ctx.Request.PostForm[name]
+		return ctx.Request.PostForm[name], nil
 	} else {
 		// collectFormat=csv(style=form, explode=false)
 		if vs := ctx.Request.PostForm[name]; len(vs) > 0 {
-			return strings.Split(vs[0], ",")
+			return strings.Split(vs[0], ","), nil
 		}
-		return nil
+		return nil, nil
 	}
 }
 
 // FormValueMap 根据explode解析form object参数
-func (ctx *Context) FormValueMap(name string, explode bool) map[string]string {
+func (ctx *Context) FormValueMap(name string, explode bool) (map[string]string, error) {
 	if ctx.Request.PostForm == nil {
 		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
 		if err != nil {
-			log.Error("parse form error: %v", err)
+			return nil, err
 		}
 	}
 	if explode {
@@ -68,7 +67,7 @@ func (ctx *Context) FormValueMap(name string, explode bool) map[string]string {
 				rt[kv[:ps]] = kv[ps+1:]
 			}
 		}
-		return rt
+		return rt, nil
 	} else {
 		// collectFormat=csv(style=form, explode=false)
 		if vs := ctx.Request.PostForm[name]; len(vs) > 0 {
@@ -77,9 +76,9 @@ func (ctx *Context) FormValueMap(name string, explode bool) map[string]string {
 			for i, n := 1, len(ss); i < n; i += 2 {
 				rt[ss[i-1]] = ss[i]
 			}
-			return rt
+			return rt, nil
 		}
-		return nil
+		return nil, nil
 	}
 }
 
@@ -88,28 +87,28 @@ func (ctx *Context) FormValueMap(name string, explode bool) map[string]string {
 ****************************************/
 
 // PathValue 获取首个path参数
-func (ctx *Context) PathValue(name string) string {
+func (ctx *Context) PathValue(name string) (string, error) {
 	for _, pm := range ctx.params {
 		if pm.Key == name {
-			return pm.Value
+			return pm.Value, nil
 		}
 	}
-	return ""
+	return "", nil
 }
 
 // PathValueSlice 根据explode解析path array参数
-func (ctx *Context) PathValueSlice(name string, explode bool) []string {
+func (ctx *Context) PathValueSlice(name string, explode bool) ([]string, error) {
 	for _, pm := range ctx.params {
 		if pm.Key == name {
 			// path的explode情形都相同, 所以可以忽略
-			return strings.Split(pm.Value, ",")
+			return strings.Split(pm.Value, ","), nil
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 // PathValueMap 根据explode解析path object参数
-func (ctx *Context) PathValueMap(name string, explode bool) map[string]string {
+func (ctx *Context) PathValueMap(name string, explode bool) (map[string]string, error) {
 	for _, pm := range ctx.params {
 		if pm.Key == name {
 			if explode {
@@ -119,60 +118,60 @@ func (ctx *Context) PathValueMap(name string, explode bool) map[string]string {
 						rt[kv[:ps]] = kv[ps+1:]
 					}
 				}
-				return rt
+				return rt, nil
 			} else {
 				rt := make(map[string]string)
 				ss := strings.Split(pm.Value, ",")
 				for i, n := 1, len(ss); i < n; i += 2 {
 					rt[ss[i-1]] = ss[i]
 				}
-				return rt
+				return rt, nil
 			}
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 /****************************************
 *	query: style=form, explode=?
 ****************************************/
 
-func (ctx *Context) QueryValue(name string) string {
+func (ctx *Context) QueryValue(name string) (string, error) {
 	if ctx.query == nil {
 		var err error
 		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
 		if err != nil {
-			log.Error("parse query error: %v", err)
+			return "", err
 		}
 	}
 	if vs, _ := ctx.query[name]; len(vs) > 0 {
-		return vs[0]
+		return vs[0], nil
 	}
-	return ""
+	return "", nil
 }
-func (ctx *Context) QueryValueSlice(name string, explode bool) []string {
+func (ctx *Context) QueryValueSlice(name string, explode bool) ([]string, error) {
 	if ctx.query == nil {
 		var err error
 		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
 		if err != nil {
-			log.Error("parse query error: %v", err)
+			return nil, err
 		}
 	}
 	if explode {
-		return ctx.query[name]
+		return ctx.query[name], nil
 	} else {
 		if vs := ctx.query[name]; len(vs) > 0 {
-			return strings.Split(vs[0], ",")
+			return strings.Split(vs[0], ","), nil
 		}
-		return nil
+		return nil, nil
 	}
 }
-func (ctx *Context) QueryValueMap(name string, explode bool) map[string]string {
+func (ctx *Context) QueryValueMap(name string, explode bool) (map[string]string, error) {
 	if ctx.query == nil {
 		var err error
 		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
 		if err != nil {
-			log.Error("parse query error: %v", err)
+			return nil, err
 		}
 	}
 	if explode {
@@ -183,7 +182,7 @@ func (ctx *Context) QueryValueMap(name string, explode bool) map[string]string {
 				rt[kv[:ps]] = kv[ps+1:]
 			}
 		}
-		return rt
+		return rt, nil
 	} else {
 		// collectFormat=csv(style=form, explode=false)
 		if vs := ctx.query[name]; len(vs) > 0 {
@@ -192,9 +191,9 @@ func (ctx *Context) QueryValueMap(name string, explode bool) map[string]string {
 			for i, n := 1, len(ss); i < n; i += 2 {
 				rt[ss[i-1]] = ss[i]
 			}
-			return rt
+			return rt, nil
 		}
-		return nil
+		return nil, nil
 	}
 }
 
@@ -202,17 +201,17 @@ func (ctx *Context) QueryValueMap(name string, explode bool) map[string]string {
 *	header: style=simple, explode=?
 ****************************************/
 
-func (ctx *Context) HeaderValue(name string) string {
-	return ctx.Request.Header.Get(name)
+func (ctx *Context) HeaderValue(name string) (string, error) {
+	return ctx.Request.Header.Get(name), nil
 }
-func (ctx *Context) HeaderValueSlice(name string, explode bool) []string {
+func (ctx *Context) HeaderValueSlice(name string, explode bool) ([]string, error) {
 	if explode {
-		return ctx.Request.Header.Values(name)
+		return ctx.Request.Header.Values(name), nil
 	} else {
-		return strings.Split(ctx.Request.Header.Get(name), ",")
+		return strings.Split(ctx.Request.Header.Get(name), ","), nil
 	}
 }
-func (ctx *Context) HeaderValueMap(name string, explode bool) map[string]string {
+func (ctx *Context) HeaderValueMap(name string, explode bool) (map[string]string, error) {
 	if explode {
 		rt := make(map[string]string)
 		for _, kv := range ctx.Request.Header.Values(name) {
@@ -220,14 +219,14 @@ func (ctx *Context) HeaderValueMap(name string, explode bool) map[string]string 
 				rt[kv[:ps]] = kv[ps+1:]
 			}
 		}
-		return rt
+		return rt, nil
 	} else {
 		rt := make(map[string]string)
 		ss := strings.Split(ctx.Request.Header.Get(name), ",")
 		for i, n := 1, len(ss); i < n; i += 2 {
 			rt[ss[i-1]] = ss[i]
 		}
-		return rt
+		return rt, nil
 	}
 }
 
@@ -235,15 +234,15 @@ func (ctx *Context) HeaderValueMap(name string, explode bool) map[string]string 
 *	cookie
 ****************************************/
 
-func (ctx *Context) CookieValue(name string) string {
+func (ctx *Context) CookieValue(name string) (string, error) {
 	for _, ck := range ctx.Request.Cookies() {
 		if ck.Name == name {
-			return ck.Value
+			return ck.Value, nil
 		}
 	}
-	return ""
+	return "", nil
 }
-func (ctx *Context) CookieValueSlice(name string, explode bool) []string {
+func (ctx *Context) CookieValueSlice(name string, explode bool) ([]string, error) {
 	if explode {
 		rt := make([]string, 0, 4)
 		for _, ck := range ctx.Request.Cookies() {
@@ -251,17 +250,17 @@ func (ctx *Context) CookieValueSlice(name string, explode bool) []string {
 				rt = append(rt, ck.Value)
 			}
 		}
-		return rt
+		return rt, nil
 	} else {
 		for _, ck := range ctx.Request.Cookies() {
 			if ck.Name == name {
-				return strings.Split(ck.Value, ",")
+				return strings.Split(ck.Value, ","), nil
 			}
 		}
-		return nil
+		return nil, nil
 	}
 }
-func (ctx *Context) CookieValueMap(name string, explode bool) map[string]string {
+func (ctx *Context) CookieValueMap(name string, explode bool) (map[string]string, error) {
 	if explode {
 		rt := make(map[string]string)
 		for _, ck := range ctx.Request.Cookies() {
@@ -271,7 +270,7 @@ func (ctx *Context) CookieValueMap(name string, explode bool) map[string]string 
 				}
 			}
 		}
-		return rt
+		return rt, nil
 	} else {
 		for _, ck := range ctx.Request.Cookies() {
 			if ck.Name == name {
@@ -280,9 +279,9 @@ func (ctx *Context) CookieValueMap(name string, explode bool) map[string]string 
 				for i, n := 1, len(vs); i < n; i += 2 {
 					rt[vs[i-1]] = vs[i]
 				}
-				return rt
+				return rt, nil
 			}
 		}
-		return nil
+		return nil, nil
 	}
 }
