@@ -78,7 +78,7 @@ func WebsocketHandleFunc(ctx *Context) {
 
 		// 结果处理
 		if err != nil {
-			if xrr := ctx.writeErrorResult(out, StatusErrorFrom(err, profile.DefaultErrorStatus)); xrr != nil {
+			if xrr := ctx.writeErrorResult(out, StatusErrorFrom(err)); xrr != nil {
 				if _, ok := xrr.(*websocket.CloseError); !ok {
 					log.Error("websocket write result error: %v", xrr)
 				}
