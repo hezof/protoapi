@@ -259,7 +259,7 @@ func encodeArrayEmpty(w *JsonEncoder) {
 }
 
 func encodeObject(w *JsonEncoder, value any) {
-	if e, ok := any(value).(FieldCodec); ok {
+	if e, ok := value.(FieldCodec); ok {
 		w.ensure(2)
 		w.buff = append(w.buff, leftBrace)
 		e.EncodeField(w)
