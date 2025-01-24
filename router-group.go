@@ -107,7 +107,7 @@ func (rc *_group) StaticFile(path string, file string) *_group {
 		panic("URL parameters can not be used when serving a static file")
 	}
 	call := func(c *Context) {
-		http.ServeFile(c.ResponseWriter, c.Request, file)
+		http.ServeFile(c.ResponseWriter.ResponseWriter, c.Request, file)
 	}
 	rc.HandleFunc(http.MethodGet, path, call)
 	rc.HandleFunc(http.MethodHead, path, call)
@@ -140,9 +140,9 @@ func (rc *_group) StaticFS(prefix string, fs http.FileSystem) *_group {
 			c.ResponseWriter.WriteHeader(http.StatusMovedPermanently)
 		} else if ulen > plen && c.Request.URL.Path[plen] == '/' {
 			c.Request.URL.Path = c.Request.URL.Path[plen:]
-			serv.ServeHTTP(c.ResponseWriter, c.Request)
+			serv.ServeHTTP(c.ResponseWriter.ResponseWriter, c.Request)
 		} else {
-			http.NotFound(c.ResponseWriter, c.Request)
+			http.NotFound(c.ResponseWriter.ResponseWriter, c.Request)
 		}
 	}
 	rc.HandleFunc(http.MethodGet, path, call)

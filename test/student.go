@@ -47,7 +47,7 @@ func (s *Student) DecodeField(r *protoapi.JsonDecoder, f string) {
 	case `name`:
 		protoapi.DecodeString(r, &s.Name)
 	case `sex`:
-		protoapi.DecodeEnum(r, &s.Sex, Sex_Names, Sex_Values)
+		protoapi.DecodeEnum(r, &s.Sex)
 	case `age`:
 		protoapi.DecodeUint32(r, &s.Age)
 	case `score`:

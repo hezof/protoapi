@@ -564,16 +564,12 @@ __AFTER__:
 
 func i18nGrpcError(c context.Context, err error) error {
 
-	if result, ok := err.(*StatusResult); ok {
+	if result, ok := err.(StatusResult); ok {
 		if md, ok := metadata.FromIncomingContext(c); ok {
 			if vs, ok := md["accept-language"]; ok {
 				if resMap := fastGetResMapByAcceptLanguage(vs[0]); resMap != nil {
-					if rs, ok := resMap[result.code]; ok {
-						if len(result.details) == 0 {
-							result.message = rs.Message
-						} else {
-							result.message = fmt.Sprintf(rs.Message, result.details...)
-						}
+					if rs, ok := resMap[result.GetCode()]; ok {
+						result.SetMessage(rs.Message)
 					}
 				}
 			}
@@ -582,12 +578,8 @@ func i18nGrpcError(c context.Context, err error) error {
 		if md, ok := metadata.FromIncomingContext(c); ok {
 			if vs, ok := md["accept-language"]; ok {
 				if resMap := fastGetResMapByAcceptLanguage(vs[0]); resMap != nil {
-					if rs, ok := resMap[result.code]; ok {
-						if len(result.details) == 0 {
-							err = status.Error(sta.Code(), rs.Message)
-						} else {
-							err = status.Error(sta.Code(), fmt.Sprintf(rs.Message, result.details...))
-						}
+					if rs, ok := resMap[result.GetCode()]; ok {
+						err = status.Error(sta.Code(), rs.Message)
 					}
 				}
 			}
@@ -605,7 +597,7 @@ var defaultHttpPanicHandler = &Handler{
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
-			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, "internal server error: %+v", ctx.panic))
+			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
 		},
 	},
 }
