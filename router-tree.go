@@ -1,5 +1,5 @@
 // Copyright 2013 Julien Schmidt. All rights reserved.
-// Use of this source Code is governed by a BSD-style license that can be found
+// Use of this source code is governed by a BSD-style license that can be found
 // at https://github.com/julienschmidt/httprouter/blob/master/LICENSE
 
 package protoapi
@@ -28,7 +28,7 @@ type Param struct {
 // It is therefore safe to read values by the index.
 type Params []Param
 
-// Get returns the value of the first Param which key matches the given Name and a boolean true.
+// Get returns the value of the first Param which key matches the given name and a boolean true.
 // If no matching Param is found, an empty string is returned and a boolean false .
 func (ps Params) Get(name string) (string, bool) {
 	for _, entry := range ps {
@@ -39,7 +39,7 @@ func (ps Params) Get(name string) (string, bool) {
 	return "", false
 }
 
-// ByName returns the value of the first Param which key matches the given Name.
+// ByName returns the value of the first Param which key matches the given name.
 // If no matching Param is found, an empty string is returned.
 func (ps Params) ByName(name string) (va string) {
 	va, _ = ps.Get(name)
@@ -230,7 +230,7 @@ walk:
 				if len(path) >= len(n.path) && n.path == path[:len(n.path)] &&
 					// Adding a child to a catchAll is not possible
 					n.nType != catchAll &&
-					// Check for longer wildcard, e.g. :Name and :names
+					// Check for longer wildcard, e.g. :name and :names
 					(len(n.path) >= len(path) || path[len(n.path)] == '/') {
 					continue walk
 				}
@@ -262,7 +262,7 @@ walk:
 	}
 }
 
-// Search for a wildcard segment and check the Name for invalid characters.
+// Search for a wildcard segment and check the name for invalid characters.
 // Returns -1 as index, if no wildcard was found.
 func findWildcard(path string) (wildcard string, i int, valid bool) {
 	// Find start
@@ -295,15 +295,15 @@ func (n *node) insertChild(path string, fullPath string, handlers *Handler) {
 			break
 		}
 
-		// The wildcard Name must only contain one ':' or '*' character
+		// The wildcard name must only contain one ':' or '*' character
 		if !valid {
 			panic("only one wildcard per path segment is allowed, has: '" +
 				wildcard + "' in path '" + fullPath + "'")
 		}
 
-		// check if the wildcard has a Name
+		// check if the wildcard has a name
 		if len(wildcard) < 2 {
-			panic("wildcards must be named with a non-empty Name in path '" + fullPath + "'")
+			panic("wildcards must be named with a non-empty name in path '" + fullPath + "'")
 		}
 
 		if wildcard[0] == ':' { // param

@@ -1,0 +1,6655 @@
+{
+	"Path": "protoapi.proto",
+	"Package": "protoapi",
+	"GoPackage": "protoapi",
+	"GoImportPath": "github.com/hezof/protoapi",
+	"Services": null,
+	"Messages": {
+		"Vec": [
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Error",
+				"FullName": "protoapi.Error",
+				"GoIdent": {
+					"GoName": "Error",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "status",
+						"FullName": "protoapi.Error.status",
+						"GoName": "Status",
+						"GoIdent": {
+							"GoName": "Error_Status",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 13,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "code",
+						"FullName": "protoapi.Error.code",
+						"GoName": "Code",
+						"GoIdent": {
+							"GoName": "Error_Code",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 13,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "name",
+						"FullName": "protoapi.Error.name",
+						"GoName": "Name",
+						"GoIdent": {
+							"GoName": "Error_Name",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "message",
+						"FullName": "protoapi.Error.message",
+						"GoName": "Message",
+						"GoIdent": {
+							"GoName": "Error_Message",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "details",
+						"FullName": "protoapi.Error.details",
+						"GoName": "Details",
+						"GoIdent": {
+							"GoName": "Error_Details",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": true,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Tag",
+				"FullName": "protoapi.Tag",
+				"GoIdent": {
+					"GoName": "Tag",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "name",
+						"FullName": "protoapi.Tag.name",
+						"GoName": "Name",
+						"GoIdent": {
+							"GoName": "Tag_Name",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "desc",
+						"FullName": "protoapi.Tag.desc",
+						"GoName": "Desc",
+						"GoIdent": {
+							"GoName": "Tag_Desc",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Http",
+				"FullName": "protoapi.Http",
+				"GoIdent": {
+					"GoName": "Http",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "name",
+						"FullName": "protoapi.Http.name",
+						"GoName": "Name",
+						"GoIdent": {
+							"GoName": "Http_Name",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "desc",
+						"FullName": "protoapi.Http.desc",
+						"GoName": "Desc",
+						"GoIdent": {
+							"GoName": "Http_Desc",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "get",
+						"FullName": "protoapi.Http.get",
+						"GoName": "Get",
+						"GoIdent": {
+							"GoName": "Http_Get",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "put",
+						"FullName": "protoapi.Http.put",
+						"GoName": "Put",
+						"GoIdent": {
+							"GoName": "Http_Put",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "post",
+						"FullName": "protoapi.Http.post",
+						"GoName": "Post",
+						"GoIdent": {
+							"GoName": "Http_Post",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "delete",
+						"FullName": "protoapi.Http.delete",
+						"GoName": "Delete",
+						"GoIdent": {
+							"GoName": "Http_Delete",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "options",
+						"FullName": "protoapi.Http.options",
+						"GoName": "Options",
+						"GoIdent": {
+							"GoName": "Http_Options",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "head",
+						"FullName": "protoapi.Http.head",
+						"GoName": "Head",
+						"GoIdent": {
+							"GoName": "Http_Head",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "patch",
+						"FullName": "protoapi.Http.patch",
+						"GoName": "Patch",
+						"GoIdent": {
+							"GoName": "Http_Patch",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "trace",
+						"FullName": "protoapi.Http.trace",
+						"GoName": "Trace",
+						"GoIdent": {
+							"GoName": "Http_Trace",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "connect",
+						"FullName": "protoapi.Http.connect",
+						"GoName": "Connect",
+						"GoIdent": {
+							"GoName": "Http_Connect",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "websocket",
+						"FullName": "protoapi.Http.websocket",
+						"GoName": "Websocket",
+						"GoIdent": {
+							"GoName": "Http_Websocket",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "body",
+						"FullName": "protoapi.Http.body",
+						"GoName": "Body",
+						"GoIdent": {
+							"GoName": "Http_Body",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 14,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "status",
+						"FullName": "protoapi.Http.status",
+						"GoName": "Status",
+						"GoIdent": {
+							"GoName": "Http_Status",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 13,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "result",
+						"FullName": "protoapi.Http.result",
+						"GoName": "Result",
+						"GoIdent": {
+							"GoName": "Http_Result",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 14,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "errors",
+						"FullName": "protoapi.Http.errors",
+						"GoName": "Errors",
+						"GoIdent": {
+							"GoName": "Http_Errors",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": true,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "tags",
+						"FullName": "protoapi.Http.tags",
+						"GoName": "Tags",
+						"GoIdent": {
+							"GoName": "Http_Tags",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": true,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Role",
+				"FullName": "protoapi.Role",
+				"GoIdent": {
+					"GoName": "Role",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "code",
+						"FullName": "protoapi.Role.code",
+						"GoName": "Code",
+						"GoIdent": {
+							"GoName": "Role_Code",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 4,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "name",
+						"FullName": "protoapi.Role.name",
+						"GoName": "Name",
+						"GoIdent": {
+							"GoName": "Role_Name",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "desc",
+						"FullName": "protoapi.Role.desc",
+						"GoName": "Desc",
+						"GoIdent": {
+							"GoName": "Role_Desc",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Plugin",
+				"FullName": "protoapi.Plugin",
+				"GoIdent": {
+					"GoName": "Plugin",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.Plugin.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "Plugin_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.Plugin.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "Plugin_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "MinLength",
+				"FullName": "protoapi.MinLength",
+				"GoIdent": {
+					"GoName": "MinLength",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.MinLength.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "MinLength_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.MinLength.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "MinLength_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "MaxLength",
+				"FullName": "protoapi.MaxLength",
+				"GoIdent": {
+					"GoName": "MaxLength",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.MaxLength.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "MaxLength_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.MaxLength.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "MaxLength_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "MinItems",
+				"FullName": "protoapi.MinItems",
+				"GoIdent": {
+					"GoName": "MinItems",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.MinItems.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "MinItems_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.MinItems.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "MinItems_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "MaxItems",
+				"FullName": "protoapi.MaxItems",
+				"GoIdent": {
+					"GoName": "MaxItems",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.MaxItems.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "MaxItems_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.MaxItems.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "MaxItems_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Minimum",
+				"FullName": "protoapi.Minimum",
+				"GoIdent": {
+					"GoName": "Minimum",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.Minimum.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "Minimum_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.Minimum.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "Minimum_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "exclusive",
+						"FullName": "protoapi.Minimum.exclusive",
+						"GoName": "Exclusive",
+						"GoIdent": {
+							"GoName": "Minimum_Exclusive",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 8,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Maximum",
+				"FullName": "protoapi.Maximum",
+				"GoIdent": {
+					"GoName": "Maximum",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.Maximum.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "Maximum_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.Maximum.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "Maximum_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "exclusive",
+						"FullName": "protoapi.Maximum.exclusive",
+						"GoName": "Exclusive",
+						"GoIdent": {
+							"GoName": "Maximum_Exclusive",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 8,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Enum",
+				"FullName": "protoapi.Enum",
+				"GoIdent": {
+					"GoName": "Enum",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "str",
+						"FullName": "protoapi.Enum.str",
+						"GoName": "Str",
+						"GoIdent": {
+							"GoName": "Enum_Str",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": true,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "int",
+						"FullName": "protoapi.Enum.int",
+						"GoName": "Int",
+						"GoIdent": {
+							"GoName": "Enum_Int",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 3,
+						"IsMap": false,
+						"IsRepeated": true,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.Enum.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "Enum_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Pattern",
+				"FullName": "protoapi.Pattern",
+				"GoIdent": {
+					"GoName": "Pattern",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "val",
+						"FullName": "protoapi.Pattern.val",
+						"GoName": "Val",
+						"GoIdent": {
+							"GoName": "Pattern_Val",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "err",
+						"FullName": "protoapi.Pattern.err",
+						"GoName": "Err",
+						"GoIdent": {
+							"GoName": "Pattern_Err",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Prop",
+				"FullName": "protoapi.Prop",
+				"GoIdent": {
+					"GoName": "Prop",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "name",
+						"FullName": "protoapi.Prop.name",
+						"GoName": "Name",
+						"GoIdent": {
+							"GoName": "Prop_Name",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "desc",
+						"FullName": "protoapi.Prop.desc",
+						"GoName": "Desc",
+						"GoIdent": {
+							"GoName": "Prop_Desc",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "zero",
+						"FullName": "protoapi.Prop.zero",
+						"GoName": "Zero",
+						"GoIdent": {
+							"GoName": "Prop_Zero",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 14,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "enum_name",
+						"FullName": "protoapi.Prop.enum_name",
+						"GoName": "EnumName",
+						"GoIdent": {
+							"GoName": "Prop_EnumName",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 8,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "in",
+						"FullName": "protoapi.Prop.in",
+						"GoName": "In",
+						"GoIdent": {
+							"GoName": "Prop_In",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 14,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "explode",
+						"FullName": "protoapi.Prop.explode",
+						"GoName": "Explode",
+						"GoIdent": {
+							"GoName": "Prop_Explode",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 8,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Rule",
+				"FullName": "protoapi.Rule",
+				"GoIdent": {
+					"GoName": "Rule",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "required",
+						"FullName": "protoapi.Rule.required",
+						"GoName": "Required",
+						"GoIdent": {
+							"GoName": "Rule_Required",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Error",
+							"FullName": "protoapi.Error",
+							"GoIdent": {
+								"GoName": "Error",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "status",
+									"FullName": "protoapi.Error.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Error_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "code",
+									"FullName": "protoapi.Error.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Error_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Error.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Error_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "message",
+									"FullName": "protoapi.Error.message",
+									"GoName": "Message",
+									"GoIdent": {
+										"GoName": "Error_Message",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "details",
+									"FullName": "protoapi.Error.details",
+									"GoName": "Details",
+									"GoIdent": {
+										"GoName": "Error_Details",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "minimum",
+						"FullName": "protoapi.Rule.minimum",
+						"GoName": "Minimum",
+						"GoIdent": {
+							"GoName": "Rule_Minimum",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Maximum",
+							"FullName": "protoapi.Maximum",
+							"GoIdent": {
+								"GoName": "Maximum",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.Maximum.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "Maximum_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.Maximum.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "Maximum_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "exclusive",
+									"FullName": "protoapi.Maximum.exclusive",
+									"GoName": "Exclusive",
+									"GoIdent": {
+										"GoName": "Maximum_Exclusive",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 8,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "maximum",
+						"FullName": "protoapi.Rule.maximum",
+						"GoName": "Maximum",
+						"GoIdent": {
+							"GoName": "Rule_Maximum",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Maximum",
+							"FullName": "protoapi.Maximum",
+							"GoIdent": {
+								"GoName": "Maximum",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.Maximum.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "Maximum_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.Maximum.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "Maximum_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "exclusive",
+									"FullName": "protoapi.Maximum.exclusive",
+									"GoName": "Exclusive",
+									"GoIdent": {
+										"GoName": "Maximum_Exclusive",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 8,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "min_length",
+						"FullName": "protoapi.Rule.min_length",
+						"GoName": "MinLength",
+						"GoIdent": {
+							"GoName": "Rule_MinLength",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "MinLength",
+							"FullName": "protoapi.MinLength",
+							"GoIdent": {
+								"GoName": "MinLength",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.MinLength.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "MinLength_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.MinLength.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "MinLength_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "max_length",
+						"FullName": "protoapi.Rule.max_length",
+						"GoName": "MaxLength",
+						"GoIdent": {
+							"GoName": "Rule_MaxLength",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "MaxLength",
+							"FullName": "protoapi.MaxLength",
+							"GoIdent": {
+								"GoName": "MaxLength",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.MaxLength.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "MaxLength_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.MaxLength.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "MaxLength_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "min_items",
+						"FullName": "protoapi.Rule.min_items",
+						"GoName": "MinItems",
+						"GoIdent": {
+							"GoName": "Rule_MinItems",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "MinItems",
+							"FullName": "protoapi.MinItems",
+							"GoIdent": {
+								"GoName": "MinItems",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.MinItems.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "MinItems_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.MinItems.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "MinItems_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "max_items",
+						"FullName": "protoapi.Rule.max_items",
+						"GoName": "MaxItems",
+						"GoIdent": {
+							"GoName": "Rule_MaxItems",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "MaxItems",
+							"FullName": "protoapi.MaxItems",
+							"GoIdent": {
+								"GoName": "MaxItems",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.MaxItems.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "MaxItems_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.MaxItems.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "MaxItems_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "enum",
+						"FullName": "protoapi.Rule.enum",
+						"GoName": "Enum",
+						"GoIdent": {
+							"GoName": "Rule_Enum",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Enum",
+							"FullName": "protoapi.Enum",
+							"GoIdent": {
+								"GoName": "Enum",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "str",
+									"FullName": "protoapi.Enum.str",
+									"GoName": "Str",
+									"GoIdent": {
+										"GoName": "Enum_Str",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "int",
+									"FullName": "protoapi.Enum.int",
+									"GoName": "Int",
+									"GoIdent": {
+										"GoName": "Enum_Int",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 3,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.Enum.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "Enum_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "pattern",
+						"FullName": "protoapi.Rule.pattern",
+						"GoName": "Pattern",
+						"GoIdent": {
+							"GoName": "Rule_Pattern",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Pattern",
+							"FullName": "protoapi.Pattern",
+							"GoIdent": {
+								"GoName": "Pattern",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.Pattern.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "Pattern_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.Pattern.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "Pattern_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "plugin",
+						"FullName": "protoapi.Rule.plugin",
+						"GoName": "Plugin",
+						"GoIdent": {
+							"GoName": "Rule_Plugin",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Plugin",
+							"FullName": "protoapi.Plugin",
+							"GoIdent": {
+								"GoName": "Plugin",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.Plugin.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "Plugin_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.Plugin.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "Plugin_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Meta",
+				"FullName": "protoapi.Meta",
+				"GoIdent": {
+					"GoName": "Meta",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Fields": [
+					{
+						"Name": "Package",
+						"FullName": "protoapi.Meta.Package",
+						"GoName": "Package",
+						"GoIdent": {
+							"GoName": "Meta_Package",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "Service",
+						"FullName": "protoapi.Meta.Service",
+						"GoName": "Service",
+						"GoIdent": {
+							"GoName": "Meta_Service",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "Method",
+						"FullName": "protoapi.Meta.Method",
+						"GoName": "Method",
+						"GoIdent": {
+							"GoName": "Meta_Method",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 9,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "ClientStreaming",
+						"FullName": "protoapi.Meta.ClientStreaming",
+						"GoName": "ClientStreaming",
+						"GoIdent": {
+							"GoName": "Meta_ClientStreaming",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 8,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "ServerStreaming",
+						"FullName": "protoapi.Meta.ServerStreaming",
+						"GoName": "ServerStreaming",
+						"GoIdent": {
+							"GoName": "Meta_ServerStreaming",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 8,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": null,
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "Http",
+						"FullName": "protoapi.Meta.Http",
+						"GoName": "Http",
+						"GoIdent": {
+							"GoName": "Meta_Http",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Http",
+							"FullName": "protoapi.Http",
+							"GoIdent": {
+								"GoName": "Http",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "name",
+									"FullName": "protoapi.Http.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Http_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "desc",
+									"FullName": "protoapi.Http.desc",
+									"GoName": "Desc",
+									"GoIdent": {
+										"GoName": "Http_Desc",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "get",
+									"FullName": "protoapi.Http.get",
+									"GoName": "Get",
+									"GoIdent": {
+										"GoName": "Http_Get",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "put",
+									"FullName": "protoapi.Http.put",
+									"GoName": "Put",
+									"GoIdent": {
+										"GoName": "Http_Put",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "post",
+									"FullName": "protoapi.Http.post",
+									"GoName": "Post",
+									"GoIdent": {
+										"GoName": "Http_Post",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "delete",
+									"FullName": "protoapi.Http.delete",
+									"GoName": "Delete",
+									"GoIdent": {
+										"GoName": "Http_Delete",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "options",
+									"FullName": "protoapi.Http.options",
+									"GoName": "Options",
+									"GoIdent": {
+										"GoName": "Http_Options",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "head",
+									"FullName": "protoapi.Http.head",
+									"GoName": "Head",
+									"GoIdent": {
+										"GoName": "Http_Head",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "patch",
+									"FullName": "protoapi.Http.patch",
+									"GoName": "Patch",
+									"GoIdent": {
+										"GoName": "Http_Patch",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "trace",
+									"FullName": "protoapi.Http.trace",
+									"GoName": "Trace",
+									"GoIdent": {
+										"GoName": "Http_Trace",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "connect",
+									"FullName": "protoapi.Http.connect",
+									"GoName": "Connect",
+									"GoIdent": {
+										"GoName": "Http_Connect",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "websocket",
+									"FullName": "protoapi.Http.websocket",
+									"GoName": "Websocket",
+									"GoIdent": {
+										"GoName": "Http_Websocket",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "body",
+									"FullName": "protoapi.Http.body",
+									"GoName": "Body",
+									"GoIdent": {
+										"GoName": "Http_Body",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 14,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "status",
+									"FullName": "protoapi.Http.status",
+									"GoName": "Status",
+									"GoIdent": {
+										"GoName": "Http_Status",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 13,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "result",
+									"FullName": "protoapi.Http.result",
+									"GoName": "Result",
+									"GoIdent": {
+										"GoName": "Http_Result",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 14,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "errors",
+									"FullName": "protoapi.Http.errors",
+									"GoName": "Errors",
+									"GoIdent": {
+										"GoName": "Http_Errors",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "tags",
+									"FullName": "protoapi.Http.tags",
+									"GoName": "Tags",
+									"GoIdent": {
+										"GoName": "Http_Tags",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": true,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "Role",
+						"FullName": "protoapi.Meta.Role",
+						"GoName": "Role",
+						"GoIdent": {
+							"GoName": "Meta_Role",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Role",
+							"FullName": "protoapi.Role",
+							"GoIdent": {
+								"GoName": "Role",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "code",
+									"FullName": "protoapi.Role.code",
+									"GoName": "Code",
+									"GoIdent": {
+										"GoName": "Role_Code",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 4,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "name",
+									"FullName": "protoapi.Role.name",
+									"GoName": "Name",
+									"GoIdent": {
+										"GoName": "Role_Name",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "desc",
+									"FullName": "protoapi.Role.desc",
+									"GoName": "Desc",
+									"GoIdent": {
+										"GoName": "Role_Desc",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "MessagePlugin",
+						"FullName": "protoapi.Meta.MessagePlugin",
+						"GoName": "MessagePlugin",
+						"GoIdent": {
+							"GoName": "Meta_MessagePlugin",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": false,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Plugin",
+							"FullName": "protoapi.Plugin",
+							"GoIdent": {
+								"GoName": "Plugin",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "val",
+									"FullName": "protoapi.Plugin.val",
+									"GoName": "Val",
+									"GoIdent": {
+										"GoName": "Plugin_Val",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 9,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": null,
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "err",
+									"FullName": "protoapi.Plugin.err",
+									"GoName": "Err",
+									"GoIdent": {
+										"GoName": "Plugin_Err",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					},
+					{
+						"Name": "FieldRules",
+						"FullName": "protoapi.Meta.FieldRules",
+						"GoName": "FieldRules",
+						"GoIdent": {
+							"GoName": "Meta_FieldRules",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Kind": 11,
+						"IsMap": false,
+						"IsRepeated": true,
+						"HasOptional": false,
+						"Enum": null,
+						"Message": {
+							"FilePath": "protoapi.proto",
+							"Name": "Rule",
+							"FullName": "protoapi.Rule",
+							"GoIdent": {
+								"GoName": "Rule",
+								"GoImportPath": "github.com/hezof/protoapi"
+							},
+							"Fields": [
+								{
+									"Name": "required",
+									"FullName": "protoapi.Rule.required",
+									"GoName": "Required",
+									"GoIdent": {
+										"GoName": "Rule_Required",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Error",
+										"FullName": "protoapi.Error",
+										"GoIdent": {
+											"GoName": "Error",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "status",
+												"FullName": "protoapi.Error.status",
+												"GoName": "Status",
+												"GoIdent": {
+													"GoName": "Error_Status",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "code",
+												"FullName": "protoapi.Error.code",
+												"GoName": "Code",
+												"GoIdent": {
+													"GoName": "Error_Code",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 13,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "name",
+												"FullName": "protoapi.Error.name",
+												"GoName": "Name",
+												"GoIdent": {
+													"GoName": "Error_Name",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "message",
+												"FullName": "protoapi.Error.message",
+												"GoName": "Message",
+												"GoIdent": {
+													"GoName": "Error_Message",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "details",
+												"FullName": "protoapi.Error.details",
+												"GoName": "Details",
+												"GoIdent": {
+													"GoName": "Error_Details",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "minimum",
+									"FullName": "protoapi.Rule.minimum",
+									"GoName": "Minimum",
+									"GoIdent": {
+										"GoName": "Rule_Minimum",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Maximum",
+										"FullName": "protoapi.Maximum",
+										"GoIdent": {
+											"GoName": "Maximum",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.Maximum.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "Maximum_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.Maximum.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "Maximum_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "exclusive",
+												"FullName": "protoapi.Maximum.exclusive",
+												"GoName": "Exclusive",
+												"GoIdent": {
+													"GoName": "Maximum_Exclusive",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 8,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "maximum",
+									"FullName": "protoapi.Rule.maximum",
+									"GoName": "Maximum",
+									"GoIdent": {
+										"GoName": "Rule_Maximum",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Maximum",
+										"FullName": "protoapi.Maximum",
+										"GoIdent": {
+											"GoName": "Maximum",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.Maximum.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "Maximum_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.Maximum.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "Maximum_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "exclusive",
+												"FullName": "protoapi.Maximum.exclusive",
+												"GoName": "Exclusive",
+												"GoIdent": {
+													"GoName": "Maximum_Exclusive",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 8,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "min_length",
+									"FullName": "protoapi.Rule.min_length",
+									"GoName": "MinLength",
+									"GoIdent": {
+										"GoName": "Rule_MinLength",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "MinLength",
+										"FullName": "protoapi.MinLength",
+										"GoIdent": {
+											"GoName": "MinLength",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.MinLength.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "MinLength_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.MinLength.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "MinLength_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "max_length",
+									"FullName": "protoapi.Rule.max_length",
+									"GoName": "MaxLength",
+									"GoIdent": {
+										"GoName": "Rule_MaxLength",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "MaxLength",
+										"FullName": "protoapi.MaxLength",
+										"GoIdent": {
+											"GoName": "MaxLength",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.MaxLength.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "MaxLength_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.MaxLength.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "MaxLength_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "min_items",
+									"FullName": "protoapi.Rule.min_items",
+									"GoName": "MinItems",
+									"GoIdent": {
+										"GoName": "Rule_MinItems",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "MinItems",
+										"FullName": "protoapi.MinItems",
+										"GoIdent": {
+											"GoName": "MinItems",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.MinItems.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "MinItems_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.MinItems.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "MinItems_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "max_items",
+									"FullName": "protoapi.Rule.max_items",
+									"GoName": "MaxItems",
+									"GoIdent": {
+										"GoName": "Rule_MaxItems",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "MaxItems",
+										"FullName": "protoapi.MaxItems",
+										"GoIdent": {
+											"GoName": "MaxItems",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.MaxItems.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "MaxItems_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.MaxItems.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "MaxItems_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "enum",
+									"FullName": "protoapi.Rule.enum",
+									"GoName": "Enum",
+									"GoIdent": {
+										"GoName": "Rule_Enum",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Enum",
+										"FullName": "protoapi.Enum",
+										"GoIdent": {
+											"GoName": "Enum",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "str",
+												"FullName": "protoapi.Enum.str",
+												"GoName": "Str",
+												"GoIdent": {
+													"GoName": "Enum_Str",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "int",
+												"FullName": "protoapi.Enum.int",
+												"GoName": "Int",
+												"GoIdent": {
+													"GoName": "Enum_Int",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 3,
+												"IsMap": false,
+												"IsRepeated": true,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.Enum.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "Enum_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "pattern",
+									"FullName": "protoapi.Rule.pattern",
+									"GoName": "Pattern",
+									"GoIdent": {
+										"GoName": "Rule_Pattern",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Pattern",
+										"FullName": "protoapi.Pattern",
+										"GoIdent": {
+											"GoName": "Pattern",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.Pattern.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "Pattern_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.Pattern.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "Pattern_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								},
+								{
+									"Name": "plugin",
+									"FullName": "protoapi.Rule.plugin",
+									"GoName": "Plugin",
+									"GoIdent": {
+										"GoName": "Rule_Plugin",
+										"GoImportPath": "github.com/hezof/protoapi"
+									},
+									"Kind": 11,
+									"IsMap": false,
+									"IsRepeated": false,
+									"HasOptional": false,
+									"Enum": null,
+									"Message": {
+										"FilePath": "protoapi.proto",
+										"Name": "Plugin",
+										"FullName": "protoapi.Plugin",
+										"GoIdent": {
+											"GoName": "Plugin",
+											"GoImportPath": "github.com/hezof/protoapi"
+										},
+										"Fields": [
+											{
+												"Name": "val",
+												"FullName": "protoapi.Plugin.val",
+												"GoName": "Val",
+												"GoIdent": {
+													"GoName": "Plugin_Val",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 9,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": null,
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											},
+											{
+												"Name": "err",
+												"FullName": "protoapi.Plugin.err",
+												"GoName": "Err",
+												"GoIdent": {
+													"GoName": "Plugin_Err",
+													"GoImportPath": "github.com/hezof/protoapi"
+												},
+												"Kind": 11,
+												"IsMap": false,
+												"IsRepeated": false,
+												"HasOptional": false,
+												"Enum": null,
+												"Message": {
+													"FilePath": "protoapi.proto",
+													"Name": "Error",
+													"FullName": "protoapi.Error",
+													"GoIdent": {
+														"GoName": "Error",
+														"GoImportPath": "github.com/hezof/protoapi"
+													},
+													"Fields": [
+														{
+															"Name": "status",
+															"FullName": "protoapi.Error.status",
+															"GoName": "Status",
+															"GoIdent": {
+																"GoName": "Error_Status",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "code",
+															"FullName": "protoapi.Error.code",
+															"GoName": "Code",
+															"GoIdent": {
+																"GoName": "Error_Code",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 13,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "name",
+															"FullName": "protoapi.Error.name",
+															"GoName": "Name",
+															"GoIdent": {
+																"GoName": "Error_Name",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "message",
+															"FullName": "protoapi.Error.message",
+															"GoName": "Message",
+															"GoIdent": {
+																"GoName": "Error_Message",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": false,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														},
+														{
+															"Name": "details",
+															"FullName": "protoapi.Error.details",
+															"GoName": "Details",
+															"GoIdent": {
+																"GoName": "Error_Details",
+																"GoImportPath": "github.com/hezof/protoapi"
+															},
+															"Kind": 9,
+															"IsMap": false,
+															"IsRepeated": true,
+															"HasOptional": false,
+															"Enum": null,
+															"Message": null,
+															"Prop": null,
+															"Rule": null,
+															"Deprecated": false
+														}
+													],
+													"Desc": "",
+													"Plugin": null,
+													"Deprecated": false
+												},
+												"Prop": null,
+												"Rule": null,
+												"Deprecated": false
+											}
+										],
+										"Desc": "",
+										"Plugin": null,
+										"Deprecated": false
+									},
+									"Prop": null,
+									"Rule": null,
+									"Deprecated": false
+								}
+							],
+							"Desc": "",
+							"Plugin": null,
+							"Deprecated": false
+						},
+						"Prop": null,
+						"Rule": null,
+						"Deprecated": false
+					}
+				],
+				"Desc": "",
+				"Plugin": null,
+				"Deprecated": false
+			}
+		]
+	},
+	"Enums": {
+		"Vec": [
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Body",
+				"FullName": "protoapi.Http.Body",
+				"GoIdent": {
+					"GoName": "Http_Body",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Values": [
+					{
+						"Name": "json",
+						"FullName": "protoapi.Http.json",
+						"GoIdent": {
+							"GoName": "Http_json",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 0,
+						"Deprecated": false
+					},
+					{
+						"Name": "form",
+						"FullName": "protoapi.Http.form",
+						"GoIdent": {
+							"GoName": "Http_form",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 1,
+						"Deprecated": false
+					},
+					{
+						"Name": "omit",
+						"FullName": "protoapi.Http.omit",
+						"GoIdent": {
+							"GoName": "Http_omit",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 2,
+						"Deprecated": false
+					}
+				],
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Result",
+				"FullName": "protoapi.Http.Result",
+				"GoIdent": {
+					"GoName": "Http_Result",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Values": [
+					{
+						"Name": "simple",
+						"FullName": "protoapi.Http.simple",
+						"GoIdent": {
+							"GoName": "Http_simple",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 0,
+						"Deprecated": false
+					},
+					{
+						"Name": "unwrap",
+						"FullName": "protoapi.Http.unwrap",
+						"GoIdent": {
+							"GoName": "Http_unwrap",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 1,
+						"Deprecated": false
+					},
+					{
+						"Name": "events",
+						"FullName": "protoapi.Http.events",
+						"GoIdent": {
+							"GoName": "Http_events",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 2,
+						"Deprecated": false
+					}
+				],
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "In",
+				"FullName": "protoapi.Prop.In",
+				"GoIdent": {
+					"GoName": "Prop_In",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Values": [
+					{
+						"Name": "body",
+						"FullName": "protoapi.Prop.body",
+						"GoIdent": {
+							"GoName": "Prop_body",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 0,
+						"Deprecated": false
+					},
+					{
+						"Name": "path",
+						"FullName": "protoapi.Prop.path",
+						"GoIdent": {
+							"GoName": "Prop_path",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 1,
+						"Deprecated": false
+					},
+					{
+						"Name": "query",
+						"FullName": "protoapi.Prop.query",
+						"GoIdent": {
+							"GoName": "Prop_query",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 2,
+						"Deprecated": false
+					},
+					{
+						"Name": "header",
+						"FullName": "protoapi.Prop.header",
+						"GoIdent": {
+							"GoName": "Prop_header",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 3,
+						"Deprecated": false
+					},
+					{
+						"Name": "cookie",
+						"FullName": "protoapi.Prop.cookie",
+						"GoIdent": {
+							"GoName": "Prop_cookie",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 4,
+						"Deprecated": false
+					}
+				],
+				"Deprecated": false
+			},
+			{
+				"FilePath": "protoapi.proto",
+				"Name": "Zero",
+				"FullName": "protoapi.Prop.Zero",
+				"GoIdent": {
+					"GoName": "Prop_Zero",
+					"GoImportPath": "github.com/hezof/protoapi"
+				},
+				"Values": [
+					{
+						"Name": "omit_empty",
+						"FullName": "protoapi.Prop.omit_empty",
+						"GoIdent": {
+							"GoName": "Prop_omit_empty",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 0,
+						"Deprecated": false
+					},
+					{
+						"Name": "with_empty",
+						"FullName": "protoapi.Prop.with_empty",
+						"GoIdent": {
+							"GoName": "Prop_with_empty",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 1,
+						"Deprecated": false
+					},
+					{
+						"Name": "conv_empty",
+						"FullName": "protoapi.Prop.conv_empty",
+						"GoIdent": {
+							"GoName": "Prop_conv_empty",
+							"GoImportPath": "github.com/hezof/protoapi"
+						},
+						"Number": 2,
+						"Deprecated": false
+					}
+				],
+				"Deprecated": false
+			}
+		]
+	}
+}

@@ -170,13 +170,13 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 	switch ctx.Handler.Result {
 	case Http_simple:
 
-		ctx.result.code = 0
-		ctx.result.data = val
+		ctx.result.Code = 0
+		ctx.result.Data = val
 
 		err := EncodeResponse(out, &ctx.result)
 
 		// 及时清理避免引用
-		ctx.result.data = nil
+		ctx.result.Data = nil
 
 		return err
 

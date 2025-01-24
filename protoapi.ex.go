@@ -1,24 +1,17 @@
 package protoapi
 
 import (
+	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+/**********************************
+ * 扩展Error实现StatusResult接口
+ **********************************/
+
 func (e *Error) Error() string {
 	return ToJson(e)
-}
-
-func (e *Error) SetStatus(status uint32) {
-	e.Status = status
-}
-
-func (e *Error) SetName(name string) {
-	e.Name = name
-}
-
-func (e *Error) SetMessage(message string) {
-	if len(e.De)
 }
 
 func (e *Error) DecodeField(r *JsonDecoder, f string) {
@@ -41,6 +34,22 @@ func (e *Error) EncodeField(w *JsonEncoder) {
 // GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
 func (e *Error) GRPCStatus() *status.Status {
 	return status.New(codes.Code(e.Status<<_CodeBits|e.Code), e.Message)
+}
+
+func (e *Error) SetStatus(status uint32) {
+	e.Status = status
+}
+
+func (e *Error) SetName(name string) {
+	e.Name = name
+}
+
+func (e *Error) SetMessage(message string) {
+	if len(e.Details) > 0 {
+		e.Message = fmt.Sprintf(message, as(e.Details)...)
+	} else {
+		e.Message = message
+	}
 }
 
 var _ StatusResult = (*Error)(nil)
