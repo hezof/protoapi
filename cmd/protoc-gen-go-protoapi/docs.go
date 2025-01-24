@@ -149,7 +149,7 @@ func definition(m *MessageExt) *Definition {
 			p = field(f, false)
 		}
 		// 允许覆盖字段名称
-		s.Properties.Add(fname(f), p)
+		s.Properties.Add(f.PropName(), p)
 	}
 	return s
 }
@@ -250,7 +250,7 @@ func parameters(h *Http, m *MessageExt) []*OASv2Parameter {
 			// 默认都是在body
 			if f.Prop != nil && f.Prop.In != Prop_body {
 				p := new(OASv2Parameter)
-				p.Name = fname(f)
+				p.Name = f.PropName()
 				switch f.Prop.In {
 				case Prop_path:
 					p.In = `path`
@@ -325,27 +325,13 @@ func parameters(h *Http, m *MessageExt) []*OASv2Parameter {
 			for _, f := range m.Fields {
 				// 默认都是在body
 				if f.Prop == nil || f.Prop.In == Prop_body {
-					p.Schema.Properties.Add(fname(f), field(f, false))
+					p.Schema.Properties.Add(f.PropName(), field(f, false))
 				}
 			}
 		}
 		ss = append(ss, p)
 	}
 	return ss
-}
-
-func fname(f *FieldExt) string {
-	if f.Prop != nil && f.Prop.Name != `` {
-		return f.Prop.Name
-	}
-	return f.Name
-}
-
-func explode(f *FieldExt) bool {
-	if f.Prop != nil && f.Prop.Explode {
-		return true
-	}
-	return false
 }
 
 func field(f *FieldExt, sub bool) *OASv2Schema {
@@ -446,7 +432,7 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 		if f.Rule.Enum != nil {
 			// 避免覆盖enum的枚举
 			if s.Enum == nil {
-				s.Enum = enums(f.Kind, f.Rule.Enum)
+				s.Enum = f.RuleEnums()
 			}
 		}
 		if f.Rule.Pattern != nil {
@@ -455,20 +441,6 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 	}
 	s.Deprecated = f.Deprecated
 	return s
-}
-
-func enums(k protoreflect.Kind, e *Enum) []interface{} {
-	var rt []interface{}
-	if k == protoreflect.StringKind {
-		for _, v := range e.Str {
-			rt = append(rt, v)
-		}
-	} else {
-		for _, v := range e.Int {
-			rt = append(rt, v)
-		}
-	}
-	return rt
 }
 
 func ref(fullName string) string {
@@ -703,11 +675,11 @@ type OASv2Operation struct {
 }
 
 type OASv2Parameter struct {
-	Name        string       `yaml:"name,omitempty"`
-	In          string       `yaml:"in,omitempty"`
-	Schema      *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
-	OASv2Schema `yaml:",inline"`                       // if in is not "body"
-	Required    bool         `yaml:"required,omitempty"`
+	Name        string           `yaml:"name,omitempty"`
+	In          string           `yaml:"in,omitempty"`
+	Schema      *OASv2Schema     `yaml:"schema,omitempty"` // If in is "body":
+	OASv2Schema `yaml:",inline"` // if in is not "body"
+	Required    bool             `yaml:"required,omitempty"`
 }
 
 type OASv2Response struct {

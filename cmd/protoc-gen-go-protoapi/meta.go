@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
@@ -239,42 +238,35 @@ type FileExt struct {
 	Enums        IdxVec[*EnumExt]    /*展开成平面*/
 }
 
-func CreateMeta(f *FileExt, s *ServiceExt, m *MethodExt) *Meta {
-	meta := new(Meta)
-	meta.Package = f.Package
-	meta.Service = s.Name
-	meta.Method = m.Name
-	meta.ClientStreaming = m.IsStreamingClient
-	meta.ServerStreaming = m.IsStreamingServer
-	meta.Http = m.Http
-	meta.Role = m.Role
-	meta.InputPlugin = m.InputMessage.Plugin
-	meta.InputRules = make([]*Rule, len(m.InputMessage.Fields))
-	for i, v := range m.InputMessage.Fields {
-		meta.InputRules[i] = v.Rule
+func (f *FieldExt) PropName() string {
+	if f.Prop != nil && f.Prop.Name != `` {
+		return f.Prop.Name
 	}
-	return meta
+	return f.Name
 }
 
-// EncodeMeta 断言编码. 用于protogen传值
-func EncodeMeta(meta *Meta) string {
-	bs, err := proto.Marshal(meta)
-	if err != nil {
-		panic(fmt.Errorf("ecnode meta error: %v", err))
+func (f *FieldExt) PropExplode() bool {
+	if f.Prop != nil && f.Prop.Explode {
+		return true
 	}
-	return base64.StdEncoding.EncodeToString(bs)
+	return false
 }
 
-// DecodeMeta 断言解码. 用于protogen传值
-func DecodeMeta(b64 string) *Meta {
-	bs, err := base64.StdEncoding.DecodeString(b64)
-	if err != nil {
-		panic(fmt.Errorf("decode meta error: %v", err))
+func (f *FieldExt) RuleEnums() []any {
+	if f.Rule != nil && f.Rule.Enum != nil {
+		if f.Kind == protoreflect.StringKind {
+			ret := make([]any, len(f.Rule.Enum.Str))
+			for i, v := range f.Rule.Enum.Str {
+				ret[i] = v
+			}
+			return ret
+		} else {
+			ret := make([]any, len(f.Rule.Enum.Int))
+			for i, v := range f.Rule.Enum.Int {
+				ret[i] = v
+			}
+			return ret
+		}
 	}
-	meta := new(Meta)
-	err = proto.Unmarshal(bs, meta)
-	if err != nil {
-		panic(fmt.Errorf("decode meta error: %v", err))
-	}
-	return meta
+	return nil
 }

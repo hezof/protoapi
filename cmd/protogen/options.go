@@ -15,7 +15,7 @@ type CustomOptions struct {
 	Debug     bool   // 打印调试
 	Update    bool   // 更新插件
 	Clean     bool   // 清理文件(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
-	Config    string // 配置变量, 例如: "VERSION=0.5.1;GOPROXY=https://goproxy.cn;GOPRIVATE=*.net,*.cn"
+	Config    string // 配置变量, 例如: "MODULE=github.com/hezof/protoapi;VERSION=0.5.1;GOPROXY=https://goproxy.cn;GOPRIVATE=*.net,*.cn"
 	GoOut     string // GO输出目录
 	ProtoBase string // PB基准目录
 	ProtoPath string // PB查找目录,多值逗号分隔
@@ -77,10 +77,19 @@ func initSystemOptions(ops *Context) {
 }
 
 type Config struct {
+	IMPORT        string // protoapi引入路径
 	VERSION       string // protogen版本, 默认: VERSION
 	GOPROXY       string // go代理仓库, 默认: https://goproxy.cn
 	GOPRIVATE     string // go私有代理, 默认: *.net,*.cn
 	MAVEN_CENTRAL string // maven中央仓库, 默认: https://maven.aliyun.com/repository/central
+}
+
+func (c *Config) Module() string {
+	return c.IMPORT + CONTEXT
+}
+
+func (c *Config) Version() string {
+	return c.VERSION
 }
 
 func parseConfig(s string) *Config {
@@ -90,6 +99,7 @@ func parseConfig(s string) *Config {
 
 	c := new(Config)
 	// 默认值
+	c.IMPORT = `github.com/hezof/protoapi`
 	c.VERSION = VERSION
 	c.GOPROXY = `https://goproxy.cn`
 	c.GOPRIVATE = `*.net,*.cn`
@@ -101,6 +111,8 @@ func parseConfig(s string) *Config {
 			k := strings.TrimSpace(kvs[0])
 			v := strings.TrimSpace(kvs[1])
 			switch k {
+			case `IMPORT`:
+				c.IMPORT = v
 			case `VERSION`:
 				c.VERSION = v
 			case `GOPROXY`:

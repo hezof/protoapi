@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const MODULE = `github.com/hezof/protoapi/cmd/protogen`
+const CONTEXT = `/cmd/protogen`
 const VERSION = `v0.5.25`
 
 func main() {
@@ -25,7 +25,8 @@ func main() {
 	case len(ctx.flagset.Args()) == 0:
 		ctx.PrintHelp()
 	default:
-		ctx.UpdatePlugin(parseConfig(ctx.Config), false)
+		cfg := parseConfig(ctx.Config)
+		ctx.UpdatePlugin(cfg, false)
 
 		// 重复路径或文件需要去重处理
 		protoPaths := make(map[string]bool)
