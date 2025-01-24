@@ -267,14 +267,14 @@ func parameters(h *Http, m *MessageExt) []*OASv2Parameter {
 						Type:             `array`,
 						Description:      fieldDescription(f),
 						Items:            field(f, true),
-						CollectionFormat: If(f.Prop.Explode, `multi`, `csv`),
+						CollectionFormat: If(f.PropExplode(), `multi`, `csv`),
 					}
 				case f.IsMap:
 					p.OASv2Schema = OASv2Schema{
 						Type:                 `object`,
 						Description:          fieldDescription(f),
 						AdditionalProperties: field(f.Message.Fields[1], true),
-						CollectionFormat:     If(f.Prop.Explode, `multi`, `csv`),
+						CollectionFormat:     If(f.PropExplode(), `multi`, `csv`),
 					}
 				default:
 					p.OASv2Schema = *field(f, false)
@@ -401,7 +401,7 @@ func field(f *FieldExt, sub bool) *OASv2Schema {
 		if f.IsMap {
 			s.Type = `object`
 			s.AdditionalProperties = field(f.Message.Fields[1], true)
-			s.CollectionFormat = If(f.Prop.Explode, `multi`, `csv`)
+			s.CollectionFormat = If(f.PropExplode(), `multi`, `csv`)
 		} else {
 			s.Ref = ref(f.Message.FullName)
 		}
@@ -675,11 +675,11 @@ type OASv2Operation struct {
 }
 
 type OASv2Parameter struct {
-	Name        string           `yaml:"name,omitempty"`
-	In          string           `yaml:"in,omitempty"`
-	Schema      *OASv2Schema     `yaml:"schema,omitempty"` // If in is "body":
-	OASv2Schema `yaml:",inline"` // if in is not "body"
-	Required    bool             `yaml:"required,omitempty"`
+	Name        string       `yaml:"name,omitempty"`
+	In          string       `yaml:"in,omitempty"`
+	Schema      *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
+	OASv2Schema `yaml:",inline"`                       // if in is not "body"
+	Required    bool         `yaml:"required,omitempty"`
 }
 
 type OASv2Response struct {

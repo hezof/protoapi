@@ -151,7 +151,6 @@ message Req {
       name: "id",
       desc: "主键字段",
       in: path,
-      style: simple,
     },
     (protoapi.rule) = {
       required: {
@@ -166,7 +165,6 @@ message Req {
       name: "name",
       desc: "名称字段",
       in: body,
-      style: simple,
     },
     (protoapi.rule) = {
       enum: {
@@ -184,7 +182,6 @@ message Req {
       name: "class",
       desc: "班级ID",
       in: body,
-      style: simple,
     },
     (protoapi.rule) = {
       enum: {
