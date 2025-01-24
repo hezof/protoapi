@@ -8,7 +8,7 @@ import (
 )
 
 const CONTEXT = `/cmd/protogen`
-const VERSION = `v0.5.25`
+const VERSION = `v0.6.1`
 
 func main() {
 
@@ -72,6 +72,6 @@ func main() {
 			}
 		}
 
-		ctx.Generate(keys(protoPaths), keys(protoFiles))
+		ctx.Generate(cfg, keys(protoPaths), keys(protoFiles))
 	}
 }
