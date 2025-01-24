@@ -48,7 +48,7 @@ func shouldMessageValidator(m *MessageExt) bool {
 }
 
 func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
-	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "context", GoImportPath: "context"})
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(set *protoapi.MethodSetting, ctx context.Context) *protoapi.Error {")
 	if m.Plugin != nil {

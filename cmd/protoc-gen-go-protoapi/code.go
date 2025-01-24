@@ -30,7 +30,7 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	for _, ps := range meta.Services {
 		g.P()
 		g.P(serviceTitle(ps))
-		if *requireUnimplemented {
+		if requireUnimplemented {
 			g.P(`type `, ps.GoName, "Implement struct {")
 			g.P(`    *`, meta.GoPackage, `.`, `Unimplemented`, ps.GoName, "Server")
 			g.P(`}`)

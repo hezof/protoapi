@@ -6,12 +6,12 @@ import (
 )
 
 func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *MessageExt) {
-	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiModule)})
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
 
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeField(r *protoapi.JsonDecoder, f string) {")
 	g.P("switch k {")
 	for _, f := range m.Fields {
-		g.P("case `", fname(f), "`:")
+		g.P("case `", f.PropName(), "`:")
 		switch {
 		case IsKind(f, protoreflect.BoolKind):
 			switch {

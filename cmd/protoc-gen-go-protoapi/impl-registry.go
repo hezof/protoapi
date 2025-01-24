@@ -6,7 +6,7 @@ import (
 )
 
 func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt) {
-	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: ProtoapiModule})
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "io", GoImportPath: "io"})
 
 	g.P("func ", service.GoName, "Registry(impl interface{}, aspects []protoapi.ServiceAspect) *protoapi.ServiceSetting {")
@@ -62,19 +62,19 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 						case IsKind(f, protoreflect.BoolKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.ParamBoolOptional(ctx.FormBool, `", fname(f), "`, &req.", f.GoName, "); err != nil {")
+								g.P("if err := protoapi.ParamBoolOptional(ctx.FormBool, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.ParamBoolRepeated(ctx.FormBoolSlice, `", fname(f), "`, &req.", f.GoName, ", ); err != nil {")
+								g.P("if err := protoapi.ParamBoolRepeated(ctx.FormBoolSlice, `", f.PropName(), "`, &req.", f.GoName, ", ); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathBoolMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBoolMap(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.ParamBool(ctx.FormBool, `", fname(f), "`, &req.", f.GoName, "); err != nil {")
+								g.P("if err := protoapi.ParamBool(ctx.FormBool, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
@@ -83,38 +83,38 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 							if f.Prop != nil && f.Prop.EnumName {
 								switch {
 								case f.HasOptional:
-									g.P("if err := protoapi.PathEnumNameOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_value); err != nil {")
+									g.P("if err := protoapi.PathEnumNameOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_value); err != nil {")
 									g.P("return err")
 									g.P("}")
 								case f.IsRepeated:
-									g.P("if err := protoapi.PathEnumNameRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_value); err != nil {")
+									g.P("if err := protoapi.PathEnumNameRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_value); err != nil {")
 									g.P("return err")
 									g.P("}")
 								case f.IsMap:
-									g.P("if err := protoapi.PathEnumNameMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_value); err != nil {")
+									g.P("if err := protoapi.PathEnumNameMap(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_value); err != nil {")
 									g.P("return err")
 									g.P("}")
 								default:
-									g.P("if err := protoapi.PathEnumName(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_value); err != nil {")
+									g.P("if err := protoapi.PathEnumName(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_value); err != nil {")
 									g.P("return err")
 									g.P("}")
 								}
 							} else {
 								switch {
 								case f.HasOptional:
-									g.P("if err := protoapi.PathEnumOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_name); err != nil {")
+									g.P("if err := protoapi.PathEnumOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_name); err != nil {")
 									g.P("return err")
 									g.P("}")
 								case f.IsRepeated:
-									g.P("if err := protoapi.PathEnumRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_name); err != nil {")
+									g.P("if err := protoapi.PathEnumRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_name); err != nil {")
 									g.P("return err")
 									g.P("}")
 								case f.IsMap:
-									g.P("if err := protoapi.PathEnumMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_name); err != nil {")
+									g.P("if err := protoapi.PathEnumMap(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_name); err != nil {")
 									g.P("return err")
 									g.P("}")
 								default:
-									g.P("if err := protoapi.PathEnum(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), enumGoName, "_name); err != nil {")
+									g.P("if err := protoapi.PathEnum(ctx, `", f.PropName(), "`, &req.", f.GoName, ", ", enumGoName, "_name); err != nil {")
 									g.P("return err")
 									g.P("}")
 								}
@@ -122,171 +122,171 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 						case IsKind(f, protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathInt32Optional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt32Optional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathInt32Repeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt32Repeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathInt32Map(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt32Map(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathInt32(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt32(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.Uint32Kind, protoreflect.Fixed32Kind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathUint32Optional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint32Optional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathUint32Repeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint32Repeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathUint32Map(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint32Map(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathUint32(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint32(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathInt64Optional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt64Optional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathInt64Repeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt64Repeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathInt64Map(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt64Map(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathInt64(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathInt64(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.Uint64Kind, protoreflect.Fixed64Kind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathUint64Optional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint64Optional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathUint64Repeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint64Repeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathUint64Map(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint64Map(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathUint64(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathUint64(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.FloatKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathFloatOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathFloatOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathFloatRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathFloatRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathFloatMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathFloatMap(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathFloat(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathFloat(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.DoubleKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathDoubleOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathDoubleOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathDoubleRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathDoubleRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathDoubleMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathDoubleMap(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathDouble(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathDouble(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.StringKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathStringOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathStringOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathStringRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathStringRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathStringMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathStringMap(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathString(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathString(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.BytesKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathBytesOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytesOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathBytesRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytesRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathBytesMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytesMap(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathBytes(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytes(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}
 						case IsKind(f, protoreflect.MessageKind):
 							switch {
 							case f.HasOptional:
-								g.P("if err := protoapi.PathMessageOptional(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathMessageOptional(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsRepeated:
-								g.P("if err := protoapi.PathBytesRepeated(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytesRepeated(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							case f.IsMap:
-								g.P("if err := protoapi.PathBytesMap(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytesMap(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							default:
-								g.P("if err := protoapi.PathBytes(ctx, `", fname(f), "`, &req.", f.GoName, ", ", style(f), "); err != nil {")
+								g.P("if err := protoapi.PathBytes(ctx, `", f.PropName(), "`, &req.", f.GoName, "); err != nil {")
 								g.P("return err")
 								g.P("}")
 							}

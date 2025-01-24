@@ -25,7 +25,7 @@ func main() {
 	var flags flag.FlagSet
 	flags.BoolVar(&requireUnimplemented, "require_unimplemented_servers", true, "set to false to match legacy behavior")
 	flags.BoolVar(&useGenericStreams, "use_generic_streams_experimental", true, "set to true to use generic types for streaming client and server objects; this flag is EXPERIMENTAL and may be changed or removed in a future release")
-	flags.StringVar(&protoapiImport, "import", "github.com/hezof/protoapi", "protoapi module")
+	flags.StringVar(&protoapiImport, "import", "github.com/hezof/protoapi", "set import path to protoapi")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
