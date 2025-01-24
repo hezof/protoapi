@@ -271,7 +271,7 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 					time.Sleep(100 * time.Millisecond)
 				}
 				oldBin := Lookup(os.Args[0])
-				newBin := filepath.Join(ctx.HomeDir, FullName(CONTEXT, VERSION, GoGetBin))
+				newBin := filepath.Join(ctx.HomeDir, FullName(MODULE, VERSION, GoGetBin))
 				_ = os.Chmod(oldBin, os.ModePerm)
 				_ = os.Remove(oldBin)
 				if err := os.Rename(newBin, oldBin); err != nil {
@@ -285,8 +285,8 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 		}
 
 	} else {
-		ctx.GoGet(c, c.Module(), c.Version(), GoGetBin)
-		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(CONTEXT, VERSION, GoGetBin)), os.Args, &os.ProcAttr{
+		ctx.GoGet(c, MODULE, c.VERSION, GoGetBin)
+		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(MODULE, VERSION, GoGetBin)), os.Args, &os.ProcAttr{
 			Env:   append(os.Environ(), __self_update_pid__+`=`+strconv.Itoa(os.Getpid())),
 			Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		})
@@ -317,14 +317,22 @@ func (ctx *Context) generate(config *Config, protoPath []string, protoFile strin
 	args = append(args, `--plugin=protoc-gen-go-grpc=`+ctx.ProtocGenGoGrpcFile)
 	args = append(args, `--plugin=protoc-gen-go-protoapi=`+ctx.ProtocGenGoProtoapiFile)
 
+	args = append(args, `--go_out=`+ctx.GoOut)
 	if ctx.GrpcV2 {
-		args = append(args, `--go_out=`+ctx.GoOut)
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
-		args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true,import=%v:%v`, config.IMPORT, ctx.GoOut))
+		if ctx.Import == `` {
+			args = append(args, `--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
+		} else {
+			args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true,import=%v:%v`, ctx.Import, ctx.GoOut))
+		}
 	} else {
-		args = append(args, `--go_out=`+ctx.GoOut)
+
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
-		args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true,import=%v:%v`, config.IMPORT, ctx.GoOut))
+		if ctx.Import == `` {
+			args = append(args, `--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
+		} else {
+			args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true,import=%v:%v`, ctx.Import, ctx.GoOut))
+		}
 	}
 
 	for _, path := range protoPath {

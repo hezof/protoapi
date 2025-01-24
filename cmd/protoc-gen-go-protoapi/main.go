@@ -12,7 +12,7 @@ const version = "v0.9.9" // 与发版相同
 
 var requireUnimplemented bool
 var useGenericStreams bool
-var protoapiModule string
+var protoapiImport string
 
 func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
@@ -25,7 +25,7 @@ func main() {
 	var flags flag.FlagSet
 	flags.BoolVar(&requireUnimplemented, "require_unimplemented_servers", true, "set to false to match legacy behavior")
 	flags.BoolVar(&useGenericStreams, "use_generic_streams_experimental", true, "set to true to use generic types for streaming client and server objects; this flag is EXPERIMENTAL and may be changed or removed in a future release")
-	flags.StringVar(&protoapiModule, "protoapi_module", "github.com/hezof/protoapi", "protoapi module")
+	flags.StringVar(&protoapiImport, "import", "github.com/hezof/protoapi", "protoapi module")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
