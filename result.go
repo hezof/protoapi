@@ -24,125 +24,131 @@ const (
 	_StatusMask = 2 << (_StatusBits - 1)
 )
 
-// StatusResult 带状态的结果. 必须注意status与code的约定取值范围!
-type StatusResult struct {
-	status  uint32 // 状态代码(http).
-	code    uint32 // 错误代码. 0表示成功
-	name    string // 错误名称. OK表示成功
-	message string // 错误消息.
-	details []any  // 错误参数.
-	data    any    // 结果数据
+// StatusResult 带状态码的结果
+type StatusResult interface {
+	error
+	FieldCodec
+	GRPCStatus() *status.Status
+	GetCode() uint32
+	SetStatus(status uint32)
+	GetStatus() uint32
+	SetName(name string)
+	GetName() string
+	SetMessage(message string)
+	GetMessage() string
 }
 
-func (sr *StatusResult) SetStatus(status uint32) {
-	sr.status = status
+// SimpleResult 带状态的结果. 必须注意status与code的约定取值范围!
+type SimpleResult struct {
+	Status  uint32   // 状态代码(http).
+	Code    uint32   // 错误代码. 0表示成功
+	Name    string   // 错误名称. OK表示成功
+	Message string   // 错误消息.
+	Details []string // 错误参数.
+	Data    any      // 结果数据
 }
 
-func (sr *StatusResult) SetName(name string) {
-	sr.name = name
-}
-
-func (sr *StatusResult) SetMessage(message string) {
-	if len(sr.details) > 0 {
-		message = fmt.Sprintf(message, sr.details)
-	}
-	sr.message = message
-}
-
-func (sr *StatusResult) GetStatus() uint32 {
-	return sr.status
-}
-
-func (sr *StatusResult) GetCode() uint32 {
-	return sr.code
-}
-
-func (sr *StatusResult) GetName() string {
-	return sr.name
-}
-
-func (sr *StatusResult) GetMessage() string {
-	return sr.message
-}
-
-func (sr *StatusResult) DecodeField(r *JsonDecoder, f string) {
-	switch f {
-	case profile.ResultCodeField:
-		DecodeUint32(r, &sr.code)
-	case profile.ResultNameField:
-		DecodeString(r, &sr.name)
-	case profile.ResultMessageField:
-		DecodeString(r, &sr.message)
-	case profile.ResultDataField:
-		DecodeAny(r, &sr.data)
-	}
-}
-
-func (sr *StatusResult) EncodeField(w *JsonEncoder) {
-	EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.code)
-	EncodeString_OmitEmpty(w, profile.ResultNameField, sr.name)
-	EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.message)
-	EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.data)
-}
-
-var _ FieldCodec = (*StatusResult)(nil)
-
-func (sr *StatusResult) Error() string {
+func (sr *SimpleResult) Error() string {
 	return ToJson(sr)
 }
-
-var _ error = (*StatusResult)(nil) // 断言接口
-
-// GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
-func (sr *StatusResult) GRPCStatus() *status.Status {
-	return status.New(codes.Code(sr.status<<_CodeBits|sr.code), sr.message)
+func (sr *SimpleResult) DecodeField(r *JsonDecoder, f string) {
+	switch f {
+	case profile.ResultCodeField:
+		DecodeUint32(r, &sr.Code)
+	case profile.ResultNameField:
+		DecodeString(r, &sr.Name)
+	case profile.ResultMessageField:
+		DecodeString(r, &sr.Message)
+	case profile.ResultDataField:
+		DecodeAny(r, &sr.Data)
+	}
 }
 
+func (sr *SimpleResult) EncodeField(w *JsonEncoder) {
+	EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
+	EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
+	EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
+	EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
+}
+
+// GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
+func (sr *SimpleResult) GRPCStatus() *status.Status {
+	return status.New(codes.Code(sr.Status<<_CodeBits|sr.Code), sr.Message)
+}
+
+func (sr *SimpleResult) GetCode() uint32 {
+	return sr.Code
+}
+
+func (sr *SimpleResult) GetStatus() uint32 {
+	return sr.Status
+}
+
+func (sr *SimpleResult) SetStatus(status uint32) {
+	sr.Status = status
+}
+
+func (sr *SimpleResult) GetName() string {
+	return sr.Name
+}
+
+func (sr *SimpleResult) SetName(name string) {
+	sr.Name = name
+}
+
+func (sr *SimpleResult) GetMessage() string {
+	return sr.Message
+}
+
+func (sr *SimpleResult) SetMessage(message string) {
+	if len(sr.Details) > 0 {
+		message = fmt.Sprintf(message, sr.Details)
+	}
+	sr.Message = message
+}
+
+var _ StatusResult = (*SimpleResult)(nil)
+
 // StatusError 创建StatusResult错误实例. 必须注意status与code的取值范围:
-// - status 取值范围(0,1024)
-// - code 取值范围(0,4194304)
-func StatusError(status uint32, code uint32, message string, details ...interface{}) *StatusResult {
+// - Status 取值范围(0,1024)
+// - Code 取值范围(0,4194304)
+func StatusError(status uint32, code uint32, message string, details ...string) StatusResult {
 
 	status &= _StatusMask
 	code &= _CodeMask
 
 	if len(details) > 0 {
-		message = fmt.Sprintf(message, details...)
+		message = fmt.Sprintf(message, as(details)...)
 	}
-	return &StatusResult{
-		status:  status,
-		code:    code,
-		message: message,
-		details: details,
+	return &SimpleResult{
+		Status:  status,
+		Code:    code,
+		Message: message,
+		Details: details,
 	}
 }
 
 // StatusErrorFrom 定义统一的error转换为*Result规则
-func StatusErrorFrom(err error) *StatusResult {
-	// 分类处理错误
-	if result, ok := err.(*StatusResult); ok {
+func StatusErrorFrom(err error) StatusResult {
+
+	// 内部错误
+	if result, ok := err.(StatusResult); ok {
 		return result
 	}
-	if result, ok := err.(*Error); ok {
-		return &StatusResult{
-			status:  result.Status,
-			code:    result.Code,
-			name:    result.Name,
-			message: result.Message,
-		}
-	}
+	// grpc错误
 	if sta, ok := status.FromError(err); ok {
 		// Grpc Code转换为StatusResult的Status/Code
-		return &StatusResult{
-			status:  uint32(sta.Code()) >> _CodeBits,
-			code:    uint32(sta.Code()) & _CodeMask,
-			message: sta.Message(),
+		return &SimpleResult{
+			Status:  uint32(sta.Code()) >> _CodeBits,
+			Code:    uint32(sta.Code()) & _CodeMask,
+			Message: sta.Message(),
 		}
 	}
-	// unknown error
-	return &StatusResult{
-		status:  profile.DefaultErrorStatus,
-		code:    uint32(codes.Unknown),
-		message: err.Error(),
+
+	// 其他错误
+	return &SimpleResult{
+		Status:  profile.DefaultErrorStatus,
+		Code:    uint32(codes.Unknown),
+		Message: err.Error(),
 	}
 }

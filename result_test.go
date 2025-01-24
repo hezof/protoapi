@@ -10,7 +10,7 @@ import (
 )
 
 type Data struct {
-	Name string `json:"name,omitempty"`
+	Name string `json:"Name,omitempty"`
 	Age  int    `json:"age,omitempty"`
 }
 
@@ -33,7 +33,7 @@ func TestStatusResult_EncodeJSON(t *testing.T) {
 	fmt.Println(string(bs))
 }
 
-var bs = `{"code":1111,"name":"1111","message":"消息","data":{"name":"myname","age":40}}`
+var bs = `{"Code":1111,"Name":"1111","Message":"消息","Data":{"Name":"myname","age":40}}`
 
 func TestStatusResult_DecodeJSON(t *testing.T) {
 	sr := new(StatusResult)

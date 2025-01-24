@@ -24,7 +24,7 @@ Scheme
 
 覆盖顺序(从高到低):
   - json (application/json)
-  - form (application/x-www-form-urlencoded或multipart/form-data)
+  - form (application/x-www-form-urlencoded或multipart/form-Data)
   - path (params)
   - query
 
@@ -292,7 +292,7 @@ func parseValues(c *Context) (*values, error) {
 		contentType = vs[0]
 	}
 	if c.Request.ContentLength > 0 {
-		if strings.HasPrefix(contentType, "application/x-www-form-urlencoded") || strings.HasPrefix(contentType, "multipart/form-data") {
+		if strings.HasPrefix(contentType, "application/x-www-form-urlencoded") || strings.HasPrefix(contentType, "multipart/form-Data") {
 			// form
 			if c.Request.PostForm == nil {
 				err := c.Request.ParseMultipartForm(c.Handler.FormMaxMemory)

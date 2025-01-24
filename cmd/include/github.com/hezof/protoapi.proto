@@ -9,7 +9,8 @@ message Error {
   uint32 status = 1;               // 错误状态
   uint32 code = 2;                 // 错误代码
   string name = 3;                 // 错误名称
-  string message = 4;              // 错误描述
+  string message = 4;              // 错误消息
+  repeated string details = 5;     // 错误参数(用于国际化)
 }
 
 message Tag {
@@ -156,8 +157,8 @@ message Meta {
   bool ServerStreaming = 5;        // 元数据server streaming
   Http Http = 6;                   // 元数据Http
   Role Role = 7;                   // 元数据Role
-  Plugin InputPlugin = 8;          // 元数据message plugin
-  repeated Rule InputRules = 9;    // 元数据field rules
+  Plugin MessagePlugin = 8;        // 元数据message plugin
+  repeated Rule FieldRules = 9;    // 元数据field rules
 }
 
 extend  google.protobuf.ServiceOptions {

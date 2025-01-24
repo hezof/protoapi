@@ -6,10 +6,10 @@ import (
 )
 
 type Profile struct {
-	ResultCodeField            string        // code前缀, 默认: `"code":`, 0表示成功
-	ResultNameField            string        // name前缀, 默认: `"name":`, OK表示成功
-	ResultDataField            string        // data前缀, 默认: `"data":`.
-	ResultMessageField         string        // message前缀, 默认: `"message":`
+	ResultCodeField            string        // code前缀, 默认: `"Code":`, 0表示成功
+	ResultNameField            string        // name前缀, 默认: `"Name":`, OK表示成功
+	ResultDataField            string        // data前缀, 默认: `"Data":`.
+	ResultMessageField         string        // message前缀, 默认: `"Message":`
 	DecoderBufferSize          int           // 默认8K
 	EncoderBufferSize          int           // 默认8K
 	HttpFormMaxMemory          int64         // 32 MB,同gin及多数web框架.
@@ -28,10 +28,10 @@ type Profile struct {
 }
 
 var profile = Profile{
-	ResultCodeField:            `code`,
-	ResultNameField:            `name`,
-	ResultDataField:            `data`,
-	ResultMessageField:         `message`,
+	ResultCodeField:            `Code`,
+	ResultNameField:            `Name`,
+	ResultDataField:            `Data`,
+	ResultMessageField:         `Message`,
 	DecoderBufferSize:          8 * 1024,
 	EncoderBufferSize:          8 * 1024,
 	HttpFormMaxMemory:          32 << 20,

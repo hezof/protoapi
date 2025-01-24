@@ -3,12 +3,12 @@ xml语法:
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE resources [
 
-	<!ELEMENT resource (code, message, status-code)>
+	<!ELEMENT resource (Code, Message, Status-Code)>
 	<!ATTLIST accept-language CDATA "">
-	<!ELEMENT code (#PCDATA)>
-	<!ELEMENT name (#PCDATA)>
-	<!ELEMENT message (#PCDATA)>
-	<!ELEMENT status-code (#PCDATA)>
+	<!ELEMENT Code (#PCDATA)>
+	<!ELEMENT Name (#PCDATA)>
+	<!ELEMENT Message (#PCDATA)>
+	<!ELEMENT Status-Code (#PCDATA)>
 
 ]>
 <!-- accept-language使用 iso_language_code或iso_language_code-ISO_COUNTRY_CODE, 多值用逗号分割 -->
@@ -16,13 +16,13 @@ xml语法:
 
 	<resource>
 	    <!-- 必需: 错误代码 -->
-	    <code>1001</code>
+	    <Code>1001</Code>
 	    <!-- 可选: 错误名称 -->
-		<name>test</name>
+		<Name>test</Name>
 	    <!-- 可选: 错误消息 -->
-	    <message>测试%v</message>
+	    <Message>测试%v</Message>
 	    <!-- 可选: 状态码 -->
-	    <status-code>403</status-code>
+	    <Status-Code>403</Status-Code>
 	</resource>
 
 </resources>
@@ -39,10 +39,10 @@ import (
 )
 
 type resource struct {
-	Status  uint32 `xml:"status"`
-	Code    uint32 `xml:"code"`
-	Name    string `xml:"name"`
-	Message string `xml:"message"`
+	Status  uint32 `xml:"Status"`
+	Code    uint32 `xml:"Code"`
+	Name    string `xml:"Name"`
+	Message string `xml:"Message"`
 }
 
 type resources struct {
