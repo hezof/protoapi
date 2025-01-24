@@ -285,8 +285,9 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 		}
 
 	} else {
+		// 此处c.VERSION才是新版本号. VERSION仍是旧版本号.
 		ctx.GoGet(c, MODULE, c.VERSION, GoGetBin)
-		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(MODULE, VERSION, GoGetBin)), os.Args, &os.ProcAttr{
+		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(MODULE, c.VERSION, GoGetBin)), os.Args, &os.ProcAttr{
 			Env:   append(os.Environ(), __self_update_pid__+`=`+strconv.Itoa(os.Getpid())),
 			Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		})
