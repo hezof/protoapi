@@ -115,7 +115,7 @@ func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt 
 		extractEnum(file, s1)
 	}
 	for _, s1 := range s.Messages {
-		extractMessage(file, s1, false)
+		extractMessage(file, s1, isMap)
 	}
 	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
 	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
