@@ -1,0 +1,69 @@
+import (
+	"context"
+	"google.golang.org/grpc"
+)
+
+// DemoImplement test2.Demo. 这是一个Demo测试
+type DemoImplement struct {}
+
+var _ test2.DemoServer = (*DemoImplement)(nil)
+
+// Simple test2.Demo.Simple. 简单RPC
+// GET /demo/simple/:id
+func (ps *DemoImplement) Simple(ctx context.Context, req *test2.Req) (rsp *test2.Rsp, err error) {
+    return
+}
+
+// Client3 test2.Demo.Client3. Streaming Client
+// POST /demo/client/:id
+// HEAD /demo/client/:id
+func (ps *DemoImplement) Client3(svr grpc.ClientStreamingServer[test2.Req,test2.Rsp]) (err error) {
+    return
+}
+
+// Server3 test2.Demo.Server3. Streaming Server
+// POST /demo/server/:id
+// HEAD /demo/server/:id
+func (ps *DemoImplement) Server3(req *test2.Req, svr grpc.ServerStreamingServer[test2.Rsp]) (err error) {
+    return
+}
+
+// Bidirectional test2.Demo.Bidirectional. Streaming Server
+// POST /demo/Bidirectional/:id
+// HEAD /demo/Bidirectional/:id
+func (ps *DemoImplement) Bidirectional(svr grpc.BidiStreamingServer[test2.Req,test2.Rsp]) (err error) {
+    return
+}
+
+// CopyDemoImplement test2.CopyDemo. 这是一个Demo测试
+type CopyDemoImplement struct {}
+
+var _ test2.CopyDemoServer = (*CopyDemoImplement)(nil)
+
+// Simple test2.CopyDemo.Simple. 简单RPC
+// GET /copy/simple/:id
+func (ps *CopyDemoImplement) Simple(ctx context.Context, req *test2.Req) (rsp *test2.Rsp, err error) {
+    return
+}
+
+// Client3 test2.CopyDemo.Client3. Streaming Client
+// POST /copy/client/:id
+// HEAD /copy/client/:id
+func (ps *CopyDemoImplement) Client3(svr grpc.ClientStreamingServer[test2.Req,test2.Rsp]) (err error) {
+    return
+}
+
+// Server3 test2.CopyDemo.Server3. Streaming Server
+// POST /copy/server/:id
+// HEAD /copy/server/:id
+func (ps *CopyDemoImplement) Server3(req *test2.Req, svr grpc.ServerStreamingServer[test2.Rsp]) (err error) {
+    return
+}
+
+// Bidirectional test2.CopyDemo.Bidirectional. Streaming Server
+// POST /copy/Bidirectional/:id
+// HEAD /copy/Bidirectional/:id
+func (ps *CopyDemoImplement) Bidirectional(svr grpc.BidiStreamingServer[test2.Req,test2.Rsp]) (err error) {
+    return
+}
+
