@@ -418,7 +418,7 @@ func EncodeEnumOptional_ConvEmpty[Enum ~int32](w *JsonEncoder, name string, valu
 	message类型
  *************************************/
 
-func EncodeMessageOptional[Message any](w *JsonEncoder, name string, value *Message) {
+func EncodeMessageOptional[Message any](w *JsonEncoder, value *Message) {
 	EncodeMessage(w, value)
 }
 

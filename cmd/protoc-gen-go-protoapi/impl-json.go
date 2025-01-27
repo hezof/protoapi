@@ -9,7 +9,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
 
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeField(r *protoapi.JsonDecoder, f string) {")
-	g.P("switch k {")
+	g.P("switch f {")
 	for _, f := range m.Fields {
 		g.P("case `", f.PropName(), "`:")
 		switch {
@@ -29,24 +29,24 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 			if f.Prop != nil && f.Prop.EnumName {
 				switch {
 				case f.HasOptional:
-					g.P("protoapi.DecodeEnumNameOptional(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumNameOptional(r, &x.", f.GoName, ", ", enumGoName, "_value)")
 				case f.IsRepeated:
-					g.P("protoapi.DecodeEnumNameRepeated(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumNameRepeated(r, &x.", f.GoName, ", ", enumGoName, "_value)")
 				case f.IsMap:
-					g.P("protoapi.DecodeEnumNameMap(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumNameMap(r, &x.", f.GoName, ", ", enumGoName, "_value)")
 				default:
-					g.P("protoapi.DecodeEnumName(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumName(r, &x.", f.GoName, ", ", enumGoName, "_value)")
 				}
 			} else {
 				switch {
 				case f.HasOptional:
-					g.P("protoapi.DecodeEnumOptional(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumOptional(r, &x.", f.GoName, ")")
 				case f.IsRepeated:
-					g.P("protoapi.DecodeEnumRepeated(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumRepeated(r, &x.", f.GoName, ")")
 				case f.IsMap:
-					g.P("protoapi.DecodeEnumMap(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnumMap(r, &x.", f.GoName, ")")
 				default:
-					g.P("protoapi.DecodeEnum(r, &x.", f.GoName, ", ", enumGoName, "_name, ", enumGoName, "_value)")
+					g.P("protoapi.DecodeEnum(r, &x.", f.GoName, ")")
 				}
 			}
 		case IsKind(f, protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind):
