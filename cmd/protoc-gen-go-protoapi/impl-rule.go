@@ -86,7 +86,7 @@ func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 				validatePattern(g, i, f)
 			}
 			if r.Plugin != nil {
-				g.P("if err:=set.FieldPlugins[", i, "](ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.InputRules[", i, "].Plugin); err != nil {")
+				g.P("if err:=set.FieldPlugins[", i, "](ctx, `", f.Name, "`, x.", f.GoName, ", set.Meta.FieldRules[", i, "].Plugin); err != nil {")
 				g.P("return err")
 				g.P("}")
 			}
@@ -105,20 +105,20 @@ func validateRequired(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		fallthrough
 	case f.IsMap:
 		g.P("if x.", f.GoName, " == nil {")
-		g.P("return set.Meta.InputRules[", i, "].Required")
+		g.P("return set.Meta.FieldRules[", i, "].Required")
 		g.P("}")
 	default:
 		switch f.Kind {
 		case protoreflect.BoolKind:
 			if f.HasOptional {
 				g.P("if x.", f.GoName, " == nil {")
-				g.P("return set.Meta.InputRules[", i, "].Required")
+				g.P("return set.Meta.FieldRules[", i, "].Required")
 				g.P("}")
 			}
 		case protoreflect.EnumKind:
 			if f.HasOptional {
 				g.P("if x.", f.GoName, " == nil {")
-				g.P("return set.Meta.InputRules[", i, "].Required")
+				g.P("return set.Meta.FieldRules[", i, "].Required")
 				g.P("}")
 			}
 		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind,
@@ -128,28 +128,29 @@ func validateRequired(g *protogen.GeneratedFile, i int, f *FieldExt) {
 			protoreflect.FloatKind, protoreflect.DoubleKind:
 			if f.HasOptional {
 				g.P("if x.", f.GoName, " == nil {")
-				g.P("return set.Meta.InputRules[", i, "].Required")
+				g.P("return set.Meta.FieldRules[", i, "].Required")
 				g.P("}")
 			}
 		case protoreflect.StringKind:
 			if f.HasOptional {
 				g.P("if x.", f.GoName, " == nil {")
-				g.P("return set.Meta.InputRules[", i, "].Required")
+				g.P("return set.Meta.FieldRules[", i, "].Required")
 				g.P("}")
 			} else {
+				// 严格地讲, 空串是有值的. 但习惯性将空串当成无值看待!
 				g.P("if x.", f.GoName, " == `` {")
-				g.P("return set.Meta.InputRules[", i, "].Required")
+				g.P("return set.Meta.FieldRules[", i, "].Required")
 				g.P("}")
 			}
 		case protoreflect.BytesKind:
 			g.P("if x.", f.GoName, " == nil {")
-			g.P("return set.Meta.InputRules[", i, "].Required")
+			g.P("return set.Meta.FieldRules[", i, "].Required")
 			g.P("}")
 		case protoreflect.MessageKind:
 			fallthrough
 		case protoreflect.GroupKind:
 			g.P("if x.", f.GoName, " == nil {")
-			g.P("return set.Meta.InputRules[", i, "].Required")
+			g.P("return set.Meta.FieldRules[", i, "].Required")
 			g.P("}")
 		}
 	}
@@ -177,22 +178,22 @@ func validateMinimum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 				g.P("if x.", f.GoName, " != nil {")
 				if f.Rule.Minimum.Exclusive {
 					g.P("if *x.", f.GoName, " <= ", f.Rule.Minimum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Minimum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Minimum.Err")
 					g.P("}")
 				} else {
 					g.P("if *x.", f.GoName, " < ", f.Rule.Minimum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Minimum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Minimum.Err")
 					g.P("}")
 				}
 				g.P("}")
 			} else {
 				if f.Rule.Minimum.Exclusive {
 					g.P("if x.", f.GoName, " <= ", f.Rule.Minimum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Minimum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Minimum.Err")
 					g.P("}")
 				} else {
 					g.P("if x.", f.GoName, " < ", f.Rule.Minimum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Minimum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Minimum.Err")
 					g.P("}")
 				}
 			}
@@ -226,22 +227,22 @@ func validateMaximum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 				g.P("if x.", f.GoName, " != nil {")
 				if f.Rule.Maximum.Exclusive {
 					g.P("if *x.", f.GoName, " >= ", f.Rule.Maximum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Maximum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Maximum.Err")
 					g.P("}")
 				} else {
 					g.P("if *x.", f.GoName, " > ", f.Rule.Maximum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Maximum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Maximum.Err")
 					g.P("}")
 				}
 				g.P("}")
 			} else {
 				if f.Rule.Maximum.Exclusive {
 					g.P("if x.", f.GoName, " >= ", f.Rule.Maximum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Maximum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Maximum.Err")
 					g.P("}")
 				} else {
 					g.P("if x.", f.GoName, " > ", f.Rule.Maximum.Val, " {")
-					g.P("return set.Meta.InputRules[", i, "].Maximum.Err")
+					g.P("return set.Meta.FieldRules[", i, "].Maximum.Err")
 					g.P("}")
 				}
 			}
@@ -275,20 +276,18 @@ func validateMinLength(g *protogen.GeneratedFile, i int, f *FieldExt) {
 				// 只比较非nil值, 否则nil算是上界, 还是下界? 扯开了难有定论
 				g.P("if x.", f.GoName, " != nil {")
 				g.P("if len(*x.", f.GoName, ") < ", f.Rule.MinLength.Val, " {")
-				g.P("return set.Meta.InputRules[", i, "].MinLength.Err")
+				g.P("return set.Meta.FieldRules[", i, "].MinLength.Err")
 				g.P("}")
 				g.P("}")
 			} else {
-				g.P("if x.", f.GoName, " != `` {")
 				g.P("if len(x.", f.GoName, ") < ", f.Rule.MinLength.Val, " {")
-				g.P("return set.Meta.InputRules[", i, "].MinLength.Err")
-				g.P("}")
+				g.P("return set.Meta.FieldRules[", i, "].MinLength.Err")
 				g.P("}")
 			}
 		case protoreflect.BytesKind:
 			g.P("if x.", f.GoName, " != nil {")
 			g.P("if len(x.", f.GoName, ") < ", f.Rule.MinLength.Val, " {")
-			g.P("return set.Meta.InputRules[", i, "].MinLength.Err")
+			g.P("return set.Meta.FieldRules[", i, "].MinLength.Err")
 			g.P("}")
 			g.P("}")
 		case protoreflect.MessageKind:
@@ -318,20 +317,18 @@ func validateMaxLength(g *protogen.GeneratedFile, i int, f *FieldExt) {
 				// 只比较非nil值, 否则nil算是上界, 还是下界? 扯开了难有定论
 				g.P("if x.", f.GoName, " != nil {")
 				g.P("if len(*x.", f.GoName, ") > ", f.Rule.MaxLength.Val, " {")
-				g.P("return set.Meta.InputRules[", i, "].MaxLength.Err")
+				g.P("return set.Meta.FieldRules[", i, "].MaxLength.Err")
 				g.P("}")
 				g.P("}")
 			} else {
-				g.P("if x.", f.GoName, " != `` {")
 				g.P("if len(x.", f.GoName, ") > ", f.Rule.MaxLength.Val, " {")
-				g.P("return set.Meta.InputRules[", i, "].MaxLength.Err")
-				g.P("}")
+				g.P("return set.Meta.FieldRules[", i, "].MaxLength.Err")
 				g.P("}")
 			}
 		case protoreflect.BytesKind:
 			g.P("if x.", f.GoName, " != nil {")
 			g.P("if len(x.", f.GoName, ") > ", f.Rule.MaxLength.Val, " {")
-			g.P("return set.Meta.InputRules[", i, "].MaxLength.Err")
+			g.P("return set.Meta.FieldRules[", i, "].MaxLength.Err")
 			g.P("}")
 			g.P("}")
 		case protoreflect.MessageKind:
@@ -349,7 +346,7 @@ func validateMinItems(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		fallthrough
 	case f.IsMap:
 		g.P("if len(x.", f.GoName, ") < ", f.Rule.MinItems.Val, " {")
-		g.P("return set.Meta.InputRules[", i, "].MinItems.Err")
+		g.P("return set.Meta.FieldRules[", i, "].MinItems.Err")
 		g.P("}")
 	default:
 		switch f.Kind {
@@ -377,7 +374,7 @@ func validateMaxItems(g *protogen.GeneratedFile, i int, f *FieldExt) {
 		fallthrough
 	case f.IsMap:
 		g.P("if len(x.", f.GoName, ") > ", f.Rule.MaxItems.Val, " {")
-		g.P("return set.Meta.InputRules[", i, "].MaxItems.Err")
+		g.P("return set.Meta.FieldRules[", i, "].MaxItems.Err")
 		g.P("}")
 	default:
 		switch f.Kind {
@@ -420,7 +417,7 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 					for _, v := range f.Rule.Enum.Int {
 						g.P(fmt.Sprintf(`case %v:`, v))
 					}
-					g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+					g.P("default: return set.Meta.FieldRules[", i, "].Enum.Err ")
 					g.P("}")
 					g.P("}")
 				} else {
@@ -428,7 +425,7 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 					for _, v := range f.Rule.Enum.Int {
 						g.P(fmt.Sprintf(`case %v:`, v))
 					}
-					g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+					g.P("default: return set.Meta.FieldRules[", i, "].Enum.Err ")
 					g.P("}")
 				}
 			}
@@ -440,7 +437,7 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 					for _, v := range f.Rule.Enum.Str {
 						g.P(fmt.Sprintf(`case %q:`, v)) // 不要简单地拼接"..."
 					}
-					g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+					g.P("default: return set.Meta.FieldRules[", i, "].Enum.Err ")
 					g.P("}")
 					g.P("}")
 				} else {
@@ -449,7 +446,7 @@ func validateEnum(g *protogen.GeneratedFile, i int, f *FieldExt) {
 					for _, v := range f.Rule.Enum.Str {
 						g.P(fmt.Sprintf(`case %q:`, v)) // 不要简单地拼接"..."
 					}
-					g.P("default: return set.Meta.InputRules[", i, "].Enum.Err ")
+					g.P("default: return set.Meta.FieldRules[", i, "].Enum.Err ")
 					g.P("}")
 					g.P("}")
 				}
@@ -481,20 +478,20 @@ func validatePattern(g *protogen.GeneratedFile, i int, f *FieldExt) {
 			if f.HasOptional {
 				g.P("if x.", f.GoName, " != nil {")
 				g.P("if !set.FieldPatterns[", i, "].MatchString(*x.", f.GoName, ") {")
-				g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+				g.P("return set.Meta.FieldRules[", i, "].Pattern.Err")
 				g.P("}")
 				g.P("}")
 			} else {
 				g.P("if x.", f.GoName, " != `` {")
 				g.P("if !set.FieldPatterns[", i, "].MatchString(x.", f.GoName, ") {")
-				g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+				g.P("return set.Meta.FieldRules[", i, "].Pattern.Err")
 				g.P("}")
 				g.P("}")
 			}
 		case protoreflect.BytesKind:
 			g.P("if x.", f.GoName, " != nil {")
 			g.P("if !set.FieldPatterns[", i, "].Match(x.", f.GoName, ") {")
-			g.P("return set.Meta.InputRules[", i, "].Pattern.Err")
+			g.P("return set.Meta.FieldRules[", i, "].Pattern.Err")
 			g.P("}")
 			g.P("}")
 		case protoreflect.MessageKind:
