@@ -129,7 +129,7 @@ func definition(m *MessageExt) *Definition {
 	for _, f := range m.Fields {
 		// path参数都是必需的
 		if (f.Prop != nil && f.Prop.In == Prop_path) || (f.Rule != nil && f.Rule.Required != nil) {
-			s.Required = append(s.Required, f.Name)
+			s.Required = append(s.Required, f.PropName())
 		}
 		var p *OASv2Schema
 		switch {
@@ -675,11 +675,11 @@ type OASv2Operation struct {
 }
 
 type OASv2Parameter struct {
-	Name        string           `yaml:"name,omitempty"`
-	In          string           `yaml:"in,omitempty"`
-	Schema      *OASv2Schema     `yaml:"schema,omitempty"` // If in is "body":
-	OASv2Schema `yaml:",inline"` // if in is not "body"
-	Required    bool             `yaml:"required,omitempty"`
+	Name        string       `yaml:"name,omitempty"`
+	In          string       `yaml:"in,omitempty"`
+	Schema      *OASv2Schema `yaml:"schema,omitempty"` // If in is "body":
+	OASv2Schema `yaml:",inline"`                       // if in is not "body"
+	Required    bool         `yaml:"required,omitempty"`
 }
 
 type OASv2Response struct {
