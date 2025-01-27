@@ -20,7 +20,7 @@ func extractFile(gen *protogen.Plugin, f *protogen.File) *FileExt {
 	}
 
 	for _, s := range f.Messages {
-		m := extractMessage(file, s)
+		m := extractMessage(file, s, false)
 		for _, v := range m.Fields {
 			if v.IsMap && v.Message.Fields[0].Kind != protoreflect.StringKind {
 				gen.Error(fmt.Errorf("invalid map key type %v", v.Message.Fields[0].Kind))
@@ -83,7 +83,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.IsMap = s.Desc.IsMap()
 	v.IsRepeated = s.Desc.IsList()
 	v.HasOptional = s.Desc.HasOptionalKeyword()
-	v.Message = extractMessage(file, s.Message)
+	v.Message = extractMessage(file, s.Message, s.Desc.IsMap())
 	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
 	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated()
@@ -91,7 +91,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	return v
 }
 
-func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
+func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt {
 	if s == nil {
 		return nil
 	}
@@ -101,9 +101,12 @@ func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
-	if rv, ok := file.Messages.Add(v.FullName, v); !ok {
-		// 如果已经包含则跳过,否则会形成"环"
-		return rv
+	if !isMap {
+		// 如果不是map字段的message, 则将其加至全局messages
+		if rv, ok := file.Messages.Add(v.FullName, v); !ok {
+			// 如果已经包含则跳过,否则会形成"环"
+			return rv
+		}
 	}
 	for _, f1 := range s.Fields {
 		extractField(file, v, f1)
@@ -112,7 +115,7 @@ func extractMessage(file *FileExt, s *protogen.Message) *MessageExt {
 		extractEnum(file, s1)
 	}
 	for _, s1 := range s.Messages {
-		extractMessage(file, s1)
+		extractMessage(file, s1, false)
 	}
 	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
 	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
@@ -131,8 +134,8 @@ func extractMethod(file *FileExt, service *ServiceExt, s *protogen.Method) *Meth
 	v.GoName = s.GoName
 	v.IsStreamingClient = s.Desc.IsStreamingClient()
 	v.IsStreamingServer = s.Desc.IsStreamingServer()
-	v.InputMessage = extractMessage(file, s.Input)
-	v.OutputMessage = extractMessage(file, s.Output)
+	v.InputMessage = extractMessage(file, s.Input, false)
+	v.OutputMessage = extractMessage(file, s.Output, false)
 	v.Http = proto.GetExtension(s.Desc.Options(), E_Http).(*Http)
 	v.Role = proto.GetExtension(s.Desc.Options(), E_Role).(*Role)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated()

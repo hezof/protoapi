@@ -1,8 +1,6 @@
-package test2
 import (
 	"context"
 	"google.golang.org/grpc"
-	test2 "github.com/hezof/protoapi/cmd/protogen/test"
 )
 
 // DemoImplement test2.Demo. 这是一个Demo测试
