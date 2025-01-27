@@ -70,7 +70,7 @@ func extractEnum(f *FileExt, s *protogen.Enum) *EnumExt {
 	return v
 }
 
-func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldExt {
+func extractField(file *FileExt, message *MessageExt, s *protogen.Field, special bool) *FieldExt {
 	if s == nil {
 		return nil
 	}
@@ -83,7 +83,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.IsMap = s.Desc.IsMap()
 	v.IsRepeated = s.Desc.IsList()
 	v.HasOptional = s.Desc.HasOptionalKeyword()
-	v.Message = extractMessage(file, s.Message, s.Desc.IsMap())
+	v.Message = extractMessage(file, s.Message, special)
 	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
 	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated()
@@ -91,7 +91,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	return v
 }
 
-func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt {
+func extractMessage(file *FileExt, s *protogen.Message, special bool) *MessageExt {
 	if s == nil {
 		return nil
 	}
@@ -101,7 +101,7 @@ func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt 
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
-	if !isMap {
+	if !special {
 		// 如果不是map字段的message, 则将其加至全局messages
 		if rv, ok := file.Messages.Add(v.FullName, v); !ok {
 			// 如果已经包含则跳过,否则会形成"环"
@@ -109,13 +109,13 @@ func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt 
 		}
 	}
 	for _, f1 := range s.Fields {
-		extractField(file, v, f1)
+		extractField(file, v, f1, special)
 	}
 	for _, s1 := range s.Enums {
 		extractEnum(file, s1)
 	}
 	for _, s1 := range s.Messages {
-		extractMessage(file, s1, isMap)
+		extractMessage(file, s1, special)
 	}
 	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
 	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
