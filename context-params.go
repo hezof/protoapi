@@ -31,8 +31,8 @@ func (ctx *Context) FormValue(name string) (string, error) {
 	return "", nil
 }
 
-// FormValueSlice 根据explode解析form array参数
-func (ctx *Context) FormValueSlice(name string, explode bool) ([]string, error) {
+// FormValueRepeated 根据explode解析form array参数
+func (ctx *Context) FormValueRepeated(name string, explode bool) ([]string, error) {
 	if ctx.Request.PostForm == nil {
 		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
 		if err != nil {
@@ -96,8 +96,8 @@ func (ctx *Context) PathValue(name string) (string, error) {
 	return "", nil
 }
 
-// PathValueSlice 根据explode解析path array参数
-func (ctx *Context) PathValueSlice(name string, explode bool) ([]string, error) {
+// PathValueRepeated 根据explode解析path array参数
+func (ctx *Context) PathValueRepeated(name string, explode bool) ([]string, error) {
 	for _, pm := range ctx.params {
 		if pm.Key == name {
 			// path的explode情形都相同, 所以可以忽略
@@ -149,7 +149,7 @@ func (ctx *Context) QueryValue(name string) (string, error) {
 	}
 	return "", nil
 }
-func (ctx *Context) QueryValueSlice(name string, explode bool) ([]string, error) {
+func (ctx *Context) QueryValueRepeated(name string, explode bool) ([]string, error) {
 	if ctx.query == nil {
 		var err error
 		ctx.query, err = url.ParseQuery(ctx.Request.URL.RawQuery)
@@ -204,7 +204,7 @@ func (ctx *Context) QueryValueMap(name string, explode bool) (map[string]string,
 func (ctx *Context) HeaderValue(name string) (string, error) {
 	return ctx.Request.Header.Get(name), nil
 }
-func (ctx *Context) HeaderValueSlice(name string, explode bool) ([]string, error) {
+func (ctx *Context) HeaderValueRepeated(name string, explode bool) ([]string, error) {
 	if explode {
 		return ctx.Request.Header.Values(name), nil
 	} else {
@@ -242,7 +242,7 @@ func (ctx *Context) CookieValue(name string) (string, error) {
 	}
 	return "", nil
 }
-func (ctx *Context) CookieValueSlice(name string, explode bool) ([]string, error) {
+func (ctx *Context) CookieValueRepeated(name string, explode bool) ([]string, error) {
 	if explode {
 		rt := make([]string, 0, 4)
 		for _, ck := range ctx.Request.Cookies() {
