@@ -41,9 +41,9 @@ type ServiceAspect interface {
 	// Order 切面执行顺序[主,次]. Before Advice按[major,minor]的升序执行. After Advice按[major,minor]的降序执行.
 	Order() [2]int
 	// Before Advice执行前置处理, 返回ctx, req作为后面节点入参. 返回err会将执行流程跳至After Advice()
-	Before(setting *MethodSetting, ctx context.Context, req any) (context.Context, error)
+	Before(set *MethodSetting, ctx context.Context, req any) (context.Context, error)
 	// After 事后内容. 返回ctx, rsp, err覆盖后面的传递内容.
-	After(setting *MethodSetting, ctx context.Context, req, rsp any, err error) (context.Context, any, error)
+	After(set *MethodSetting, ctx context.Context, req, rsp any, err error) (context.Context, any, error)
 }
 
 // MessageValidator 校验接口
