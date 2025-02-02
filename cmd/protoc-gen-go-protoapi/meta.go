@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -37,7 +38,7 @@ func extractFile(gen *protogen.Plugin, f *protogen.File) *FileExt {
 	return file
 }
 
-func extractEnumValue(f *FileExt, e *EnumExt, s *protogen.EnumValue) *EnumValueExt {
+func extractEnumValue(file *FileExt, e *EnumExt, s *protogen.EnumValue) *EnumValueExt {
 	if s == nil {
 		return nil
 	}
@@ -51,26 +52,26 @@ func extractEnumValue(f *FileExt, e *EnumExt, s *protogen.EnumValue) *EnumValueE
 	return v
 }
 
-func extractEnum(f *FileExt, s *protogen.Enum) *EnumExt {
+func extractEnum(file *FileExt, s *protogen.Enum) *EnumExt {
 	if s == nil {
 		return nil
 	}
 	v := new(EnumExt)
-	v.FilePath = s.Desc.ParentFile().Path()
+	v.Local = file.Path == s.Desc.ParentFile().Path()
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
-	if rv, ok := f.Enums.Add(v.FullName, v); !ok {
+	if rv, ok := file.Enums.Add(v.FullName, v); !ok {
 		return rv
 	}
 	for _, s1 := range s.Values {
-		extractEnumValue(f, v, s1)
+		extractEnumValue(file, v, s1)
 	}
 	v.Deprecated = s.Desc.Options().(*descriptorpb.EnumOptions).GetDeprecated()
 	return v
 }
 
-func extractField(file *FileExt, message *MessageExt, s *protogen.Field, special bool) *FieldExt {
+func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldExt {
 	if s == nil {
 		return nil
 	}
@@ -79,11 +80,12 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field, special
 	v.FullName = string(s.Desc.FullName())
 	v.GoName = s.GoName
 	v.GoIdent = s.GoIdent
-	v.Kind = s.Desc.Kind()
 	v.IsMap = s.Desc.IsMap()
 	v.IsRepeated = s.Desc.IsList()
 	v.HasOptional = s.Desc.HasOptionalKeyword()
-	v.Message = extractMessage(file, s.Message, special)
+	v.Kind = s.Desc.Kind()
+	v.Enum = extractEnum(file, s.Enum)
+	v.Message = extractMessage(file, s.Message, v.IsMap)
 	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
 	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated()
@@ -91,31 +93,29 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field, special
 	return v
 }
 
-func extractMessage(file *FileExt, s *protogen.Message, special bool) *MessageExt {
+func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt {
 	if s == nil {
 		return nil
 	}
 
 	v := new(MessageExt)
-	v.FilePath = s.Desc.ParentFile().Path()
+	v.Local = !isMap && file.Path == s.Desc.ParentFile().Path()
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoIdent = s.GoIdent
-	if !special {
-		// 如果不是map字段的message, 则将其加至全局messages
-		if rv, ok := file.Messages.Add(v.FullName, v); !ok {
-			// 如果已经包含则跳过,否则会形成"环"
-			return rv
-		}
+	// 如果不是map字段的message, 则将其加至全局messages
+	if rv, ok := file.Messages.Add(v.FullName, v); !ok {
+		// 如果已经包含则跳过,否则会形成"环"
+		return rv
 	}
 	for _, f1 := range s.Fields {
-		extractField(file, v, f1, special)
+		extractField(file, v, f1)
 	}
 	for _, s1 := range s.Enums {
 		extractEnum(file, s1)
 	}
 	for _, s1 := range s.Messages {
-		extractMessage(file, s1, special)
+		extractMessage(file, s1, false)
 	}
 	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
 	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
@@ -149,7 +149,6 @@ func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 		return nil
 	}
 	v := new(ServiceExt)
-	v.FilePath = s.Desc.ParentFile().Path()
 	v.Name = string(s.Desc.Name())
 	v.FullName = string(s.Desc.FullName())
 	v.GoName = s.GoName
@@ -180,7 +179,7 @@ type FieldExt struct {
 }
 
 type MessageExt struct {
-	FilePath   string // 需要用来判断是否当前file
+	Local      bool
 	Name       string
 	FullName   string
 	GoIdent    protogen.GoIdent
@@ -199,7 +198,7 @@ type EnumValueExt struct {
 }
 
 type EnumExt struct {
-	FilePath   string // 需要用来判断是否当前file
+	Local      bool
 	Name       string
 	FullName   string
 	GoIdent    protogen.GoIdent
@@ -221,7 +220,6 @@ type MethodExt struct {
 }
 
 type ServiceExt struct {
-	FilePath   string // 需要用来判断是否当前file
 	Name       string
 	FullName   string
 	GoName     string

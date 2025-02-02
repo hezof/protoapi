@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"time"
+
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"time"
 )
 
 // generateCodeFile 生成实现文件: *_protoapi.pb.go
@@ -32,7 +33,7 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 
 	// 2. 输出message(local)的JsonCodec及MessageValidator实现
 	for _, m := range meta.Messages.Vec {
-		if m.FilePath == meta.Path {
+		if m.Local {
 			implementFieldCodec(gen, g, m)
 			if shouldMessageValidator(m) {
 				implementMessageValidator(g, m)
@@ -40,11 +41,9 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 		}
 	}
 
-	// 3. 输出service(local)的ServiceRegistry实现
+	// 3. 输出service(所有service都是本地的)的ServiceRegistry实现
 	for _, s := range meta.Services {
-		if s.FilePath == meta.Path {
-			implementServiceRegistry(g, meta, s)
-		}
+		implementServiceRegistry(g, meta, s)
 	}
 }
 
