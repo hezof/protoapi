@@ -20,92 +20,114 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 		g.P("ret.Methods = append(ret.Methods, &protoapi.MethodSetting{")
 		g.P("Meta: protoapi.DecodeMeta(`", EncodeMeta(CreateMeta(file, service, method)), "`),")
 		if method.Http != nil {
-
-			var (
-				body   []*FieldExt
-				path   []*FieldExt
-				query  []*FieldExt
-				header []*FieldExt
-				cookie []*FieldExt
-			)
-
-			for _, f := range method.InputMessage.Fields {
-				if f.Prop == nil {
-					body = append(body, f)
-				} else {
-					switch f.Prop.In {
-					case Prop_body:
-						body = append(body, f)
-					case Prop_path:
-						path = append(path, f)
-					case Prop_query:
-						query = append(query, f)
-					case Prop_header:
-						header = append(header, f)
-					case Prop_cookie:
-						cookie = append(cookie, f)
-					}
-				}
+			switch {
+			case !method.IsStreamingClient && !method.IsStreamingServer:
+				simpleRpcCall(g, file, service, method)
+			case method.IsStreamingClient && !method.IsStreamingServer:
+				clientStreamingRpcCall(g, file, service, method)
+			case !method.IsStreamingClient && method.IsStreamingServer:
+				serverStreamingRpcCall(g, file, service, method)
+			case method.IsStreamingClient && method.IsStreamingServer:
+				bidirectionalStreamingRpcCall(g, file, service, method)
 			}
-
-			g.P("Call: func(pc *protoapi.Context, in io.Reader) (rsp interface{}, err error) {")
-			g.P("var set = pc.Handler.Setting")
-			g.P("var req = new(", g.QualifiedGoIdent(method.InputMessage.GoIdent), ")")
-			// 1. 根据body解码request
-			if len(body) > 0 {
-				switch method.Http.Body {
-				case Http_json:
-					g.P("if err := protoapi.DecodeRequest(in, req); err != nil {")
-					g.P("return nil, err")
-					g.P("}")
-				case Http_form:
-					parseFormParams(g, body)
-				case Http_omit:
-					// nothing
-				}
-			}
-			if len(path) > 0 {
-				parsePathParams(g, path)
-			}
-			if len(query) > 0 {
-				parseQueryParams(g, path)
-			}
-			if len(header) > 0 {
-				parseHeaderParams(g, header)
-			}
-			if len(cookie) > 0 {
-				parseCookieParams(g, cookie)
-			}
-			// 2. 执行aspects的before advice
-			g.P("var idx = -1")
-			g.P("var ctx context.Context = pc")
-			g.P("for _, asp := range set.Service.Aspects {")
-			g.P("idx++")
-			g.P("if ctx, err = asp.Before(set, ctx, req); err != nil {")
-			g.P("goto __AFTER__")
-			g.P("}")
-			g.P("}")
-			// 3. 执行message validator(如果有的话)
-			g.P("if mv, ok := any(req).(protoapi.MessageValidator); ok {")
-			g.P("if err = mv.Validate(set, ctx); err != nil {")
-			g.P("goto __AFTER__")
-			g.P("}")
-			g.P("}")
-			// 4. 执行service调用
-			g.P("rsp, err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(ctx, req)")
-			// 5. 执行aspects的after advice
-			g.P("__AFTER__:")
-			g.P("for idx>=0 {")
-			g.P("ctx, rsp, err = set.Service.Aspects[idx].After(set, ctx, req, rsp, err)")
-			g.P("idx--")
-			g.P("}")
-			// 6. 返回response. rsp与err都是结果变量
-			g.P("return")
-			g.P("},") // call
 		}
 		g.P("})") // append
 	}
 	g.P("}") // func
+}
+
+func simpleRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt, method *MethodExt) {
+
+	var (
+		body   []*FieldExt
+		path   []*FieldExt
+		query  []*FieldExt
+		header []*FieldExt
+		cookie []*FieldExt
+	)
+
+	for _, f := range method.InputMessage.Fields {
+		if f.Prop == nil {
+			body = append(body, f)
+		} else {
+			switch f.Prop.In {
+			case Prop_body:
+				body = append(body, f)
+			case Prop_path:
+				path = append(path, f)
+			case Prop_query:
+				query = append(query, f)
+			case Prop_header:
+				header = append(header, f)
+			case Prop_cookie:
+				cookie = append(cookie, f)
+			}
+		}
+	}
+
+	g.P("Call: func(pc *protoapi.Context, in io.Reader) (rsp interface{}, err error) {")
+	g.P("var set = pc.Handler.Setting")
+	g.P("var req = new(", g.QualifiedGoIdent(method.InputMessage.GoIdent), ")")
+	// 1. 根据body解码request
+	if len(body) > 0 {
+		switch method.Http.Body {
+		case Http_json:
+			g.P("if err := protoapi.DecodeRequest(in, req); err != nil {")
+			g.P("return nil, err")
+			g.P("}")
+		case Http_form:
+			parseFormParams(g, body)
+		case Http_omit:
+			// nothing
+		}
+	}
+	if len(path) > 0 {
+		parsePathParams(g, path)
+	}
+	if len(query) > 0 {
+		parseQueryParams(g, path)
+	}
+	if len(header) > 0 {
+		parseHeaderParams(g, header)
+	}
+	if len(cookie) > 0 {
+		parseCookieParams(g, cookie)
+	}
+	// 2. 执行aspects的before advice
+	g.P("var idx = -1")
+	g.P("var ctx context.Context = pc")
+	g.P("for _, asp := range set.Service.Aspects {")
+	g.P("idx++")
+	g.P("if ctx, err = asp.Before(set, ctx, req); err != nil {")
+	g.P("goto __AFTER__")
+	g.P("}")
+	g.P("}")
+	// 3. 执行message validator(如果有的话)
+	g.P("if mv, ok := any(req).(protoapi.MessageValidator); ok {")
+	g.P("if err = mv.Validate(set, ctx); err != nil {")
+	g.P("goto __AFTER__")
+	g.P("}")
+	g.P("}")
+	// 4. 执行service调用
+	g.P("rsp, err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(ctx, req)")
+	// 5. 执行aspects的after advice
+	g.P("__AFTER__:")
+	g.P("for idx>=0 {")
+	g.P("ctx, rsp, err = set.Service.Aspects[idx].After(set, ctx, req, rsp, err)")
+	g.P("idx--")
+	g.P("}")
+	// 6. 返回response. rsp与err都是结果变量
+	g.P("return")
+	g.P("},") // call
+}
+
+func clientStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt, method *MethodExt) {
+}
+
+func serverStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt, method *MethodExt) {
+}
+
+func bidirectionalStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt, method *MethodExt) {
 }
 
 func parseFormParams(g *protogen.GeneratedFile, fields []*FieldExt) {
