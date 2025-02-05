@@ -82,6 +82,6 @@ func (ctx *ServerStreamContext[Req, Res]) SendAndClose(res *Res) error {
 	return ctx.ServerStream.SendMsg(res)
 }
 
-func StreamContext[Req, Res any](ctx *Context) *ServerStreamContext[Req, Res] {
+func StreamServer[Req, Res any](ctx *Context) *ServerStreamContext[Req, Res] {
 	return &ServerStreamContext[Req, Res]{grpc.ServerStream(ctx)}
 }
