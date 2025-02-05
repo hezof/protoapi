@@ -378,8 +378,8 @@ func (svr *Server) ListenAndServe() (err error) {
 		}
 		// 很关键: 必须确保"boostrap interceptor"位于最后位置, 即必须是grpc server最后添加的ServerOption
 		grpcServer = grpc.NewServer(append(opts,
-			grpc.ChainUnaryInterceptor(svr.generateBootstrapUnaryInterceptor),
-			grpc.ChainStreamInterceptor(svr.generateBootstrapStreamInterceptor),
+			grpc.ChainUnaryInterceptor(svr.bootstrapUnaryInterceptor),
+			grpc.ChainStreamInterceptor(svr.bootstrapStreamInterceptor),
 		)...)
 		for _, ps := range svr._serviceSetting {
 			// v0.9.9+支持service仅用于http
@@ -474,7 +474,7 @@ func (svr *Server) ListenAndServe() (err error) {
 * 流式拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
-func (svr *Server) generateBootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
+func (svr *Server) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 	var ctx = ss.Context()
 	var setting = svr.settings[info.FullMethod]
 	if setting == nil {
@@ -517,7 +517,7 @@ __AFTER__:
 * 一元拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 一元拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainUnaryInterceptor设置).
  **********************************************/
-func (svr *Server) generateBootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
+func (svr *Server) bootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
 	var setting = svr.settings[info.FullMethod]
 	if setting == nil {

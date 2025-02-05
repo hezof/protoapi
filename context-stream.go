@@ -40,11 +40,13 @@ func (ctx *Context) SendMsg(m interface{}) (err error) {
 	return ctx.writeApplyResult(ctx.streamWriter, m)
 }
 
+// RecvMsg 为与server.bootstrapStreamInterceptor()逻辑一致, streaming场景不校验MessageValidator
 func (ctx *Context) RecvMsg(m interface{}) error {
 	if ctx.streamReader == nil {
 		// 来自restful请求不会设置streamReader,在此进行初始化!
 		ctx.streamReader = ctx.Request.Body
 	}
+	// 解码请求体. 但验证需要
 	return DecodeRequest(ctx.streamReader, m)
 }
 
@@ -59,15 +61,17 @@ type ServerStreamContext[Req any, Res any] struct {
 }
 
 func (ctx *ServerStreamContext[Req, Res]) Recv() (*Req, error) {
-	return nil, nil
+	req := new(Req)
+	err := ctx.ServerStream.RecvMsg(req)
+	return req, err
 }
 
-func (ctx *ServerStreamContext[Req, Res]) Send(*Res) error {
-	return nil
+func (ctx *ServerStreamContext[Req, Res]) Send(res *Res) error {
+	return ctx.ServerStream.SendMsg(res)
 }
 
-func (ctx *ServerStreamContext[Req, Res]) SendAndClose(*Res) error {
-	return nil
+func (ctx *ServerStreamContext[Req, Res]) SendAndClose(res *Res) error {
+	return ctx.ServerStream.SendMsg(res)
 }
 
 func StreamContext[Req, Res any](ctx *Context) *ServerStreamContext[Req, Res] {
