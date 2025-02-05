@@ -32,6 +32,7 @@ func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service 
 		}
 		g.P("})") // append
 	}
+	g.P("return ret")
 	g.P("}") // func
 }
 
