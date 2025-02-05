@@ -25,6 +25,8 @@ type Context struct {
 	attribute      map[any]any          // (需要清理)处理属性
 	query          url.Values           // (需要清理)请求query
 	panic          any                  // (需要清理)处理异常
+	streamReader   io.Reader            // (需要清理)流式读入器, 同时也是流式环境的初始化标识!
+	streamWriter   io.Writer            // (需要清理)流式写出器, 同时也是流式环境的初始化标识!
 }
 
 // clean 负责清理外部引用. 确保pool安全!
@@ -36,6 +38,8 @@ func (ctx *Context) clean() *Context {
 	ctx.attribute = nil
 	ctx.query = nil
 	ctx.panic = nil
+	ctx.streamReader = nil
+	ctx.streamWriter = nil
 	return ctx
 }
 
@@ -321,3 +325,5 @@ func (rw *proxyResponseWriter) WriteHeader(statusCode int) {
 func (rw *proxyResponseWriter) WriteStatus(status uint32) {
 	rw.WriteHeader(int(status))
 }
+
+var _ http.ResponseWriter = (*proxyResponseWriter)(nil)

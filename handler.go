@@ -73,6 +73,10 @@ func WebsocketHandleFunc(ctx *Context) {
 			}
 			return // 结束当前ws链接
 		}
+		// 设置流式读写上下文
+		ctx.streamReader = in
+		ctx.streamWriter = out
+
 		// 业务逻辑(前置校验)
 		rsp, err := ctx.Handler.Setting.Call(ctx, in)
 
