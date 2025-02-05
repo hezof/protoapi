@@ -164,8 +164,8 @@ func (ctx *Context) WriteApplyResult(val any) error {
 	}
 	// 设置内容类型
 	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
-	// 写出状态与结果
-	ctx.ResponseWriter.WriteStatus(ctx.Handler.Setting.Meta.Http.Status)
+	// 写出状态与结果(status不为0)
+	ctx.ResponseWriter.WriteStatus(ctx.Handler.Status)
 	return ctx.writeApplyResult(ctx.ResponseWriter.ResponseWriter, val)
 }
 

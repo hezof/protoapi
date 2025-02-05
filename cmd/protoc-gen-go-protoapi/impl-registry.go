@@ -6,7 +6,6 @@ import (
 )
 
 func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt) {
-	g.QualifiedGoIdent(protogen.GoIdent{GoName: "context", GoImportPath: "context"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "io", GoImportPath: "io"})
 
@@ -66,8 +65,8 @@ func simpleRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt
 	}
 
 	g.P("Call: func(pc *protoapi.Context, in io.Reader) (rsp interface{}, err error) {")
-	g.P("var set = pc.Handler.Setting")
-	g.P("var req = new(", g.QualifiedGoIdent(method.InputMessage.GoIdent), ")")
+	g.P("set := pc.Handler.Setting")
+	g.P("req := new(", g.QualifiedGoIdent(method.InputMessage.GoIdent), ")")
 	// 1. 根据body解码request
 	if len(body) > 0 {
 		switch method.Http.Body {
@@ -94,56 +93,28 @@ func simpleRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt
 		parseCookieParams(g, cookie)
 	}
 	// 2. 执行aspects的before advice
-	g.P("var idx = -1")
-	g.P("var ctx context.Context = pc")
-	g.P("for _, asp := range set.Service.Aspects {")
-	g.P("idx++")
-	g.P("if ctx, err = asp.Before(set, ctx, req); err != nil {")
-	g.P("goto __AFTER__")
-	g.P("}")
-	g.P("}")
-	// 3. 执行message validator(如果有的话)
-	g.P("if mv, ok := any(req).(protoapi.MessageValidator); ok {")
-	g.P("if err = mv.Validate(set, ctx); err != nil {")
-	g.P("goto __AFTER__")
-	g.P("}")
-	g.P("}")
-	// 4. 执行service调用
+	g.P("idx, ctx, err := protoapi.BeforeAspect(set, pc, req)")
+	// 3. 执行service逻辑
+	g.P("if err == nil {")
 	g.P("rsp, err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(ctx, req)")
-	// 5. 执行aspects的after advice
-	g.P("__AFTER__:")
-	g.P("for idx>=0 {")
-	g.P("ctx, rsp, err = set.Service.Aspects[idx].After(set, ctx, req, rsp, err)")
-	g.P("idx--")
-	g.P("}")
-	// 6. 返回response. rsp与err都是结果变量
-	g.P("return")
+	g.P("}") // if
+	// 6. 返回response.
+	g.P("return protoapi.AfterAspect(set, idx, ctx, req, rsp, err)")
 	g.P("},") // call
 }
 
 func clientStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt, method *MethodExt) {
 	g.P("Call: func(pc *protoapi.Context, in io.Reader) (rsp interface{}, err error) {")
 	// 1. 引用setting
-	g.P("var set = pc.Handler.Setting")
+	g.P("set := pc.Handler.Setting")
 	// 2. 执行aspects的before advice. 请求与响应都是nil.
-	g.P("var idx = -1")
-	g.P("var ctx context.Context = pc")
-	g.P("for _, asp := range set.Service.Aspects {")
-	g.P("idx++")
-	g.P("if ctx, err = asp.Before(set, ctx, nil); err != nil {")
-	g.P("goto __AFTER__")
-	g.P("}")
-	g.P("}")
-	// 3. 执行service调用
-	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext[", g.QualifiedGoIdent(method.InputMessage.GoIdent), ",", g.QualifiedGoIdent(method.OutputMessage.GoIdent), "](ctx))")
-	// 5. 执行aspects的after advice
-	g.P("__AFTER__:")
-	g.P("for idx>=0 {")
-	g.P("ctx, _, err = set.Service.Aspects[idx].After(set, ctx, nil, nil, err)")
-	g.P("idx--")
-	g.P("}")
-	// 6. 返回response. rsp与err都是结果变量
-	g.P("return")
+	g.P("idx, ctx, err := protoapi.BeforeAspect(set, pc, nil)")
+	// 3. 执行service逻辑
+	g.P("if err == nil {")
+	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext(ctx)")
+	g.P("}") // if
+	// 4. 返回response.
+	g.P("return protoapi.AfterAspect(set, idx, ctx, nil, nil, err)")
 	g.P("},") // call
 }
 
@@ -176,8 +147,8 @@ func serverStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *S
 	}
 
 	g.P("Call: func(pc *protoapi.Context, in io.Reader) (rsp interface{}, err error) {")
-	g.P("var set = pc.Handler.Setting")
-	g.P("var req = new(", g.QualifiedGoIdent(method.InputMessage.GoIdent), ")")
+	g.P("set := pc.Handler.Setting")
+	g.P("req := new(", g.QualifiedGoIdent(method.InputMessage.GoIdent), ")")
 	// 1. 根据body解码request
 	if len(body) > 0 {
 		switch method.Http.Body {
@@ -204,34 +175,29 @@ func serverStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *S
 		parseCookieParams(g, cookie)
 	}
 	// 2. 执行aspects的before advice
-	g.P("var idx = -1")
-	g.P("var ctx context.Context = pc")
-	g.P("for _, asp := range set.Service.Aspects {")
-	g.P("idx++")
-	g.P("if ctx, err = asp.Before(set, ctx, req); err != nil {")
-	g.P("goto __AFTER__")
-	g.P("}")
-	g.P("}")
-	// 3. 执行message validator(如果有的话)
-	g.P("if mv, ok := any(req).(protoapi.MessageValidator); ok {")
-	g.P("if err = mv.Validate(set, ctx); err != nil {")
-	g.P("goto __AFTER__")
-	g.P("}")
-	g.P("}")
-	// 4. 执行service调用
-	g.P("rsp, err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(ctx, req)")
-	// 5. 执行aspects的after advice
-	g.P("__AFTER__:")
-	g.P("for idx>=0 {")
-	g.P("ctx, rsp, err = set.Service.Aspects[idx].After(set, ctx, req, rsp, err)")
-	g.P("idx--")
-	g.P("}")
-	// 6. 返回response. rsp与err都是结果变量
-	g.P("return")
+	g.P("idx, ctx, err := protoapi.BeforeAspect(set, pc, req)")
+	// 3. 执行service逻辑
+	g.P("if err == nil {")
+	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(req, protoapi.StreamContext(ctx))")
+	g.P("}") // if
+	// 6. 返回response.
+	g.P("return protoapi.AfterAspect(set, idx, ctx, req, nil, err)")
 	g.P("},") // call
 }
 
 func bidirectionalStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt, method *MethodExt) {
+	g.P("Call: func(pc *protoapi.Context, in io.Reader) (rsp interface{}, err error) {")
+	// 1. 引用setting
+	g.P("set := pc.Handler.Setting")
+	// 2. 执行aspects的before advice. 请求与响应都是nil.
+	g.P("idx, ctx, err := protoapi.BeforeAspect(set, pc, nil)")
+	// 3. 执行service逻辑
+	g.P("if err == nil {")
+	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext(ctx)")
+	g.P("}") // if
+	// 4. 返回response.
+	g.P("return protoapi.AfterAspect(set, idx, ctx, nil, nil, err)")
+	g.P("},") // call
 }
 
 func parseFormParams(g *protogen.GeneratedFile, fields []*FieldExt) {

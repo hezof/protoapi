@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const MAX_MEM = 32 << 20 // 32M
+
 type Profile struct {
 	ResultCodeField            string        // code前缀, 默认: `"Code":`, 0表示成功
 	ResultNameField            string        // name前缀, 默认: `"Name":`, OK表示成功
@@ -34,8 +36,8 @@ var profile = Profile{
 	ResultMessageField:         `Message`,
 	DecoderBufferSize:          8 * 1024,
 	EncoderBufferSize:          8 * 1024,
-	HttpFormMaxMemory:          32 << 20,
-	HttpBodyMaxBytes:           32 << 20,
+	HttpFormMaxMemory:          MAX_MEM,
+	HttpBodyMaxBytes:           MAX_MEM,
 	HttpKeepAlive:              3 * time.Minute,
 	GrpcKeepAlive:              5 * time.Minute,
 	GrpcKeepAlivePolicy:        5 * time.Minute,

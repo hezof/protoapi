@@ -320,11 +320,11 @@ func (svr *Server) ListenAndServe() (err error) {
 	 ********************************************************/
 	for method, pathSetting := range _requestSetting {
 		for path, setting := range pathSetting {
-			handler := setting.Handler
-			handler.BodyMaxBytes = NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes)
-			handler.FormMaxMemory = NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory)
-			handler.HandleChain = Join(svr._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
-			svr.mux.route(method, path, handler) // 正式注册到mux
+			setting.Handler.Status = NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
+			setting.Handler.BodyMaxBytes = NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, profile.HttpBodyMaxBytes, MAX_MEM)
+			setting.Handler.FormMaxMemory = NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, profile.HttpFormMaxMemory, MAX_MEM)
+			setting.Handler.HandleChain = Join(svr._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
+			svr.mux.route(method, path, setting.Handler) // 正式注册到mux
 		}
 	}
 	svr.mux.initServeHTTP()
