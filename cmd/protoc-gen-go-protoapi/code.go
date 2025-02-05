@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"google.golang.org/protobuf/compiler/protogen"
@@ -12,10 +11,6 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	g := gen.NewGeneratedFile(file.GeneratedFilenamePrefix+`_protoapi.code`, file.GoImportPath)
 
 	qualifiedGoIdent := genQualifiedGoIdentFunc(file)
-
-	bs, _ := json.MarshalIndent(meta, ``, `	`)
-	g.Write(bs)
-	g.P()
 
 	streaming := false
 	for _, ps := range meta.Services {
