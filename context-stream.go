@@ -40,14 +40,22 @@ func (ctx *Context) SendMsg(m interface{}) (err error) {
 	return ctx.writeApplyResult(ctx.streamWriter, m)
 }
 
-// RecvMsg 为与server.bootstrapStreamInterceptor()逻辑一致, streaming场景不校验MessageValidator
+// RecvMsg 与server.bootstrapStreamInterceptor逻辑不完全一致. 后者不作MessageValidator校验!
 func (ctx *Context) RecvMsg(m interface{}) error {
 	if ctx.streamReader == nil {
 		// 来自restful请求不会设置streamReader,在此进行初始化!
 		ctx.streamReader = ctx.Request.Body
 	}
-	// 解码请求体. 但验证需要
-	return DecodeRequest(ctx.streamReader, m)
+	// 解码请求体
+	err := DecodeRequest(ctx.streamReader, m)
+	if err != nil { // 读取失败时关闭流
+		return err
+	}
+	// 验证请求体
+	if mv, ok := m.(MessageValidator); ok {
+		return mv.Validate(ctx.Handler.Setting, ctx)
+	}
+	return nil
 }
 
 func (ctx *Context) Context() context.Context {

@@ -475,34 +475,27 @@ func (svr *Server) ListenAndServe() (err error) {
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
 func (svr *Server) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
-	var ctx = ss.Context()
-	var setting = svr.settings[info.FullMethod]
-	if setting == nil {
+	set := svr.settings[info.FullMethod]
+	ctx := ss.Context()
+	if set == nil {
 		return StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
-	defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
+	defer func(set *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
-			err = grpcPanicFunc(meta, ctx, p)
+			err = grpcPanicFunc(set, ctx, p)
 		}
-	}(setting, ctx, svr.grpcPanicFunc)
-	var aspects = setting.Service.Aspects
+	}(set, ctx, svr.grpcPanicFunc)
 
-	var idx = -1
-	for _, s := range aspects {
-		idx++
-		if ctx, err = s.Before(setting, ctx, nil); err != nil {
-			goto __AFTER__
-		}
-	}
+	// 前置处理
+	idx, ctx, err := BeforeAspect(set, ctx, nil)
 
 	// 业务调用
-	err = handler(srv, ss)
-
-__AFTER__:
-	for idx >= 0 {
-		ctx, _, err = aspects[idx].After(setting, ctx, nil, nil, err)
-		idx--
+	if err == nil {
+		err = handler(svr, ss)
 	}
+
+	// 后置处理
+	_, err = AfterAspect(set, idx, ctx, nil, nil, err)
 
 	// 错误转换(grpc默认关闭i18n追求更快性能)
 	if err != nil && hasResMap && svr.config.GrpcI18nError {
@@ -519,39 +512,26 @@ __AFTER__:
  **********************************************/
 func (svr *Server) bootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
-	var setting = svr.settings[info.FullMethod]
-	if setting == nil {
+	set := svr.settings[info.FullMethod]
+	if set == nil {
 		return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
-	defer func(meta *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
+	defer func(set *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
-			err = grpcPanicFunc(meta, ctx, p)
+			err = grpcPanicFunc(set, ctx, p)
 		}
-	}(setting, ctx, svr.grpcPanicFunc)
-	var aspects = setting.Service.Aspects
+	}(set, ctx, svr.grpcPanicFunc)
 
-	var idx = -1
-	for _, s := range aspects {
-		idx++
-		if ctx, err = s.Before(setting, ctx, req); err != nil {
-			goto __AFTER__
-		}
-	}
+	// 前置处理
+	idx, ctx, err := BeforeAspect(set, ctx, req)
 
-	// 语法校验
-	if vd, ok := req.(MessageValidator); ok {
-		if err = vd.Validate(setting, ctx); err != nil {
-			goto __AFTER__
-		}
-	}
 	// 业务调用
-	rsp, err = handler(ctx, req)
-
-__AFTER__:
-	for idx >= 0 {
-		ctx, rsp, err = aspects[idx].After(setting, ctx, req, rsp, err)
-		idx--
+	if err == nil {
+		rsp, err = handler(ctx, req)
 	}
+
+	// 后置处理
+	rsp, err = AfterAspect(set, idx, ctx, req, rsp, err)
 
 	// 错误转换(grpc默认关闭i18n追求更快性能)
 	if err != nil && hasResMap && svr.config.GrpcI18nError {
@@ -611,7 +591,7 @@ var defaultHttpNotFoundHandler = &Handler{
 }
 
 // GrpcPanicFunc grpc panic处理函数
-type GrpcPanicFunc func(meta *MethodSetting, ctx context.Context, p interface{}) error
+type GrpcPanicFunc func(set *MethodSetting, ctx context.Context, p interface{}) error
 
 func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
 	log.Error("panic: %+v\n%v", p, StackTrace(2, "\n"))

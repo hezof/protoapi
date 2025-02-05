@@ -46,6 +46,33 @@ type ServiceAspect interface {
 	After(set *MethodSetting, ctx context.Context, req, rsp any, err error) (context.Context, any, error)
 }
 
+// BeforeAspect BeforeAspect与AfterAspect实现ServiceAspect的流程逻辑.
+func BeforeAspect(set *MethodSetting, ctx context.Context, req any) (int, context.Context, error) {
+	var idx = -1 // 初始为-1. 可能没有aspects
+	var err error
+	for _, asp := range set.Service.Aspects {
+		idx++
+		if ctx, err = asp.Before(set, ctx, req); err != nil {
+			return idx, ctx, err
+		}
+	}
+	if mv, ok := req.(MessageValidator); ok {
+		if err = mv.Validate(set, ctx); err != nil {
+			return idx, ctx, err
+		}
+	}
+	return idx, ctx, nil
+}
+
+// AfterAspect BeforeAdvice与AfterAdvice实现ServiceAspect的流程逻辑.
+func AfterAspect(set *MethodSetting, idx int, ctx context.Context, req, rsp any, err error) (any, error) {
+	for idx >= 0 {
+		ctx, rsp, err = set.Service.Aspects[idx].After(set, ctx, req, rsp, err)
+		idx--
+	}
+	return rsp, err
+}
+
 // MessageValidator 校验接口
 type MessageValidator interface {
 	Validate(set *MethodSetting, ctx context.Context) *Error
