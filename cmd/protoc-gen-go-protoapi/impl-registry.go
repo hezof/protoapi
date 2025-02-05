@@ -111,7 +111,7 @@ func clientStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, service *S
 	g.P("idx, ctx, err := protoapi.BeforeAspect(set, pc, nil)")
 	// 3. 执行service逻辑
 	g.P("if err == nil {")
-	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext(ctx)")
+	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext(ctx))")
 	g.P("}") // if
 	// 4. 返回response.
 	g.P("return protoapi.AfterAspect(set, idx, ctx, nil, nil, err)")
@@ -193,7 +193,7 @@ func bidirectionalStreamingRpcCall(g *protogen.GeneratedFile, file *FileExt, ser
 	g.P("idx, ctx, err := protoapi.BeforeAspect(set, pc, nil)")
 	// 3. 执行service逻辑
 	g.P("if err == nil {")
-	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext(ctx)")
+	g.P("err = set.Service.Impl.(", service.GoName, "Server).", method.GoName, "(protoapi.StreamContext(ctx))")
 	g.P("}") // if
 	// 4. 返回response.
 	g.P("return protoapi.AfterAspect(set, idx, ctx, nil, nil, err)")
