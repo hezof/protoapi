@@ -18,32 +18,65 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
 
 	var (
-		pBase  string
-		pPath  string
-		pAddr  string
-		pLogo  string
-		pTitle string
+		pBase   string
+		pPath   string
+		pAddr   string
+		pLogo   string
+		pTitle  string
+		primary string
 	)
 	flag.StringVar(&pBase, "base", "/", "基础路径")
-	flag.StringVar(&pPath, "path", "docs", "文档路径")
+	flag.StringVar(&pPath, "arg", "docs", "文档路径")
 	flag.StringVar(&pAddr, "addr", ":8080", "监听地址")
 	flag.StringVar(&pLogo, "logo", "", "favicon.ico")
 	flag.StringVar(&pTitle, "title", "文档标题", "文档标题")
+	flag.StringVar(&primary, "primary", "", "文档模板")
 
 	flag.Parse()
 	args := flag.Args()
 
-	if len(args) < 1 {
-		SysLog(Error, "swagger mixin file error: none")
-		os.Exit(1)
+	// 去重
+	files := make(map[string]bool)
+	for _, arg := range args {
+		info, err := os.Stat(arg)
+		if info == nil || os.IsNotExist(err) {
+			continue
+		}
+		if info.IsDir() {
+			filepath.Walk(arg, func(path string, info fs.FileInfo, err error) error {
+				if err != nil || info.IsDir() || strings.HasPrefix(info.Name(), ".") || !strings.HasSuffix(info.Name(), ".yaml") {
+					return nil
+				}
+				abs, _ := filepath.Abs(path)
+				files[abs] = true
+				return nil
+			})
+		} else {
+			if strings.HasPrefix(info.Name(), ".") || !strings.HasSuffix(info.Name(), ".yaml") {
+				continue
+			}
+			abs, _ := filepath.Abs(arg)
+			files[abs] = true
+		}
 	}
 
-	data, err := OrderJson(Mixin(args[0], args[1:]))
+	args = make([]string, 0, len(files))
+	for file, _ := range files {
+		args = append(args, file)
+	}
+	// 默认第一个作为primary
+	if primary == "" {
+		primary = args[0]
+		args = args[1:]
+	}
+
+	data, err := OrderJson(Mixin(primary, args))
 	if err != nil {
 		SysLog(Error, "swagger marshal json error: %v", err)
 		os.Exit(2)
