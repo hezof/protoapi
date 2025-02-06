@@ -75,14 +75,14 @@ func AfterAspect(set *MethodSetting, idx int, ctx context.Context, req, rsp any,
 
 // MessageValidator 校验接口
 type MessageValidator interface {
-	Validate(set *MethodSetting, ctx context.Context) *Error
+	Validate(set *MethodSetting, ctx context.Context) error
 }
 
 // MessagePlugin message校验插件
-type MessagePlugin func(ctx context.Context, req any, plg *Plugin) *Error
+type MessagePlugin func(ctx context.Context, req any, plg *Plugin) error
 
 // FieldPlugin field校验插件
-type FieldPlugin func(ctx context.Context, key string, val any, plg *Plugin) *Error
+type FieldPlugin func(ctx context.Context, key string, val any, plg *Plugin) error
 
 // EncodeMeta 断言编码. 用于protogen传值
 func EncodeMeta(meta *Meta) string {
