@@ -495,7 +495,7 @@ func (svr *Server) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStr
 
 	// 业务调用
 	if err == nil {
-		err = handler(svr, ss)
+		err = handler(srv, ss)
 	}
 
 	// 后置处理

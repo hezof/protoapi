@@ -34,7 +34,7 @@ func generateImplFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	// 2. 输出message(local)的JsonCodec及MessageValidator实现
 	for _, m := range meta.Messages.Vec {
 		if m.Local {
-			implementFieldCodec(gen, g, m)
+			implementFieldCodec(g, m)
 			if shouldMessageValidator(m) {
 				implementMessageValidator(g, m)
 			}
