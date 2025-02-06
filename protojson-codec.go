@@ -22,7 +22,6 @@ func DecodeAny(r *JsonDecoder, val any) {
 		if jc, ok := val.(FieldCodec); ok {
 			r.readObject(jc)
 		} else {
-			r.unreadByte()
 			err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), val)
 			if err != nil {
 				r.reportError(err)
@@ -31,7 +30,6 @@ func DecodeAny(r *JsonDecoder, val any) {
 	case ObjectEnd:
 		r.invalidCharacterError()
 	case ArrayBegin:
-		r.unreadByte()
 		err := UnmarshalJSON(r.dumpObjectOrArray(ArrayBegin), val)
 		if err != nil {
 			r.reportError(err)

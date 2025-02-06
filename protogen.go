@@ -119,7 +119,6 @@ func DecodeRequest(in io.Reader, req any) error {
 			r.readObject(fc)
 		} else {
 			// 未实现JsonCodec使用encoding/std反射解码
-			r.unreadByte() // 回退"{"
 			err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), req)
 			if err != nil {
 				r.reportError(err)
