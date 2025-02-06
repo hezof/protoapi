@@ -49,11 +49,11 @@ func main() {
 			continue
 		}
 		if info.IsDir() {
-			filepath.Walk(arg, func(path string, info fs.FileInfo, err error) error {
+			filepath.Walk(arg, func(arg string, info fs.FileInfo, err error) error {
 				if err != nil || info.IsDir() || strings.HasPrefix(info.Name(), ".") || !strings.HasSuffix(info.Name(), ".yaml") {
 					return nil
 				}
-				abs, _ := filepath.Abs(path)
+				abs, _ := filepath.Abs(arg)
 				files[abs] = true
 				return nil
 			})

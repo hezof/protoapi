@@ -41,7 +41,7 @@ func generateDocsFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 
 				sse := m.Http.Result == Http_events
 
-				p := &OASv2Operation{Responses: make(OASv2ResponseMap)}
+				p := &OASv2Operation{Responses: make(OASv2ResponseMap), Produces: []string{"application/json"}}
 				p.OperationId = m.FullName
 				p.Summary = NvlS(m.Http.Name, m.FullName)
 				p.Description = NvlS(m.Http.Desc, m.FullName)
@@ -671,6 +671,7 @@ type OASv2Operation struct {
 	Tags        []string          `yaml:"tags,omitempty"`
 	Parameters  []*OASv2Parameter `yaml:"parameters,omitempty"`
 	Responses   OASv2ResponseMap  `yaml:"responses,omitempty"`
+	Produces    []string          `yaml:"produces,omitempty"`
 	Deprecated  bool              `yaml:"deprecated,omitempty"`
 }
 
