@@ -60,7 +60,7 @@ func (sr *SimpleResult) DecodeField(r *JsonDecoder, f string) {
 	case profile.ResultMessageField:
 		DecodeString(r, &sr.Message)
 	case profile.ResultDataField:
-		DecodeAny(r, &sr.Data)
+		DecodeAny(r, sr.Data)
 	}
 }
 
