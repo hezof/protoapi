@@ -149,6 +149,9 @@ func (svr *Server) RegisterService(registry ServiceRegistry, implement interface
 	serviceSetting := registry(implement, aspects)
 	for _, methodSetting := range serviceSetting.Methods {
 		methodSetting.Service = serviceSetting
+		// MessagePlugins 初始化
+		// FieldPlugins 初始化
+		// FieldPatterns 初始化
 	}
 	svr._serviceSetting = append(svr._serviceSetting, serviceSetting)
 	return svr
@@ -475,6 +478,7 @@ func (svr *Server) ListenAndServe() (err error) {
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
 func (svr *Server) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
+
 	set := svr.settings[info.FullMethod]
 	ctx := ss.Context()
 	if set == nil {

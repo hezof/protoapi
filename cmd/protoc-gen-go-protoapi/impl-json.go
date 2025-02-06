@@ -163,7 +163,7 @@ func implementFieldCodec(gen *protogen.Plugin, g *protogen.GeneratedFile, m *Mes
 	}
 	g.P("}") // switch
 	g.P("}") // func
-	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") EncodeJSON(w *protoapi.JsonEncoder) {")
+	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") EncodeField(w *protoapi.JsonEncoder) {")
 	for _, f := range m.Fields {
 		switch {
 		case IsKind(f, protoreflect.BoolKind):
