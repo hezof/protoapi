@@ -2,6 +2,7 @@ package protoapi
 
 import (
 	"context"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -10,55 +11,77 @@ import (
  实现grpc.ServerStream
 *************************************/
 
-type stream struct {
-	c *Context // 流式上下文
-}
-
-func (s *stream) SendHeader(md metadata.MD) error {
-	h := s.c.ResponseWriter.Header()
+func (ctx *Context) SendHeader(md metadata.MD) error {
+	h := ctx.ResponseWriter.Header()
 	for k, v := range md {
 		h[k] = v
 	}
 	return nil
 }
 
-func (s *stream) SetHeader(md metadata.MD) error {
+func (ctx *Context) SetHeader(md metadata.MD) error {
 	panic("unsupported operation")
 }
 
-func (s *stream) SetTrailer(md metadata.MD) {
+func (ctx *Context) SetTrailer(md metadata.MD) {
 	panic("unsupported operation")
 }
 
-func (s *stream) SendMsg(m interface{}) (err error) {
-	//if s.c.streamEncoder == nil {
-	//	if s.c.mux.closed != 0 {
-	//		s.c.ResponseWriter.Header()["Connection"] = closeConnection
-	//	}
-	//	s.c.ResponseWriter.Header()["Content-Type"] = jsonContentType
-	//	s.c.ResponseWriter.WriteHeader(int(s.c.Handler.Meta.Status))
-	//	s.c.streamEncoder = GetEncoder(s.c.ResponseWriter.ResponseWriter)
-	//}
-	//
+func (ctx *Context) SendMsg(m interface{}) (err error) {
+	if ctx.streamWriter == nil {
+		// 来自restful请求不会设置streamWriter,在此进行初始化!
+		if ctx.mux.closed != 0 {
+			ctx.ResponseWriter.Header()["Connection"] = closeConnection
+		}
+		ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
+		ctx.ResponseWriter.WriteStatus(ctx.Handler.Status)
+		ctx.streamWriter = ctx.ResponseWriter.ResponseWriter
+	}
+	return ctx.writeApplyResult(ctx.streamWriter, m)
+}
+
+// RecvMsg 与server.bootstrapStreamInterceptor逻辑不完全一致. 后者不作MessageValidator校验!
+func (ctx *Context) RecvMsg(m interface{}) error {
+	if ctx.streamReader == nil {
+		// 来自restful请求不会设置streamReader,在此进行初始化!
+		ctx.streamReader = ctx.Request.Body
+	}
+	// 解码请求体
+	err := DecodeRequest(ctx.streamReader, m)
+	if err != nil { // 读取失败时关闭流
+		return err
+	}
+	// 验证请求体
+	if mv, ok := m.(MessageValidator); ok {
+		return mv.Validate(ctx.Handler.Setting, ctx)
+	}
 	return nil
 }
 
-func (s *stream) RecvMsg(m interface{}) error {
-	//if s.c.streamDecoder == nil {
-	//	s.c.streamDecoder = NewDecoder(s.c.Request.Body)
-	//}
-	//return s.c.streamDecoder.Decode(m)
-	return nil
+func (ctx *Context) Context() context.Context {
+	return ctx
 }
 
-func (s *stream) Context() context.Context {
-	return s.c
+var _ grpc.ServerStream = (*Context)(nil)
+
+type ServerStreamContext[Req any, Res any] struct {
+	grpc.ServerStream
 }
 
-var _ grpc.ServerStream = (*stream)(nil)
-
-type Test struct {
-	stream
+func (ctx *ServerStreamContext[Req, Res]) Recv() (*Req, error) {
+	req := new(Req)
+	err := ctx.ServerStream.RecvMsg(req)
+	return req, err
 }
 
-var _ grpc.ServerStream = (*Test)(nil)
+func (ctx *ServerStreamContext[Req, Res]) Send(res *Res) error {
+	return ctx.ServerStream.SendMsg(res)
+}
+
+func (ctx *ServerStreamContext[Req, Res]) SendAndClose(res *Res) error {
+	return ctx.ServerStream.SendMsg(res)
+}
+
+func StreamServer[Req, Res any](ctx *Context) *ServerStreamContext[Req, Res] {
+	return &ServerStreamContext[Req, Res]{grpc.ServerStream(ctx)}
+}

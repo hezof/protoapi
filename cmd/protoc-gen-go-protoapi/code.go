@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -30,7 +31,7 @@ func generateCodeFile(gen *protogen.Plugin, file *protogen.File, meta *FileExt) 
 	for _, ps := range meta.Services {
 		g.P()
 		g.P(serviceTitle(ps))
-		if *requireUnimplemented {
+		if requireUnimplemented {
 			g.P(`type `, ps.GoName, "Implement struct {")
 			g.P(`    *`, meta.GoPackage, `.`, `Unimplemented`, ps.GoName, "Server")
 			g.P(`}`)
@@ -113,10 +114,10 @@ func genQualifiedGoIdentFunc(file *protogen.File) func(ident protogen.GoIdent) s
 }
 
 func serviceTitle(ps *ServiceExt) string {
-	if ps.Tag == nil {
+	if ps.Info == nil {
 		return fmt.Sprintf(`// %vImplement %v.`, ps.GoName, ps.FullName)
 	} else {
-		return fmt.Sprintf(`// %vImplement %v. %v`, ps.GoName, ps.FullName, ps.Tag.Desc)
+		return fmt.Sprintf(`// %vImplement %v. %v`, ps.GoName, ps.FullName, ps.Info.Desc)
 	}
 }
 
@@ -129,7 +130,7 @@ func methodTitle(pm *MethodExt) string {
 }
 
 func sse(pm *MethodExt) string {
-	if pm.Http != nil && pm.Http.Result == Http_events {
+	if pm.Http != nil && pm.Http.Result == Result_events {
 		return ` [SSE]`
 	}
 	return ``

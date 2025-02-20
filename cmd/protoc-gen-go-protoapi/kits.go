@@ -33,3 +33,28 @@ func Set(v string, vs ...string) []string {
 	}
 	return rt
 }
+
+type IdxVec[V any] struct {
+	Idx map[string]V
+	Vec []V
+}
+
+func (m *IdxVec[V]) Add(k string, v V) (V, bool) {
+	if m.Idx == nil {
+		m.Idx = make(map[string]V)
+	}
+	if vl, ok := m.Idx[k]; ok {
+		return vl, false
+	}
+	m.Idx[k] = v
+	m.Vec = append(m.Vec, v)
+	return v, true
+}
+
+func If[V any](c bool, v1, v2 V) V {
+	if c {
+		return v1
+	} else {
+		return v2
+	}
+}

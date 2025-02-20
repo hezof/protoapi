@@ -10,16 +10,10 @@ var Plugins = []*Plugin{
 		Version: "v3.21.12", // debian 12仓库版本
 	},
 	{
-		Mode:    GoGetSrc,
-		Name:    "include",
-		Module:  "github.com/hezof/protoapi/cmd/include",
-		Version: "v0.5.4",
-	},
-	{
 		Mode:    GoGetBin,
 		Name:    "protoc-gen-go",
 		Module:  "google.golang.org/protobuf/cmd/protoc-gen-go",
-		Version: "v1.36.2",
+		Version: "v1.36.5",
 	},
 	{
 		Mode:    GoGetBin,
@@ -28,10 +22,16 @@ var Plugins = []*Plugin{
 		Version: "v1.5.1",
 	},
 	{
+		Mode:    GoGetSrc,
+		Name:    "include",
+		Module:  "github.com/hezof/protoapi/cmd/include",
+		Version: "v1.0.0",
+	},
+	{
 		Mode:    GoGetBin,
 		Name:    "protoc-gen-go-protoapi",
 		Module:  "github.com/hezof/protoapi/cmd/protoc-gen-go-protoapi",
-		Version: "v0.5.0",
+		Version: "v1.0.0-beta",
 	},
 }
 

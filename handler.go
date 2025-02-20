@@ -1,9 +1,12 @@
 package protoapi
 
 import (
+	"github.com/hezof/log"
 	"github.com/hezof/protoapi/internal/websocket"
-	"ksogit.kingsoft.net/kgo/log"
 )
+
+// HandleFunc 处理逻辑函数
+type HandleFunc func(ctx *Context)
 
 // Handler 处理句柄.
 type Handler struct {
@@ -11,21 +14,21 @@ type Handler struct {
 	Method        string         // http请求方法
 	Path          string         // http请求路径
 	Status        uint32         // http请求状态
-	Result        Http_Result    // http请求结果
+	Result        Result         // http请求结果
+	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
 	BodyMaxBytes  int64          // http请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
 	FormMaxMemory int64          // http表单内存部分最大字节数. 默认 32 << 20
-	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
 }
 
 // RestfulHandleFunc 使用call生成restful的HandleFunc
 func RestfulHandleFunc(ctx *Context) {
 
 	// 业务处理(前置校验).
-	rsp, err := ctx.Handler.Meta.Call(ctx, ctx.Request.Body)
+	rsp, err := ctx.Handler.Setting.Call(ctx, ctx.Request.Body)
 
 	// 使用DownFile()/WriterStream()的Service Method实现必须确保返回rsp为nil(即无法用于grpc调用)!
 	if err != nil {
-		if xrr := ctx.WriteErrorResult(StatusErrorFrom(err, profile.DefaultErrorStatus)); xrr != nil {
+		if xrr := ctx.WriteErrorResult(StatusErrorFrom(err)); xrr != nil {
 			log.Error("write error result %v %v: %+v", ctx.Request.Method, ctx.Request.RequestURI, xrr)
 		}
 	} else if ctx.ResponseWriter.statusCode == 0 {
@@ -70,12 +73,16 @@ func WebsocketHandleFunc(ctx *Context) {
 			}
 			return // 结束当前ws链接
 		}
+		// 设置流式读写上下文
+		ctx.streamReader = in
+		ctx.streamWriter = out
+
 		// 业务逻辑(前置校验)
-		rsp, err := ctx.Handler.Meta.Call(ctx, in)
+		rsp, err := ctx.Handler.Setting.Call(ctx, in)
 
 		// 结果处理
 		if err != nil {
-			if xrr := ctx.writeErrorResult(out, StatusErrorFrom(err, profile.DefaultErrorStatus)); xrr != nil {
+			if xrr := ctx.writeErrorResult(out, StatusErrorFrom(err)); xrr != nil {
 				if _, ok := xrr.(*websocket.CloseError); !ok {
 					log.Error("websocket write result error: %v", xrr)
 				}

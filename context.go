@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,40 +9,37 @@ import (
 	"time"
 )
 
-// HandleFunc 处理逻辑函数
-type HandleFunc func(ctx *Context)
-
 // Context 处理上下文.必须注意:Context IS NON-THREAD-SAFE!!!
 type Context struct {
-	stream                              // (不用清理)支持grpc.ServerStream的基类,内部包含对Context的引用. 必须nested struct!
 	mux            *mux                 // (不用清理)创建Context的mux实例(不能重置)
-	result         StatusResult         // (不用清理)仅仅用于wrap apply result避免反复创建临时Result! 不作其他用途!
+	result         SimpleResult         // (不用清理)仅仅用于wrap apply result避免反复创建临时Result! 不作其他用途!
 	params         Params               // (不用清理)Params, 每次调用node.getValue()都必须重置
 	skippedNodes   []skippedNode        // (不用清理)配合gin-tree使用
 	cipath         []byte               // (不用清理)case-insensitive lookup path
 	cibuff         [4]byte              // (不用清理)case-insensitive lookup buffer
 	handle         int                  // (不用清理)初始值为-1!
-	resources      map[uint32]*resource // i18n资源
-	attribute      map[any]any          // 处理属性
-	query          url.Values           // 请求query
-	panic          any                  // 处理异常
-	ResponseWriter *proxyResponseWriter // 响应ResponseWriter. 不建议nested struct!
-	Request        *http.Request        // 请求Request
-	Handler        *Handler             // 处理Handler
+	ResponseWriter proxyResponseWriter  // (需要清理)响应ResponseWriter. 不建议nested struct!
+	Request        *http.Request        // (需要清理)请求Request
+	Handler        *Handler             // (需要清理)处理Handler
+	resources      map[uint32]*resource // (需要清理)i18n资源
+	attribute      map[any]any          // (需要清理)处理属性
+	query          url.Values           // (需要清理)请求query
+	panic          any                  // (需要清理)处理异常
+	streamReader   io.Reader            // (需要清理)流式读入器, 同时也是流式环境的初始化标识!
+	streamWriter   io.Writer            // (需要清理)流式写出器, 同时也是流式环境的初始化标识!
 }
-
-var _ context.Context = (*Context)(nil)
 
 // clean 负责清理外部引用. 确保pool安全!
 func (ctx *Context) clean() *Context {
+	ctx.ResponseWriter.ResponseWriter = nil
+	ctx.Request = nil
+	ctx.Handler = nil
 	ctx.resources = nil
 	ctx.attribute = nil
 	ctx.query = nil
 	ctx.panic = nil
-	ctx.ResponseWriter.ResponseWriter = nil
-	ctx.Request = nil
-	ctx.Handler = nil
-
+	ctx.streamReader = nil
+	ctx.streamWriter = nil
 	return ctx
 }
 
@@ -59,9 +55,9 @@ func (ctx *Context) serveNext(w http.ResponseWriter, r *http.Request, h *Handler
 
 func (ctx *Context) panicNext(p interface{}, h *Handler) {
 	// 保留上下文信息,重置handler为panic handler继续处理.
-	ctx.panic = p
 	ctx.Handler = h
 	ctx.handle = -1 // 初始值为-1!
+	ctx.panic = p
 	ctx.Next()
 }
 
@@ -84,11 +80,6 @@ func (ctx *Context) Abort() {
 func (ctx *Context) AbortWithStatus(statusCode int) {
 	ctx.handle = HandleChainCapacity
 	ctx.ResponseWriter.WriteHeader(statusCode)
-}
-
-func (ctx *Context) ParamValue(key string) string {
-	v, _ := ctx.params.Get(key)
-	return v
 }
 
 /*************************************
@@ -114,21 +105,13 @@ func (ctx *Context) Value(key any) any {
 	return ctx.Request.Context().Value(key)
 }
 
+var _ context.Context = (*Context)(nil)
+
 /*************************************
  输出结果
 *************************************/
 
-var (
-	jsonContentType     = []string{"application/json; charset=utf-8"}
-	htmlContentType     = []string{"text/html; charset=utf-8"}
-	plainContentType    = []string{"text/plain; charset=utf-8"}
-	streamContentType   = []string{"application/octet-stream"}
-	eventsContentType   = []string{"text/event-stream"}
-	eventsCacheControl  = []string{"no-cache"}
-	keepAliveConnection = []string{"keep-alive"}
-	closeConnection     = []string{"close"}
-)
-
+// resource 请求i18n资源
 func (ctx *Context) resource(code uint32) *resource {
 	if ctx.resources == nil {
 		var lang string
@@ -140,7 +123,8 @@ func (ctx *Context) resource(code uint32) *resource {
 	return ctx.resources[code]
 }
 
-func (ctx *Context) WriteErrorResult(result *StatusResult) error {
+// WriteErrorResult 用于restful写出错误结果
+func (ctx *Context) WriteErrorResult(result StatusResult) error {
 	// graceful关闭期间断开keepalive连接
 	if ctx.mux.closed != 0 {
 		ctx.ResponseWriter.Header()["Connection"] = closeConnection
@@ -148,32 +132,31 @@ func (ctx *Context) WriteErrorResult(result *StatusResult) error {
 	// 设置内容类型
 	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
 	// 写出状态与结果
-	ctx.ResponseWriter.WriteStatus(result.Status)
+	ctx.ResponseWriter.WriteStatus(result.GetStatus())
 	return ctx.writeErrorResult(ctx.ResponseWriter.ResponseWriter, result)
 }
 
-func (ctx *Context) writeErrorResult(out io.Writer, result *StatusResult) error {
+// writeErrorResult 用于websocket写出错误结果
+func (ctx *Context) writeErrorResult(out io.Writer, result StatusResult) error {
 	// 国际化错误消息(延后初始化)
-	if rs := ctx.resource(result.Code); rs != nil {
-		// 覆盖status
-		if rs.Status > 0 {
-			result.Status = rs.Status
-		}
-		// 支持参数格式化
-		if len(result.Details) == 0 {
-			result.Message = rs.Message
-		} else {
-			result.Message = Sprintf(rs.Message, result.Details...)
+	if hasResMap {
+		if rs := ctx.resource(result.GetCode()); rs != nil {
+			// 覆盖status
+			if rs.Status > 0 {
+				result.SetStatus(rs.Status)
+			}
+			if rs.Name != `` {
+				result.SetName(rs.Name)
+			}
+			if rs.Message != `` {
+				result.SetMessage(rs.Message)
+			}
 		}
 	}
-
-	w := GetEncoder(out)
-	defer PutEncoder(w)
-
-	result.EncodeJSON(w)
-	return w.Close()
+	return EncodeResponse(out, result)
 }
 
+// WriteApplyResult 用于restful写出请求结果
 func (ctx *Context) WriteApplyResult(val any) error {
 	// graceful关闭期间断开keepalive连接
 	if ctx.mux.closed != 0 {
@@ -181,42 +164,82 @@ func (ctx *Context) WriteApplyResult(val any) error {
 	}
 	// 设置内容类型
 	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
-	// 写出状态与结果
-	ctx.ResponseWriter.WriteStatus(ctx.Handler.Meta.Status)
+	// 写出状态与结果(status不为0)
+	ctx.ResponseWriter.WriteStatus(ctx.Handler.Status)
 	return ctx.writeApplyResult(ctx.ResponseWriter.ResponseWriter, val)
 }
 
+// writeApplyResult 用于websocket写出请求结果
 func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
-	switch ctx.Handler.Meta.Result {
-	case Http_simple:
+	switch ctx.Handler.Result {
+	case Result_normal:
 
-		w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
-		defer PutEncoder(w)
-
-		ctx.result.Code = ctx.Handler.Meta.Status
+		ctx.result.Code = 0
 		ctx.result.Data = val
-		ctx.result.EncodeJSON(w)
 
-		return w.Close()
+		err := EncodeResponse(out, &ctx.result)
 
-	case Http_unwrap:
+		// 及时清理避免引用
+		ctx.result.Data = nil
 
-		if jc, ok := val.(JsonCodec); ok {
-			w := GetEncoder(ctx.ResponseWriter.ResponseWriter)
-			defer PutEncoder(w)
+		return err
 
-			jc.EncodeJSON(w)
-			return w.Close()
-		} else {
-			w := json.NewEncoder(ctx.ResponseWriter.ResponseWriter)
-			w.SetEscapeHTML(false)
-			return w.Encode(val)
-		}
+	case Result_unwrap:
 
+		return EncodeResponse(out, val)
+
+	default:
+		return fmt.Errorf("invalid result type: %v", ctx.Handler.Setting.Meta.Http.Result)
 	}
-	return fmt.Errorf("unsupport result catalog: %v", ctx.Handler.Meta.Result)
+
 }
 
+// ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
+func (ctx *Context) ReadBody() ([]byte, error) {
+	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
+		return buff.data, nil
+	} else {
+		return io.ReadAll(ctx.Request.Body) // Transfer-Encoding: chunked的情况!
+	}
+}
+
+func (ctx *Context) CopyBody() ([]byte, error) {
+	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
+		buff.head = 0
+		return buff.data, nil
+	} else {
+		data, err := io.ReadAll(ctx.Request.Body)
+		if err == nil {
+			ctx.Request.Body = &BuffBody{data: data}
+		}
+		return data, err
+	}
+}
+
+func (ctx *Context) ReadJson(val any) error {
+	// BuffBody允许重复读
+	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
+		buff.head = 0
+	}
+	return DecodeRequest(ctx.Request.Body, val)
+}
+
+func (ctx *Context) CopyJson(val any) error {
+	// BuffBody允许重复读
+	if _, err := ctx.CopyBody(); err != nil {
+		return err
+	}
+	return DecodeRequest(ctx.Request.Body, val)
+}
+
+func (ctx *Context) WriteJson(status uint32, val any) error {
+	if ctx.mux.closed != 0 {
+		ctx.ResponseWriter.Header()["Connection"] = closeConnection
+	}
+	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
+	ctx.ResponseWriter.WriteStatus(status)
+	return EncodeResponse(ctx.ResponseWriter.ResponseWriter, val)
+}
 func (ctx *Context) WritePlain(status int, data string) error {
 	return ctx.WritePlainBytes(status, UnsafeBytes(data))
 }
@@ -252,29 +275,19 @@ func (ctx *Context) WriteHtmlBytes(status int, data []byte) error {
 }
 
 /*************************************
- 请求内容
+ 辅助变量与数据结构
 *************************************/
 
-// ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
-func (ctx *Context) ReadBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
-		return buff.data, nil
-	} else {
-		return io.ReadAll(ctx.Request.Body) // Transfer-Encoding: chunked的情况!
-	}
-}
-
-func (ctx *Context) CopyBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
-		return buff.data, nil
-	} else {
-		data, err := io.ReadAll(ctx.Request.Body)
-		if err == nil {
-			ctx.Request.Body = &BuffBody{data: data}
-		}
-		return data, err
-	}
-}
+var (
+	jsonContentType     = []string{"application/json; charset=utf-8"}
+	htmlContentType     = []string{"text/html; charset=utf-8"}
+	plainContentType    = []string{"text/plain; charset=utf-8"}
+	streamContentType   = []string{"application/octet-stream"}
+	eventsContentType   = []string{"text/event-stream"}
+	eventsCacheControl  = []string{"no-cache"}
+	keepAliveConnection = []string{"keep-alive"}
+	closeConnection     = []string{"close"}
+)
 
 // BuffBody 一次性读写Body, 配合ReadBody()一块使用
 type BuffBody struct {
@@ -313,6 +326,4 @@ func (rw *proxyResponseWriter) WriteStatus(status uint32) {
 	rw.WriteHeader(int(status))
 }
 
-/*************************************
- 与gin.Context兼容的方法
-*************************************/
+var _ http.ResponseWriter = (*proxyResponseWriter)(nil)

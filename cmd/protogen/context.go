@@ -100,16 +100,16 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		`GOPRIVATE=`+config.GOPRIVATE,
 	)
 	cmd.Dir = ctx.HomeDir
-	PrintInfo("setup %v@%v", module, version)
+	PrintInfo("downloading %v@%v", module, version)
 	if err := cmd.Run(); err != nil {
-		PrintExit("setup %v error, %v", module, err)
+		PrintExit("downloading %v error, %v", module, err)
 	}
 
 	switch mode {
 	case GoGetBin:
 		newBin := filepath.Join(ctx.TempDir, filepath.Base(module)+ctx.GOEXE)
 		if !Exists(newBin) {
-			PrintExit("setup %v failed", module)
+			PrintExit("downloading %v failed", module)
 		}
 		_ = os.Chmod(newBin, 0755)
 		oldBin := filepath.Join(ctx.HomeDir, FullName(module, version, mode))
@@ -117,12 +117,12 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		_ = os.Remove(oldBin)
 		err := os.Rename(newBin, oldBin)
 		if err != nil {
-			PrintExit("setup %v error, %v", module, err)
+			PrintExit("downloading %v error, %v", module, err)
 		}
 	case GoGetSrc:
 		newSrc := RealPath(ctx.TempDir, module)
 		if newSrc == "" {
-			PrintExit("setup %v failed", module)
+			PrintExit("downloading %v failed", module)
 		}
 		filepath.Walk(newSrc, func(path string, info fs.FileInfo, err error) error {
 			_ = os.Chmod(path, 0644)
@@ -138,7 +138,7 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		}
 		err := os.Rename(newSrc, oldSrc)
 		if err != nil {
-			PrintExit("setup %v error, %v", module, err)
+			PrintExit("downloading %v error, %v", module, err)
 		}
 	}
 }
@@ -190,23 +190,23 @@ func (ctx *Context) HttpGetProtoc(config *Config, module, version string) {
 		sysARCH = `s390x`
 	}
 
-	PrintInfo("setup %v@%v", module, version)
+	PrintInfo("downloading %v@%v", module, version)
 
 	furl := config.MAVEN_CENTRAL + `/com/google/protobuf/protoc/` + version[1:] + `/protoc-` + version[1:] + `-` + sysOS + `-` + sysARCH + `.exe`
 	rsp, err := http.Get(furl)
 	if err != nil {
-		PrintExit(`setup %v error, %v`, name, err)
+		PrintExit(`downloading %v error, %v`, name, err)
 	}
 	defer rsp.Body.Close()
 
 	data, err := io.ReadAll(rsp.Body)
 	if err != nil {
-		PrintExit(`setup %v error, %v`, name, err)
+		PrintExit(`downloading %v error, %v`, name, err)
 	}
 
 	err = os.WriteFile(ctx.ProtocFile, data, 0755)
 	if err != nil {
-		PrintExit(`setup %v error, %v`, name, err)
+		PrintExit(`downloading %v error, %v`, name, err)
 	}
 }
 
@@ -285,8 +285,9 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 		}
 
 	} else {
+		// 此处c.VERSION才是新版本号. VERSION仍是旧版本号.
 		ctx.GoGet(c, MODULE, c.VERSION, GoGetBin)
-		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(MODULE, VERSION, GoGetBin)), os.Args, &os.ProcAttr{
+		_, err := os.StartProcess(filepath.Join(ctx.HomeDir, FullName(MODULE, c.VERSION, GoGetBin)), os.Args, &os.ProcAttr{
 			Env:   append(os.Environ(), __self_update_pid__+`=`+strconv.Itoa(os.Getpid())),
 			Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 		})
@@ -301,13 +302,13 @@ func (ctx *Context) UpdatePlugin(c *Config, force bool) {
 	}
 }
 
-func (ctx *Context) Generate(protoPaths []string, protoFiles []string) {
+func (ctx *Context) Generate(config *Config, protoPaths []string, protoFiles []string) {
 	for _, protoFile := range protoFiles {
-		ctx.generate(protoPaths, protoFile)
+		ctx.generate(config, protoPaths, protoFile)
 	}
 }
 
-func (ctx *Context) generate(protoPath []string, protoFile string) {
+func (ctx *Context) generate(config *Config, protoPath []string, protoFile string) {
 	// 转成linux路径格式
 	protoFile = strings.ReplaceAll(protoFile, `\`, `/`)
 
@@ -320,10 +321,19 @@ func (ctx *Context) generate(protoPath []string, protoFile string) {
 	args = append(args, `--go_out=`+ctx.GoOut)
 	if ctx.GrpcV2 {
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
-		args = append(args, `--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
+		if ctx.Import == `` {
+			args = append(args, `--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
+		} else {
+			args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true,import=%v:%v`, ctx.Import, ctx.GoOut))
+		}
 	} else {
+
 		args = append(args, `--go-grpc_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
-		args = append(args, `--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
+		if ctx.Import == `` {
+			args = append(args, `--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
+		} else {
+			args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true,import=%v:%v`, ctx.Import, ctx.GoOut))
+		}
 	}
 
 	for _, path := range protoPath {

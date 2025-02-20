@@ -154,14 +154,12 @@ func (m *mux) HttpNotFound(h *Handler) {
 func (m *mux) initServeHTTP() {
 	m.contexts.New = func() interface{} {
 		c := &Context{
-			mux:            m,
-			params:         make([]Param, 0, m.maxParams),
-			skippedNodes:   make([]skippedNode, 0, m.maxSections),
-			cipath:         make([]byte, 0, InsensitiveCapacity),
-			cibuff:         [4]byte{},
-			ResponseWriter: new(proxyResponseWriter),
+			mux:          m,
+			params:       make([]Param, 0, m.maxParams),
+			skippedNodes: make([]skippedNode, 0, m.maxSections),
+			cipath:       make([]byte, 0, InsensitiveCapacity),
+			cibuff:       [4]byte{},
 		}
-		c.stream.c = c //相互引用
 		return c
 	}
 }

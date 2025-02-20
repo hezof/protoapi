@@ -26,6 +26,9 @@ func newGroup(path string, filters ...HandleFunc) *_group {
 		settings: make(map[string]map[string]*RequestSetting),
 	}
 }
+func (rc *_group) BasePath() string {
+	return rc.path
+}
 
 func (rc *_group) Group(path string, hs ...HandleFunc) *_group {
 	child := newGroup(path, hs...)
@@ -47,10 +50,7 @@ func (rc *_group) HandleFunc(method string, path string, hs ...HandleFunc) *_gro
 }
 
 func (rc *_group) Handle(hd *Handler) *_group {
-	// 注意: 每个Handler必须保证Meta/Method/Path非空!!!
-	if hd.Meta == nil {
-		hd.Meta = Meta(profile.DefaultApplyStatus, Http_simple)
-	}
+
 	setting, ok := rc.settings[hd.Method]
 	if !ok {
 		setting = make(map[string]*RequestSetting)
@@ -110,15 +110,15 @@ func (rc *_group) StaticFile(path string, file string) *_group {
 		panic("URL parameters can not be used when serving a static file")
 	}
 	call := func(c *Context) {
-		http.ServeFile(c.ResponseWriter, c.Request, file)
+		http.ServeFile(c.ResponseWriter.ResponseWriter, c.Request, file)
 	}
 	rc.HandleFunc(http.MethodGet, path, call)
 	rc.HandleFunc(http.MethodHead, path, call)
 	return rc
 }
 
-func (rc *_group) StaticDir(prefix string, dir string) *_group {
-	return rc.StaticFS(prefix, http.Dir(dir))
+func (rc *_group) Static(prefix string, root string) *_group {
+	return rc.StaticFS(prefix, http.Dir(root))
 }
 
 func (rc *_group) StaticFS(prefix string, fs http.FileSystem) *_group {
@@ -143,9 +143,9 @@ func (rc *_group) StaticFS(prefix string, fs http.FileSystem) *_group {
 			c.ResponseWriter.WriteHeader(http.StatusMovedPermanently)
 		} else if ulen > plen && c.Request.URL.Path[plen] == '/' {
 			c.Request.URL.Path = c.Request.URL.Path[plen:]
-			serv.ServeHTTP(c.ResponseWriter, c.Request)
+			serv.ServeHTTP(c.ResponseWriter.ResponseWriter, c.Request)
 		} else {
-			http.NotFound(c.ResponseWriter, c.Request)
+			http.NotFound(c.ResponseWriter.ResponseWriter, c.Request)
 		}
 	}
 	rc.HandleFunc(http.MethodGet, path, call)

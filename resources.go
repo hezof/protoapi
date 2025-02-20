@@ -3,11 +3,12 @@ xml语法:
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE resources [
 
-	<!ELEMENT resource (code, message, status-code)>
+	<!ELEMENT resource (Code, Message, Status-Code)>
 	<!ATTLIST accept-language CDATA "">
 	<!ELEMENT code (#PCDATA)>
+	<!ELEMENT name (#PCDATA)>
 	<!ELEMENT message (#PCDATA)>
-	<!ELEMENT status-code (#PCDATA)>
+	<!ELEMENT status (#PCDATA)>
 
 ]>
 <!-- accept-language使用 iso_language_code或iso_language_code-ISO_COUNTRY_CODE, 多值用逗号分割 -->
@@ -16,10 +17,12 @@ xml语法:
 	<resource>
 	    <!-- 必需: 错误代码 -->
 	    <code>1001</code>
-	    <!-- 必需: 错误消息 -->
+	    <!-- 可选: 错误名称 -->
+		<name>test</name>
+	    <!-- 可选: 错误消息 -->
 	    <message>测试%v</message>
-	    <!-- 可选: 状态码, 默认210 -->
-	    <status-code>403</status-code>
+	    <!-- 可选: 状态码 -->
+	    <status>403</status>
 	</resource>
 
 </resources>
@@ -29,7 +32,7 @@ package protoapi
 import (
 	"bytes"
 	"encoding/xml"
-	"ksogit.kingsoft.net/kgo/log"
+	"github.com/hezof/log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -38,6 +41,7 @@ import (
 type resource struct {
 	Status  uint32 `xml:"status"`
 	Code    uint32 `xml:"code"`
+	Name    string `xml:"name"`
 	Message string `xml:"message"`
 }
 
@@ -53,6 +57,7 @@ type resources struct {
 var (
 	allResMap = make(map[string]map[uint32]*resource)
 	defResMap = make(map[uint32]*resource)
+	hasResMap = false // 标记是否存在资源文件, 用于快速判断
 )
 
 func InitResourceBundle(resDir, defLang string) error {
@@ -90,6 +95,7 @@ func InitResourceBundle(resDir, defLang string) error {
 	})
 	if err == nil {
 		defResMap = allResMap[defLang]
+		hasResMap = len(allResMap) > 0
 	}
 	return err
 }
@@ -112,18 +118,18 @@ func ReadResourceConfig(path string) (langs []string, bundle map[uint32]*resourc
 	return
 }
 
-func LoadResourceBundle(code uint32, languages ...string) (uint32, string, bool) {
+func LoadResourceBundle(code uint32, languages ...string) (uint32, string, string, bool) {
 	for _, l := range languages {
 		if bds := allResMap[l]; bds != nil {
 			if bd := bds[code]; bd != nil {
-				return bd.Status, bd.Message, true
+				return bd.Status, bd.Name, bd.Message, true
 			}
 		}
 	}
 	if bd := defResMap[code]; bd != nil {
-		return bd.Status, bd.Message, true
+		return bd.Status, bd.Name, bd.Message, true
 	}
-	return 0, "", false
+	return 0, "", "", false
 }
 
 // 根据Accept-Language快速获取(从左到右,不按q排序). 该方法性能优于parseAcceptLanguage!

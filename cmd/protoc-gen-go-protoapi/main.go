@@ -8,22 +8,25 @@ import (
 	"google.golang.org/protobuf/types/pluginpb"
 )
 
-const version = "v0.9.9" // 与发版相同
+const VERSION = "v1.0.0" // 与发版相同
+const IMPORT = "github.com/hezof/protoapi"
 
-var requireUnimplemented *bool
-var useGenericStreams *bool
+var requireUnimplemented bool
+var useGenericStreams bool
+var protoapiImport string
 
 func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
 	if *showVersion {
-		fmt.Printf("protoc-gen-go-protoapi %v\n", version)
+		fmt.Printf("protoc-gen-go-protoapi %v\n", VERSION)
 		return
 	}
 
 	var flags flag.FlagSet
-	requireUnimplemented = flags.Bool("require_unimplemented_servers", true, "set to false to match legacy behavior")
-	useGenericStreams = flags.Bool("use_generic_streams_experimental", true, "set to true to use generic types for streaming client and server objects; this flag is EXPERIMENTAL and may be changed or removed in a future release")
+	flags.BoolVar(&requireUnimplemented, "require_unimplemented_servers", true, "set to false to match legacy behavior")
+	flags.BoolVar(&useGenericStreams, "use_generic_streams_experimental", true, "set to true to use generic types for streaming client and server objects; this flag is EXPERIMENTAL and may be changed or removed in a future release")
+	flags.StringVar(&protoapiImport, "import", IMPORT, "set import path to protoapi")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
@@ -41,17 +44,20 @@ func main() {
 	})
 }
 
-func generateFile(gen *protogen.Plugin, file *protogen.File) {
+func generateFile(gen *protogen.Plugin, src *protogen.File) {
 
 	// 1. 提取数据
-	meta := extractFile(file)
+	file := extractFile(gen, src)
+	if file == nil {
+		return
+	}
 
 	// 2. 生成实现文件: *_pb.go
-	generateImplFile(gen, file, meta)
+	generateImplFile(gen, src, file)
 
 	// 3. 生成文档文件: *_json
-	generateDocsFile(gen, file, meta)
+	generateDocsFile(gen, src, file)
 
 	// 4. 生成代码文件: *_code
-	generateCodeFile(gen, file, meta)
+	generateCodeFile(gen, src, file)
 }

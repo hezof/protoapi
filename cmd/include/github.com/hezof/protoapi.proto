@@ -9,56 +9,71 @@ message Error {
   uint32 status = 1;               // 错误状态
   uint32 code = 2;                 // 错误代码
   string name = 3;                 // 错误名称
-  string message = 4;              // 错误描述
+  string message = 4;              // 错误消息
+  repeated string details = 5;     // 错误参数(用于国际化)
 }
 
-message Tag {
-  string name = 1;                  // The name of the tag
-  string desc = 2;                  // A short description for the tag
+enum Body {
+  json = 0;                      // 解析body使用application/json
+  form = 1;                      // 解析body使用multipart/form-data或application/x-www-form-urlencoded
+  omit = 2;                      // 忽略解析body
+}
+
+enum Result {
+  normal = 0;                    // 结果使用Result包裹
+  unwrap = 1;                    // 结果不用Result包裹
+  events = 2;                    // 结果使用Server-Send-Events包裹
+}
+
+// 对于in为body/form, path, query, header, cookie的参数, 按照OAS 3.0规范解析:
+// body/form: style=form, explode=?{false|true}
+// path: style=simple, explode=?{false|true}
+// query: style=form, explode=?{false|true}
+// header: style=simple, explode=?{false|true}
+// cookie: style=form, explode=?{false|true}
+// 详细内容参考: https://swagger.io/docs/specification/v3_0/serialization
+enum In {
+  body = 0;                      // 位于body
+  path = 1;                      // 位于path. 对应style=simple及explode=true. 例如: array(blue,black,brown), object(R=100,G=200,B=150)
+  query = 2;                     // 位于query. 对应style=form及explode=true. 例如: array(color=blue&color=black&color=brown), object(R=100&G=200&B=150)
+  header = 3;                    // 位于header. 对应style=simple及explode=true. 例如: array(blue,black,brown), object(R=100,G=200,B=150)
+  cookie = 4;                    // 位于cookie. 对应style=form及explode=true. 例如: array(color=blue&color=black&color=brown), object(R=100&G=200&B=150)
+}
+
+enum Zero {
+  omit_empty = 0;                // 忽略空值, 即omitempty
+  with_empty = 1;                // 保留空值, 即忽略omitempty
+  conv_empty = 2;                // 转换空值: 对于slice/map,会将null转为[]或{}.
 }
 
 message Http {
-
-  enum Body {
-    json = 0;                       // 解析body使用application/json
-    form = 1;                       // 解析body使用multipart/form-data或application/x-www-form-urlencoded
-    omit = 2;                       // 忽略解析body
-  }
-
-  enum Result {
-    simple = 0;                    // 结果使用Result包裹
-    unwrap = 1;                    // 结果不用Result包裹
-    events = 2;                    // 结果使用Server-Send-Events包裹
-  }
-
-  string name = 1;                  // 概要信息
-  string desc = 2;                  // 描述信息
-  string get = 3;                   // GET请求
-  string put = 4;                   // PUT请求
-  string post = 5;                  // POST请求
-  string delete = 6;                // DELETE请求
-  string options = 7;               // OPTIONS请求
-  string head = 8;                  // HEAD请求
+  string name = 1;                 // 概要信息
+  string desc = 2;                 // 描述信息
+  string get = 3;                  // GET请求
+  string put = 4;                  // PUT请求
+  string post = 5;                 // POST请求
+  string delete = 6;               // DELETE请求
+  string options = 7;              // OPTIONS请求
+  string head = 8;                 // HEAD请求
   string patch = 9;                // PATCH请求
-  string trace = 10;                // TRACE请求
-  string connect = 11;              // CONNECT请求
-  string websocket = 12;            // WS请求(可能与GET冲突)
-  Body body = 13;                   // body解析方式. 默认json!
-  uint32 status = 14;               // 成功响应状态码
-  Result result = 15;               // 结果处理方式.
-  repeated Error errors = 16;       // 错误列表
-  repeated string tags = 17;        // 标签列表
+  string trace = 10;               // TRACE请求
+  string connect = 11;             // CONNECT请求
+  string websocket = 12;           // WS请求(可能与GET冲突)
+  Body body = 13;                  // body解析方式. 默认json!
+  uint32 status = 14;              // 成功响应状态码
+  Result result = 15;              // 结果处理方式.
+  repeated Error errors = 16;      // 错误列表
+}
+
+message Info {
+  string name = 1;                 // The name of the tag
+  string desc = 2;                 // A short description for the tag
 }
 
 message Role {
-  uint64 code = 1;                  // 角色标识
-  string name = 2;                  // 角色名称
-  string desc = 3;                  // 角色描述
-}
-
-message Plugin {
-  string val = 1;                  // 插件引用
-  Error err = 2;                   // 插件错误
+  uint64 code = 1;                 // 角色标识
+  string name = 2;                 // 角色名称
+  string desc = 3;                 // 角色描述
 }
 
 message MinLength {
@@ -104,79 +119,70 @@ message Pattern {
   Error err = 2;                  // 错误定义
 }
 
-message Prop {
-
-  enum In {
-    body = 0;                       // 位于body
-    path = 1;                       // 位于path
-    query = 2;                      // 位于query
-    header = 3;                     // 位于header
-    cookie = 4;                     // 位于cookie
-  }
-
-  enum Style {
-    simple = 0;                     // ARRAY(blue,black,brown), OBJECT(R=100,G=200,B=150)
-    form = 1;                       // ARRAY(color=blue&color=black&color=brown), OBJECT(R=100&G=200&B=150)
-    json = 2;                       // json
-  }
-
-  enum Empty {
-    omit_empty = 0;                 // 忽略空值, 即omitempty
-    with_empty = 1;                 // 携带空值, 即忽略omitempty
-    conv_empty = 2;                 // 转换空值: 对于slice/map,会将null转为[]或{}.
-  }
-
-  string name = 1;                  // 概要信息
-  string desc = 2;                  // 描述信息
-  Empty empty = 3;                  // 值处理策略
-  bool escape_html = 4;             // 是否转义html特殊字符.
-  bool enum_name = 5;               // 是否使用枚举名称.
-  In in = 6;                        // 数据位置. 同openapi的in.
-  Style style = 7;                  // 数据式样. 同openapi的style. 用于非json array或object!
-  string format = 8;                // 数据格式. 仅用于swagger文档提示.
-}
-
-message Rule {
-  Error required = 1;               // 是否必需. 必须声明optional!
-  Maximum minimum = 2;       // 最小数值
-  Maximum maximum = 3;       // 最大数值
-  MinLength min_length = 4;             // 最小长度
-  MaxLength max_length = 5;             // 最大长度
-  MinItems min_items = 6;              // 最小数量
-  MaxItems max_items = 7;              // 最大数量
-  Enum enum = 8;                    // 枚举列表
-  Pattern pattern = 9;              // 正则匹配
-  Plugin plugin = 10;               // 插件校验
-}
-
-message Meta {
-  string Package = 1;            // 元数据package
-  string Service = 2;            // 元数据service
-  string Method = 3;             // 元数据method
-  bool ClientStreaming = 4;      // 元数据client streaming
-  bool ServerStreaming = 5;      // 元数据server streaming
-  Http Http = 6;                 // 元数据Http
-  Role Role = 7;                 // 元数据Role
-  Plugin InputPlugin = 8;        // 元数据message plugin
-  repeated Rule InputRules = 9;  // 元数据field rules
+message Plugin {
+  string val = 1;                  // 插件引用
+  Error err = 2;                   // 插件错误
 }
 
 extend  google.protobuf.ServiceOptions {
-  Tag tag = 20000;                 // 服务标签
-  bool http_only = 20001;          // 仅仅http
+  Info info = 20001;              // 服务信息
+  bool http_only = 20002;         // 仅仅http
 }
 
 extend google.protobuf.MethodOptions {
-  Http http = 30000;              // http绑定
-  Role role = 30001;              // 方法角色
+  Http http = 30001;              // http绑定
+  Role role = 30002;              // 方法角色
 }
 
 extend google.protobuf.MessageOptions {
-  string desc = 40000;           // 消息描述
-  Plugin plugin = 40001;         // 消息插件
+  string schema = 40001;          // 消息描述
+  string extend = 40002;          // 消息插件
 }
 
 extend google.protobuf.FieldOptions {
-  Prop prop = 50000;             // 字段属性
-  Rule rule = 50001;             // 字段规则
+  string name = 50001;                 // 概要信息
+  string desc = 50002;                 // 描述信息
+  Zero zero = 50003;                   // 值处理策略
+  bool enum_name = 50004;              // 使用枚举名称而非枚举值.
+  In in = 50005;                       // 数据位置. body(json, form), path, query, header, cookie
+  bool explode = 50006;                // 解析方式. primitive类型忽略, array/object类型规则.
+  Error required = 50007;              // 是否必需. 必须声明optional!
+  Minimum minimum = 50008;             // 最小数值
+  Maximum maximum = 50009;             // 最大数值
+  MinLength min_length = 50010;        // 最小长度
+  MaxLength max_length = 50011;        // 最大长度
+  MinItems min_items = 50012;          // 最小数量
+  MaxItems max_items = 50013;          // 最大数量
+  Enum enum = 50014;                   // 枚举列表
+  Pattern pattern = 50015;             // 正则匹配
+  Plugin plugin = 50016;               // 插件校验
+}
+
+// 元数据
+message Meta {
+
+  // 字段规则
+  message Rule {
+    string name = 1;                 // 字段名称
+    Error required = 2;              // 是否必需. 必须声明optional!
+    Minimum minimum = 3;             // 最小数值
+    Maximum maximum = 4;             // 最大数值
+    MinLength min_length = 5;        // 最小长度
+    MaxLength max_length = 6;        // 最大长度
+    MinItems min_items = 7;          // 最小数量
+    MaxItems max_items = 8;          // 最大数量
+    Enum enum = 9;                   // 枚举列表
+    Pattern pattern = 10;            // 正则匹配
+    Plugin plugin = 11;              // 插件校验
+  }
+
+  string Package = 1;              // 元数据package
+  string Service = 2;              // 元数据service
+  string Method = 3;               // 元数据method
+  bool ClientStream = 4;           // 元数据client streaming
+  bool ServerStream = 5;           // 元数据server streaming
+  Http Http = 6;                   // 元数据Http
+  Role Role = 7;                   // 元数据Role
+  string MessageExtend = 8;        // 元数据message extend
+  repeated Rule FieldRules = 9;    // 元数据field rules
 }

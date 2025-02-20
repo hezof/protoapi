@@ -1,32 +1,57 @@
 package protoapi
 
-func (e *Error) DecodeJSON(r *JsonDecoder) {
-	DecodeMessage(r, &e, func(r *JsonDecoder, sr *Error, k string) {
-		switch k {
-		case profile.ResultCodeField:
-			DecodeUint32(r, &sr.Code)
-		case profile.ResultNameField:
-			DecodeString(r, &sr.Name)
-		case profile.ResultMessageField:
-			DecodeString(r, &sr.Message)
-		}
-	})
-}
+import (
+	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
 
-func (e *Error) EncodeJSON(w *JsonEncoder) {
-	EncodeMessage(w, e, func(w *JsonEncoder, m *Error) {
-		EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
-		EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
-		EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
-	})
-}
+/**********************************
+ * 扩展Error实现StatusResult接口
+ **********************************/
 
 func (e *Error) Error() string {
-	w := NewJsonEncoder(nil, 1024)
-	e.EncodeJSON(w)
-	_ = w.Close()
-	return UnsafeString(w.buff)
+	// 不能使用ToJson()会在EncodeField过程形成死循环
+	bs, _ := MarshalJSON(e)
+	return UnsafeString(bs)
 }
 
-var _ error = (*Error)(nil)
-var _ JsonCodec = (*Error)(nil)
+func (e *Error) DecodeField(r *JsonDecoder, f string) {
+	switch f {
+	case profile.ResultCodeField:
+		DecodeUint32(r, &e.Code)
+	case profile.ResultNameField:
+		DecodeString(r, &e.Name)
+	case profile.ResultMessageField:
+		DecodeString(r, &e.Message)
+	}
+}
+
+func (e *Error) EncodeField(w *JsonEncoder) {
+	EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
+	EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
+	EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
+}
+
+// GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
+func (e *Error) GRPCStatus() *status.Status {
+	return status.New(codes.Code(e.Status<<_CodeBits|e.Code), e.Message)
+}
+
+func (e *Error) SetStatus(status uint32) {
+	e.Status = status
+}
+
+func (e *Error) SetName(name string) {
+	e.Name = name
+}
+
+func (e *Error) SetMessage(message string) {
+	if len(e.Details) > 0 {
+		e.Message = fmt.Sprintf(message, as(e.Details)...)
+	} else {
+		e.Message = message
+	}
+}
+
+var _ StatusResult = (*Error)(nil)

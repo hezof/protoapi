@@ -5,7 +5,7 @@ import (
 )
 
 type Config struct {
-	Name                string        `json:"name"`                     // component name
+	Name                string        `json:"Name"`                     // component Name
 	GrpcAddr            string        `json:"grpc_addr"`                // grpc server listening address
 	GrpcKeepAlive       time.Duration `json:"grpc_keep_alive"`          // grpc server keep alive
 	GrpcI18nError       bool          `json:"grpc_i18n_error"`          // grpc i18n error
