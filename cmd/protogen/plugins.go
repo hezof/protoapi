@@ -31,7 +31,7 @@ var Plugins = []*Plugin{
 		Mode:    GoGetBin,
 		Name:    "protoc-gen-go-protoapi",
 		Module:  "github.com/hezof/protoapi/cmd/protoc-gen-go-protoapi",
-		Version: "v1.0.0-beta",
+		Version: "v1.0.0",
 	},
 }
 
