@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -23,16 +22,22 @@ func extractFile(gen *protogen.Plugin, f *protogen.File) *FileExt {
 	for _, s := range f.Messages {
 		m := extractMessage(file, s, false)
 		for _, v := range m.Fields {
-			if v.IsMap && v.Message.Fields[0].Kind != protoreflect.StringKind {
-				gen.Error(fmt.Errorf("invalid map key type %v", v.Message.Fields[0].Kind))
-				return nil
+			if v.IsMap {
+				// key必须是string
+				if v.Message.Fields[0].Kind != protoreflect.StringKind {
+					gen.Error(fmt.Errorf("invalid map key type %v", v.Message.Fields[0].Kind))
+					return nil
+				}
+				// val需换成
+				v.Kind = v.Message.Fields[1].Kind
+				v.Enum = v.Message.Fields[1].Enum
+				v.Message = v.Message.Fields[1].Message
 			}
 		}
 	}
 
 	for _, s := range f.Services {
 		extractService(file, s)
-		// TODO: 校验method合法性
 	}
 
 	return file
@@ -76,7 +81,7 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 		return nil
 	}
 	v := new(FieldExt)
-	v.Name = string(s.Desc.Name())
+	v.Name = NvlS(proto.GetExtension(s.Desc.Options(), E_Name).(string), string(s.Desc.Name()))
 	v.FullName = string(s.Desc.FullName())
 	v.GoName = s.GoName
 	v.GoIdent = s.GoIdent
@@ -86,9 +91,25 @@ func extractField(file *FileExt, message *MessageExt, s *protogen.Field) *FieldE
 	v.Kind = s.Desc.Kind()
 	v.Enum = extractEnum(file, s.Enum)
 	v.Message = extractMessage(file, s.Message, v.IsMap)
-	v.Prop = proto.GetExtension(s.Desc.Options(), E_Prop).(*Prop)
-	v.Rule = proto.GetExtension(s.Desc.Options(), E_Rule).(*Rule)
+	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
+	v.Zero = proto.GetExtension(s.Desc.Options(), E_Zero).(Zero)
+	v.EnumName = proto.GetExtension(s.Desc.Options(), E_EnumName).(bool)
+	v.In = proto.GetExtension(s.Desc.Options(), E_In).(In)
+	v.Explode = proto.GetExtension(s.Desc.Options(), E_Explode).(bool)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.FieldOptions).GetDeprecated()
+	v.Rule = &Meta_Rule{
+		Name:      v.Name,
+		Required:  proto.GetExtension(s.Desc.Options(), E_Required).(*Error),
+		Maximum:   proto.GetExtension(s.Desc.Options(), E_Maximum).(*Maximum),
+		Minimum:   proto.GetExtension(s.Desc.Options(), E_Minimum).(*Minimum),
+		MinLength: proto.GetExtension(s.Desc.Options(), E_MinLength).(*MinLength),
+		MaxLength: proto.GetExtension(s.Desc.Options(), E_MaxLength).(*MaxLength),
+		MinItems:  proto.GetExtension(s.Desc.Options(), E_MinItems).(*MinItems),
+		MaxItems:  proto.GetExtension(s.Desc.Options(), E_MaxItems).(*MaxItems),
+		Enum:      proto.GetExtension(s.Desc.Options(), E_Enum).(*Enum),
+		Pattern:   proto.GetExtension(s.Desc.Options(), E_Pattern).(*Pattern),
+		Plugin:    proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin),
+	}
 	message.Fields = append(message.Fields, v)
 	return v
 }
@@ -117,8 +138,8 @@ func extractMessage(file *FileExt, s *protogen.Message, isMap bool) *MessageExt 
 	for _, s1 := range s.Messages {
 		extractMessage(file, s1, false)
 	}
-	v.Desc = proto.GetExtension(s.Desc.Options(), E_Desc).(string)
-	v.Plugin = proto.GetExtension(s.Desc.Options(), E_Plugin).(*Plugin)
+	v.Schema = proto.GetExtension(s.Desc.Options(), E_Schema).(string)
+	v.Extend = proto.GetExtension(s.Desc.Options(), E_Extend).(string)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.MessageOptions).GetDeprecated()
 	return v
 
@@ -155,7 +176,7 @@ func extractService(file *FileExt, s *protogen.Service) *ServiceExt {
 	for _, m1 := range s.Methods {
 		extractMethod(file, v, m1)
 	}
-	v.Tag = proto.GetExtension(s.Desc.Options(), E_Tag).(*Tag)
+	v.Info = proto.GetExtension(s.Desc.Options(), E_Info).(*Info)
 	v.HttpOnly = proto.GetExtension(s.Desc.Options(), E_HttpOnly).(bool)
 	v.Deprecated = s.Desc.Options().(*descriptorpb.ServiceOptions).GetDeprecated()
 	file.Services = append(file.Services, v)
@@ -173,9 +194,13 @@ type FieldExt struct {
 	HasOptional bool
 	Enum        *EnumExt
 	Message     *MessageExt
-	Prop        *Prop
-	Rule        *Rule
+	Desc        string
+	Zero        Zero
+	EnumName    bool
+	In          In
+	Explode     bool
 	Deprecated  bool
+	Rule        *Meta_Rule
 }
 
 type MessageExt struct {
@@ -184,8 +209,8 @@ type MessageExt struct {
 	FullName   string
 	GoIdent    protogen.GoIdent
 	Fields     []*FieldExt
-	Desc       string
-	Plugin     *Plugin
+	Schema     string
+	Extend     string
 	Deprecated bool
 }
 
@@ -224,7 +249,7 @@ type ServiceExt struct {
 	FullName   string
 	GoName     string
 	Methods    []*MethodExt
-	Tag        *Tag
+	Info       *Info
 	HttpOnly   bool
 	Deprecated bool
 }
@@ -237,20 +262,6 @@ type FileExt struct {
 	Services     []*ServiceExt
 	Messages     IdxVec[*MessageExt] /*展开成平面*/
 	Enums        IdxVec[*EnumExt]    /*展开成平面*/
-}
-
-func (f *FieldExt) PropName() string {
-	if f.Prop != nil && f.Prop.Name != `` {
-		return f.Prop.Name
-	}
-	return f.Name
-}
-
-func (f *FieldExt) PropExplode() bool {
-	if f.Prop != nil && f.Prop.Explode {
-		return true
-	}
-	return false
 }
 
 func (f *FieldExt) RuleEnums() []any {

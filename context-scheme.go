@@ -7,8 +7,6 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
-
-	"github.com/hezof/protoapi/kits"
 )
 
 /*
@@ -37,12 +35,12 @@ func (ctx *Context) Scheme(dst interface{}, tag string) error {
 	 *************************************/
 	dstTyp := reflect.TypeOf(dst)
 	if dstTyp == nil || dstTyp.Kind() != reflect.Ptr {
-		return kits.ErrInvalidStructPointer
+		return ErrInvalidStructPointer
 	}
 
 	dstVal := reflect.ValueOf(dst)
 	if dstVal.IsNil() {
-		return kits.ErrInvalidMemoryOrNilPointer
+		return ErrInvalidMemoryOrNilPointer
 	}
 
 	dstTyp = dstTyp.Elem()
@@ -55,7 +53,7 @@ func (ctx *Context) Scheme(dst interface{}, tag string) error {
 		dstVal = dstVal.Elem()
 	}
 	if dstTyp.Kind() != reflect.Struct {
-		return kits.ErrInvalidStructPointer
+		return ErrInvalidStructPointer
 	}
 	/*************************************
 	 * 解析上下文数值
@@ -73,7 +71,7 @@ func adaptStruct(vs *values, dstTyp reflect.Type, dstVal *reflect.Value, tag str
 	 * 反射字段列表
 	 *************************************/
 __NEXT__:
-	for _, fld := range kits.GetStructField(dstTyp) {
+	for _, fld := range GetStructField(dstTyp) {
 		fldKey := fld.Tags[tag]
 		if fldKey == "-" {
 			continue __NEXT__
@@ -122,7 +120,7 @@ __NEXT__:
 		}
 
 		if ss, ok := vs.form[fldKey]; ok {
-			if fldTyp.Kind() == reflect.Slice && fldTyp != kits.RTypeBytes {
+			if fldTyp.Kind() == reflect.Slice && fldTyp != RTypeBytes {
 				if err = adaptSlice(ss, fldTyp, &fldVal); err != nil {
 					return
 				} else {
@@ -139,7 +137,7 @@ __NEXT__:
 		}
 
 		if ps, ok := vs.path.Get(fldKey); ok {
-			if fldTyp.Kind() == reflect.Slice && fldTyp != kits.RTypeBytes {
+			if fldTyp.Kind() == reflect.Slice && fldTyp != RTypeBytes {
 				if err = adaptSlice([]string{ps}, fldTyp, &fldVal); err != nil {
 					return
 				} else {
@@ -156,7 +154,7 @@ __NEXT__:
 		}
 
 		if ss, ok := vs.query[fldKey]; ok {
-			if fldTyp.Kind() == reflect.Slice && fldTyp != kits.RTypeBytes {
+			if fldTyp.Kind() == reflect.Slice && fldTyp != RTypeBytes {
 				if err = adaptSlice(ss, fldTyp, &fldVal); err != nil {
 					return
 				} else {
@@ -179,7 +177,7 @@ func adaptSlice(ss []string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 
 	// 优化
 	subTyp := dstTyp.Elem()
-	if subTyp == kits.RTypeString {
+	if subTyp == RTypeString {
 		dstVal.Set(reflect.ValueOf(ss))
 		return nil
 	}
@@ -215,18 +213,18 @@ func adaptSlice(ss []string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 func adaptValue(org string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 
 	// 优化几种常见特殊的类型
-	if dstTyp == kits.RTypeDuration {
-		if x, ok := kits.Duration(org); ok {
+	if dstTyp == RTypeDuration {
+		if x, ok := AsDuration(org); ok {
 			dstVal.SetInt(int64(x))
 			return nil
 		}
-	} else if dstTyp == kits.RTypeTime {
-		if x, ok := kits.Time(org); ok {
+	} else if dstTyp == RTypeTime {
+		if x, ok := AsTime(org); ok {
 			dstVal.Set(reflect.ValueOf(x))
 			return nil
 		}
-	} else if dstTyp == kits.RTypeBytes {
-		if x, ok := kits.Bytes(org); ok {
+	} else if dstTyp == RTypeBytes {
+		if x, ok := AsBytes(org); ok {
 			dstVal.Set(reflect.ValueOf(x))
 			return nil
 		}
@@ -237,32 +235,32 @@ func adaptValue(org string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 		dstVal.SetString(org)
 		return nil
 	case reflect.Bool:
-		if x, ok := kits.Bool(org); ok {
+		if x, ok := AsBool(org); ok {
 			dstVal.SetBool(x)
 			return nil
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		if x, ok := kits.Int64(org); ok {
+		if x, ok := AsInt64(org); ok {
 			dstVal.SetInt(x)
 			return nil
 		}
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		if x, ok := kits.Uint64(org); ok {
+		if x, ok := AsUint64(org); ok {
 			dstVal.SetUint(x)
 			return nil
 		}
 	case reflect.Uintptr:
-		if x, ok := kits.Uintptr(org); ok {
+		if x, ok := AsUintptr(org); ok {
 			dstVal.Set(reflect.ValueOf(x))
 			return nil
 		}
 	case reflect.Float32, reflect.Float64:
-		if x, ok := kits.Float64(org); ok {
+		if x, ok := AsFloat64(org); ok {
 			dstVal.SetFloat(x)
 			return nil
 		}
 	case reflect.Complex64, reflect.Complex128:
-		if x, ok := kits.Complex128(org); ok {
+		if x, ok := AsComplex128(org); ok {
 			dstVal.SetComplex(x)
 			return nil
 		}

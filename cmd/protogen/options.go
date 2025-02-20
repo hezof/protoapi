@@ -45,6 +45,7 @@ type SystemOptions struct {
 }
 
 func initCustomOptions(ops *Context) {
+	ops.flagset.BoolVar(&ops.Help, `h`, false, `打印帮助`)
 	ops.flagset.BoolVar(&ops.Help, `help`, false, `打印帮助`)
 	ops.flagset.BoolVar(&ops.Debug, `debug`, false, `打印调试`)
 	ops.flagset.BoolVar(&ops.Update, `update`, false, `更新插件`)

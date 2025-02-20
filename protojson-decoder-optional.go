@@ -85,7 +85,7 @@ func DecodeUint64Optional(r *JsonDecoder, p **uint64) {
 	}
 }
 
-func DecodeFloat32Optional(r *JsonDecoder, p **float32) {
+func DecodeFloatOptional(r *JsonDecoder, p **float32) {
 	switch r.token {
 	case Number:
 		v := float32(r.readFloat64())
@@ -100,7 +100,7 @@ func DecodeFloat32Optional(r *JsonDecoder, p **float32) {
 	}
 }
 
-func DecodeFloat64Optional(r *JsonDecoder, p **float64) {
+func DecodeDoubleOptional(r *JsonDecoder, p **float64) {
 	switch r.token {
 	case Number:
 		v := r.readFloat64()

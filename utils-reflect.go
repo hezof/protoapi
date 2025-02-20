@@ -1,4 +1,4 @@
-package kits
+package protoapi
 
 import (
 	"errors"
@@ -299,89 +299,89 @@ func (sb StructBinder) AdaptValue(org interface{}, dstTyp reflect.Type, dstVal *
 
 	switch dstTyp.Kind() {
 	case reflect.Bool:
-		if x, ok := Bool(org); ok {
+		if x, ok := AsBool(org); ok {
 			dstVal.SetBool(x)
 			return true, nil
 		}
 	case reflect.Int:
-		if x, ok := Int64(org); ok {
+		if x, ok := AsInt64(org); ok {
 			dstVal.SetInt(x)
 			return true, nil
 		}
 	case reflect.Int8:
-		if x, ok := Int64(org); ok {
+		if x, ok := AsInt64(org); ok {
 			dstVal.SetInt(x)
 			return true, nil
 		}
 	case reflect.Int16:
-		if x, ok := Int64(org); ok {
+		if x, ok := AsInt64(org); ok {
 			dstVal.SetInt(x)
 			return true, nil
 		}
 	case reflect.Int32:
-		if x, ok := Int64(org); ok {
+		if x, ok := AsInt64(org); ok {
 			dstVal.SetInt(x)
 			return true, nil
 		}
 	case reflect.Int64:
 		if dstTyp == RTypeDuration {
-			if x, ok := Duration(org); ok {
+			if x, ok := AsDuration(org); ok {
 				dstVal.SetInt(int64(x))
 				return true, nil
 			}
 		} else {
-			if x, ok := Int64(org); ok {
+			if x, ok := AsInt64(org); ok {
 				dstVal.SetInt(x)
 				return true, nil
 			}
 		}
 	case reflect.Uint:
-		if x, ok := Uint64(org); ok {
+		if x, ok := AsUint64(org); ok {
 			dstVal.SetUint(x)
 			return true, nil
 		}
 	case reflect.Uint8:
-		if x, ok := Uint64(org); ok {
+		if x, ok := AsUint64(org); ok {
 			dstVal.SetUint(x)
 			return true, nil
 		}
 	case reflect.Uint16:
-		if x, ok := Uint64(org); ok {
+		if x, ok := AsUint64(org); ok {
 			dstVal.SetUint(x)
 			return true, nil
 		}
 	case reflect.Uint32:
-		if x, ok := Uint64(org); ok {
+		if x, ok := AsUint64(org); ok {
 			dstVal.SetUint(x)
 			return true, nil
 		}
 	case reflect.Uint64:
-		if x, ok := Uint64(org); ok {
+		if x, ok := AsUint64(org); ok {
 			dstVal.SetUint(x)
 			return true, nil
 		}
 	case reflect.Uintptr:
-		if x, ok := Uintptr(org); ok {
+		if x, ok := AsUintptr(org); ok {
 			dstVal.Set(reflect.ValueOf(x))
 			return true, nil
 		}
 	case reflect.Float32:
-		if x, ok := Float64(org); ok {
+		if x, ok := AsFloat64(org); ok {
 			dstVal.SetFloat(x)
 			return true, nil
 		}
 	case reflect.Float64:
-		if x, ok := Float64(org); ok {
+		if x, ok := AsFloat64(org); ok {
 			dstVal.SetFloat(x)
 			return true, nil
 		}
 	case reflect.Complex64:
-		if x, ok := Complex128(org); ok {
+		if x, ok := AsComplex128(org); ok {
 			dstVal.SetComplex(x)
 			return true, nil
 		}
 	case reflect.Complex128:
-		if x, ok := Complex128(org); ok {
+		if x, ok := AsComplex128(org); ok {
 			dstVal.SetComplex(x)
 			return true, nil
 		}
@@ -465,7 +465,7 @@ func (sb StructBinder) AdaptValue(org interface{}, dstTyp reflect.Type, dstVal *
 	case reflect.Slice:
 		// []byte
 		if dstTyp == RTypeBytes {
-			if x, ok := Bytes(org); ok {
+			if x, ok := AsBytes(org); ok {
 				dstVal.Set(reflect.ValueOf(x))
 				return true, nil
 			}
@@ -516,14 +516,14 @@ func (sb StructBinder) AdaptValue(org interface{}, dstTyp reflect.Type, dstVal *
 		}
 
 	case reflect.String:
-		if x, ok := String(org); ok {
+		if x, ok := AsString(org); ok {
 			dstVal.SetString(x)
 			return true, nil
 		}
 	case reflect.Struct:
-		// time.Time
+		// time.AsTime
 		if dstTyp == RTypeTime {
-			if x, ok := Time(org); ok {
+			if x, ok := AsTime(org); ok {
 				dstVal.Set(reflect.ValueOf(x))
 				return true, nil
 			}
@@ -544,7 +544,7 @@ func (sb StructBinder) AdaptValue(org interface{}, dstTyp reflect.Type, dstVal *
 			}
 		}
 	case reflect.UnsafePointer:
-		if x, ok := UnsafePointer(org); ok {
+		if x, ok := AsUnsafePointer(org); ok {
 			dstVal.Set(reflect.ValueOf(x))
 			return true, nil
 		}

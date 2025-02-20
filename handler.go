@@ -1,8 +1,8 @@
 package protoapi
 
 import (
+	"github.com/hezof/log"
 	"github.com/hezof/protoapi/internal/websocket"
-	"ksogit.kingsoft.net/kgo/log"
 )
 
 // HandleFunc 处理逻辑函数
@@ -14,7 +14,7 @@ type Handler struct {
 	Method        string         // http请求方法
 	Path          string         // http请求路径
 	Status        uint32         // http请求状态
-	Result        Http_Result    // http请求结果
+	Result        Result         // http请求结果
 	HandleChain   []HandleFunc   // 处理链表, 最长不超过HandleChainCapacity设置
 	BodyMaxBytes  int64          // http请求体最大字节数. 如果设置则用http.MaxBytesReader()限制读入字节数! 如果是Websocket则自动忽略此参数
 	FormMaxMemory int64          // http表单内存部分最大字节数. 默认 32 << 20

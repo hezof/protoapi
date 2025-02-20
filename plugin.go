@@ -2,7 +2,9 @@ package protoapi
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
+	"sync"
 )
 
 /*
@@ -22,34 +24,50 @@ RequestPlugin 请求插件.通过此扩展接口可以:
 type RequestPlugin func(all map[string]map[string]*RequestSetting)
 
 /*
-MessageValidatePluginProvider message校验插件提供者
+MessageExtendProvider message校验插件提供者
 */
-type MessageValidatePluginProvider func(args []string) MessagePlugin
+type MessageExtendProvider func(args []string) MessageExtend
 
-var globalMessageValidatePluginProvider = make(map[string]MessageValidatePluginProvider)
+var globalMessageExtendProvider sync.Map
 
-func SetMessageValidatePluginProvider(k string, p MessageValidatePluginProvider) {
-	globalMessageValidatePluginProvider[k] = p
+func InstallMessageExtendProvider(k string, p MessageExtendProvider) {
+	globalMessageExtendProvider.Store(k, p)
+}
+
+func CompileMessageExtend(exp string) (MessageExtend, error) {
+	name, args := ParseExpression(exp)
+	if p, ok := globalMessageExtendProvider.Load(name); ok {
+		return p.(MessageExtendProvider)(args), nil
+	}
+	return nil, fmt.Errorf("MessageExtendProvider not found [%v]", exp)
 }
 
 /*
-FieldValidatePluginProvider field校验插件提供者
+FieldPluginProvider field校验插件提供者
 */
-type FieldValidatePluginProvider func(args []string) FieldPlugin
+type FieldPluginProvider func(args []string) FieldPlugin
 
-var globalFieldValidatePluginProvider = make(map[string]FieldValidatePluginProvider)
+var globalFieldPluginProvider sync.Map
 
-func SetFieldValidatePluginProvider(k string, p FieldValidatePluginProvider) {
-	globalFieldValidatePluginProvider[k] = p
+func InstallFieldPluginProvider(k string, p FieldPluginProvider) {
+	globalFieldPluginProvider.Store(k, p)
+}
+
+func CompileFieldPlugin(exp string) (FieldPlugin, error) {
+	name, args := ParseExpression(exp)
+	if p, ok := globalFieldPluginProvider.Load(name); ok {
+		return p.(FieldPluginProvider)(args), nil
+	}
+	return nil, fmt.Errorf("FieldPluginProvider not found [%v]", exp)
 }
 
 /*
-CompilePluginExpression 编译插件表达式, 其固定语法为: plugin(arg1,arg2,...), 参数之间使用逗号","分隔并忽略二侧空白.
+ParseExpression 编译插件表达式, 其固定语法为: plugin(arg1,arg2,...), 参数之间使用逗号","分隔并忽略二侧空白.
 其中(,)\是元字符,如果出现表在表达式内请使用转义字符"\"转义!, 相应规则为:
 1. 最左侧的(与最右侧的), 中间为args部分
 2. 从左到右扫描",", 判断左边是否"\", 如果不是则作为分隔符, 如果是则作为普通字符! 如果出现参数以"\"结尾的情况, 请在","前加个空格!
 */
-func CompilePluginExpression(expr string) (name string, args []string) {
+func ParseExpression(expr string) (name string, args []string) {
 	// 没有(则没参数
 	lp := strings.IndexByte(expr, '(')
 	if lp < 0 {

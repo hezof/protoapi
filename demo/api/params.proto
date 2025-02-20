@@ -1,0 +1,317 @@
+syntax = "proto3";
+package api;
+option go_package = ".;api";
+
+import "github.com/hezof/protoapi.proto";
+import "store.proto";
+
+service Params {
+
+  option (protoapi.info) = {
+    name: "参数服务",
+    desc: "参数服务用于测试通过form/path/query/header/cookie传递的参数."
+        "该服务仅用于http!"
+  };
+  option (protoapi.http_only) = true;
+
+  rpc form(ParamsInForm) returns(ParamsInForm) {
+    option (protoapi.http) = {
+      name: "读取form参数",
+      desc: "通过form/body传递参数",
+      post: "/params/form",
+      body: form,
+      status: 200,
+      result: normal,
+    };
+  };
+  rpc path(ParamsInPath) returns(ParamsInPath) {
+    option (protoapi.http) = {
+      name: "读取path参数",
+      desc: "通过path传递参数",
+      post: "/params/path/:genre_map/:genre_name_map",
+      body: omit,
+      status: 200,
+      result: normal,
+    };
+  };
+  rpc query(ParamsInQuery) returns(ParamsInQuery) {
+    option (protoapi.http) = {
+      name: "读取query参数",
+      desc: "通过path传递参数",
+      post: "/params/query",
+      body: omit,
+      status: 200,
+      result: normal,
+    };
+  };
+  rpc header(ParamsInHeader) returns(ParamsInHeader) {
+    option (protoapi.http) = {
+      name: "读取header参数",
+      desc: "通过header传递参数",
+      post: "/params/header",
+      body: omit,
+      status: 200,
+      result: normal,
+    };
+  };
+  rpc cookie(ParamsInCookie) returns(ParamsInCookie) {
+    option (protoapi.http) = {
+      name: "读取cookie参数",
+      desc: "通过cookie传递参数",
+      post: "/params/cookie",
+      body: omit,
+      status: 200,
+      result: normal,
+    };
+  };
+}
+
+message ParamsInForm {
+  bool bool = 1;
+  int32 int32 = 2;
+  int64 int64 = 3;
+  uint32 uint32 = 4;
+  uint64 uint64 = 5;
+  float float = 6;
+  double double = 7;
+  string string = 8;
+  bytes bytes = 9;
+  Genre genre = 10;
+  Genre genre_name = 101 [(protoapi.enum_name) = true];
+
+  optional bool bool_optional = 11;
+  optional int32 int32_optional = 12;
+  optional int64 int64_optional = 13;
+  optional uint32 uint32_optional = 14;
+  optional uint64 uint64_optional = 15;
+  optional float float_optional = 16;
+  optional double double_optional = 17;
+  optional string string_optional = 18;
+  optional bytes bytes_optional = 19;
+  optional Genre genre_optional = 110;
+  optional Genre genre_name_optional = 111 [(protoapi.enum_name) = true];
+
+  repeated bool bool_repeated = 21;
+  repeated int32 int32_repeated = 22;
+  repeated int64 int64_repeated = 23;
+  repeated uint32 uint32_repeated = 24;
+  repeated uint64 uint64_repeated = 25;
+  repeated float float_repeated = 26;
+  repeated double double_repeated = 27;
+  repeated string string_repeated = 28;
+  repeated bytes bytes_repeated = 29;
+  repeated Genre genre_repeated = 210;
+  repeated Genre genre_name_repeated = 211 [(protoapi.enum_name) = true];
+
+  map<string, bool> bool_map = 31;
+  map<string, int32> int32_map = 32;
+  map<string, int64> int64_map = 33;
+  map<string, uint32> uint32_map = 34;
+  map<string, uint64> uint64_map = 35;
+  map<string, float> float_map = 36;
+  map<string, double> double_map = 37;
+  map<string, string> string_map = 38;
+  map<string, bytes> bytes_map = 39;
+  map<string, Genre> genre_map = 310;
+  map<string, Genre> genre_name_map = 311 [(protoapi.enum_name) = true];
+}
+
+message ParamsInPath {
+  bool bool = 1[(protoapi.in) = path];
+  int32 int32 = 2[(protoapi.in) = path];
+  int64 int64 = 3[(protoapi.in) = path];
+  uint32 uint32 = 4[(protoapi.in) = path];
+  uint64 uint64 = 5[(protoapi.in) = path];
+  float float = 6[(protoapi.in) = path];
+  double double = 7[(protoapi.in) = path];
+  string string = 8[(protoapi.in) = path];
+  bytes bytes = 9[(protoapi.in) = path];
+  Genre genre = 10[(protoapi.in) = path];
+  Genre genre_name = 101[(protoapi.in) = path, (protoapi.enum_name) = true];
+
+  optional bool bool_optional = 11[(protoapi.in) = path];
+  optional int32 int32_optional = 12[(protoapi.in) = path];
+  optional int64 int64_optional = 13[(protoapi.in) = path];
+  optional uint32 uint32_optional = 14[(protoapi.in) = path];
+  optional uint64 uint64_optional = 15[(protoapi.in) = path];
+  optional float float_optional = 16[(protoapi.in) = path];
+  optional double double_optional = 17[(protoapi.in) = path];
+  optional string string_optional = 18[(protoapi.in) = path];
+  optional bytes bytes_optional = 19[(protoapi.in) = path];
+  optional Genre genre_optional = 110[(protoapi.in) = path];
+  optional Genre genre_name_optional = 111[(protoapi.in) = path, (protoapi.enum_name) = true];
+
+  repeated bool bool_repeated = 21[(protoapi.in) = path];
+  repeated int32 int32_repeated = 22[(protoapi.in) = path];
+  repeated int64 int64_repeated = 23[(protoapi.in) = path];
+  repeated uint32 uint32_repeated = 24[(protoapi.in) = path];
+  repeated uint64 uint64_repeated = 25[(protoapi.in) = path];
+  repeated float float_repeated = 26[(protoapi.in) = path];
+  repeated double double_repeated = 27[(protoapi.in) = path];
+  repeated string string_repeated = 28[(protoapi.in) = path];
+  repeated bytes bytes_repeated = 29[(protoapi.in) = path];
+  repeated Genre genre_repeated = 210[(protoapi.in) = path];
+  repeated Genre genre_name_repeated = 211[(protoapi.in) = path, (protoapi.enum_name) = true];
+
+  map<string, bool> bool_map = 31[(protoapi.in) = path];
+  map<string, int32> int32_map = 32[(protoapi.in) = path];
+  map<string, int64> int64_map = 33[(protoapi.in) = path];
+  map<string, uint32> uint32_map = 34[(protoapi.in) = path];
+  map<string, uint64> uint64_map = 35[(protoapi.in) = path];
+  map<string, float> float_map = 36[(protoapi.in) = path];
+  map<string, double> double_map = 37[(protoapi.in) = path];
+  map<string, string> string_map = 38[(protoapi.in) = path];
+  map<string, bytes> bytes_map = 39[(protoapi.in) = path];
+  map<string, Genre> genre_map = 310[(protoapi.in) = path];
+  map<string, Genre> genre_name_map = 311[(protoapi.in) = path, (protoapi.enum_name) = true];
+}
+
+message ParamsInHeader {
+  bool bool = 1[(protoapi.in) = header];
+  int32 int32 = 2[(protoapi.in) = header];
+  int64 int64 = 3[(protoapi.in) = header];
+  uint32 uint32 = 4[(protoapi.in) = header];
+  uint64 uint64 = 5[(protoapi.in) = header];
+  float float = 6[(protoapi.in) = header];
+  double double = 7[(protoapi.in) = header];
+  string string = 8[(protoapi.in) = header];
+  bytes bytes = 9[(protoapi.in) = header];
+  Genre genre = 10[(protoapi.in) = header];
+  Genre genre_name = 101[(protoapi.in) = header, (protoapi.enum_name) = true];
+
+  optional bool bool_optional = 11[(protoapi.in) = header];
+  optional int32 int32_optional = 12[(protoapi.in) = header];
+  optional int64 int64_optional = 13[(protoapi.in) = header];
+  optional uint32 uint32_optional = 14[(protoapi.in) = header];
+  optional uint64 uint64_optional = 15[(protoapi.in) = header];
+  optional float float_optional = 16[(protoapi.in) = header];
+  optional double double_optional = 17[(protoapi.in) = header];
+  optional string string_optional = 18[(protoapi.in) = header];
+  optional bytes bytes_optional = 19[(protoapi.in) = header];
+  optional Genre genre_optional = 110[(protoapi.in) = header];
+  optional Genre genre_name_optional = 111[(protoapi.in) = header, (protoapi.enum_name) = true];
+
+  repeated bool bool_repeated = 21[(protoapi.in) = header];
+  repeated int32 int32_repeated = 22[(protoapi.in) = header];
+  repeated int64 int64_repeated = 23[(protoapi.in) = header];
+  repeated uint32 uint32_repeated = 24[(protoapi.in) = header];
+  repeated uint64 uint64_repeated = 25[(protoapi.in) = header];
+  repeated float float_repeated = 26[(protoapi.in) = header];
+  repeated double double_repeated = 27[(protoapi.in) = header];
+  repeated string string_repeated = 28[(protoapi.in) = header];
+  repeated bytes bytes_repeated = 29[(protoapi.in) = header];
+  repeated Genre genre_repeated = 210[(protoapi.in) = header];
+  repeated Genre genre_name_repeated = 211[(protoapi.in) = header, (protoapi.enum_name) = true];
+
+  map<string, bool> bool_map = 31[(protoapi.in) = header];
+  map<string, int32> int32_map = 32[(protoapi.in) = header];
+  map<string, int64> int64_map = 33[(protoapi.in) = header];
+  map<string, uint32> uint32_map = 34[(protoapi.in) = header];
+  map<string, uint64> uint64_map = 35[(protoapi.in) = header];
+  map<string, float> float_map = 36[(protoapi.in) = header];
+  map<string, double> double_map = 37[(protoapi.in) = header];
+  map<string, string> string_map = 38[(protoapi.in) = header];
+  map<string, bytes> bytes_map = 39[(protoapi.in) = header];
+  map<string, Genre> genre_map = 310[(protoapi.in) = header];
+  map<string, Genre> genre_name_map = 311[(protoapi.in) = header, (protoapi.enum_name) = true];
+}
+
+message ParamsInQuery {
+  bool bool = 1[(protoapi.in) = query];
+  int32 int32 = 2[(protoapi.in) = query];
+  int64 int64 = 3[(protoapi.in) = query];
+  uint32 uint32 = 4[(protoapi.in) = query];
+  uint64 uint64 = 5[(protoapi.in) = query];
+  float float = 6[(protoapi.in) = query];
+  double double = 7[(protoapi.in) = query];
+  string string = 8[(protoapi.in) = query];
+  bytes bytes = 9[(protoapi.in) = query];
+  Genre genre = 10[(protoapi.in) = query];
+  Genre genre_name = 101[(protoapi.in) = query, (protoapi.enum_name) = true];
+
+  optional bool bool_optional = 11[(protoapi.in) = query];
+  optional int32 int32_optional = 12[(protoapi.in) = query];
+  optional int64 int64_optional = 13[(protoapi.in) = query];
+  optional uint32 uint32_optional = 14[(protoapi.in) = query];
+  optional uint64 uint64_optional = 15[(protoapi.in) = query];
+  optional float float_optional = 16[(protoapi.in) = query];
+  optional double double_optional = 17[(protoapi.in) = query];
+  optional string string_optional = 18[(protoapi.in) = query];
+  optional bytes bytes_optional = 19[(protoapi.in) = query];
+  optional Genre genre_optional = 110[(protoapi.in) = query];
+  optional Genre genre_name_optional = 111[(protoapi.in) = query, (protoapi.enum_name) = true];
+
+  repeated bool bool_repeated = 21[(protoapi.in) = query];
+  repeated int32 int32_repeated = 22[(protoapi.in) = query];
+  repeated int64 int64_repeated = 23[(protoapi.in) = query];
+  repeated uint32 uint32_repeated = 24[(protoapi.in) = query];
+  repeated uint64 uint64_repeated = 25[(protoapi.in) = query];
+  repeated float float_repeated = 26[(protoapi.in) = query];
+  repeated double double_repeated = 27[(protoapi.in) = query];
+  repeated string string_repeated = 28[(protoapi.in) = query];
+  repeated bytes bytes_repeated = 29[(protoapi.in) = query];
+  repeated Genre genre_repeated = 210[(protoapi.in) = query];
+  repeated Genre genre_name_repeated = 211[(protoapi.in) = query, (protoapi.enum_name) = true];
+
+  map<string, bool> bool_map = 31[(protoapi.in) = query];
+  map<string, int32> int32_map = 32[(protoapi.in) = query];
+  map<string, int64> int64_map = 33[(protoapi.in) = query];
+  map<string, uint32> uint32_map = 34[(protoapi.in) = query];
+  map<string, uint64> uint64_map = 35[(protoapi.in) = query];
+  map<string, float> float_map = 36[(protoapi.in) = query];
+  map<string, double> double_map = 37[(protoapi.in) = query];
+  map<string, string> string_map = 38[(protoapi.in) = query];
+  map<string, bytes> bytes_map = 39[(protoapi.in) = query];
+  map<string, Genre> genre_map = 310[(protoapi.in) = query];
+  map<string, Genre> genre_name_map = 311[(protoapi.in) = query, (protoapi.enum_name) = true];
+}
+
+message ParamsInCookie {
+  bool bool = 1[(protoapi.in) = cookie];
+  int32 int32 = 2[(protoapi.in) = cookie];
+  int64 int64 = 3[(protoapi.in) = cookie];
+  uint32 uint32 = 4[(protoapi.in) = cookie];
+  uint64 uint64 = 5[(protoapi.in) = cookie];
+  float float = 6[(protoapi.in) = cookie];
+  double double = 7[(protoapi.in) = cookie];
+  string string = 8[(protoapi.in) = cookie];
+  bytes bytes = 9[(protoapi.in) = cookie];
+  Genre genre = 10[(protoapi.in) = cookie];
+  Genre genre_name = 101[(protoapi.in) = cookie, (protoapi.enum_name) = true];
+
+  optional bool bool_optional = 11[(protoapi.in) = cookie];
+  optional int32 int32_optional = 12[(protoapi.in) = cookie];
+  optional int64 int64_optional = 13[(protoapi.in) = cookie];
+  optional uint32 uint32_optional = 14[(protoapi.in) = cookie];
+  optional uint64 uint64_optional = 15[(protoapi.in) = cookie];
+  optional float float_optional = 16[(protoapi.in) = cookie];
+  optional double double_optional = 17[(protoapi.in) = cookie];
+  optional string string_optional = 18[(protoapi.in) = cookie];
+  optional bytes bytes_optional = 19[(protoapi.in) = cookie];
+  optional Genre genre_optional = 110[(protoapi.in) = cookie];
+  optional Genre genre_name_optional = 111[(protoapi.in) = cookie, (protoapi.enum_name) = true];
+
+  repeated bool bool_repeated = 21[(protoapi.in) = cookie];
+  repeated int32 int32_repeated = 22[(protoapi.in) = cookie];
+  repeated int64 int64_repeated = 23[(protoapi.in) = cookie];
+  repeated uint32 uint32_repeated = 24[(protoapi.in) = cookie];
+  repeated uint64 uint64_repeated = 25[(protoapi.in) = cookie];
+  repeated float float_repeated = 26[(protoapi.in) = cookie];
+  repeated double double_repeated = 27[(protoapi.in) = cookie];
+  repeated string string_repeated = 28[(protoapi.in) = cookie];
+  repeated bytes bytes_repeated = 29[(protoapi.in) = cookie];
+  repeated Genre genre_repeated = 210[(protoapi.in) = cookie];
+  repeated Genre genre_name_repeated = 211[(protoapi.in) = cookie, (protoapi.enum_name) = true];
+
+  map<string, bool> bool_map = 31[(protoapi.in) = cookie];
+  map<string, int32> int32_map = 32[(protoapi.in) = cookie];
+  map<string, int64> int64_map = 33[(protoapi.in) = cookie];
+  map<string, uint32> uint32_map = 34[(protoapi.in) = cookie];
+  map<string, uint64> uint64_map = 35[(protoapi.in) = cookie];
+  map<string, float> float_map = 36[(protoapi.in) = cookie];
+  map<string, double> double_map = 37[(protoapi.in) = cookie];
+  map<string, string> string_map = 38[(protoapi.in) = cookie];
+  map<string, bytes> bytes_map = 39[(protoapi.in) = cookie];
+  map<string, Genre> genre_map = 310[(protoapi.in) = cookie];
+  map<string, Genre> genre_name_map = 311[(protoapi.in) = cookie, (protoapi.enum_name) = true];
+}

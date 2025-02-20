@@ -205,7 +205,7 @@ func DecodeUint64Repeated(r *JsonDecoder, p *[]uint64) {
 	}
 }
 
-func DecodeFloat32Repeated(r *JsonDecoder, p *[]float32) {
+func DecodeFloatRepeated(r *JsonDecoder, p *[]float32) {
 	switch r.token {
 	case ArrayBegin:
 		if *p == nil {
@@ -246,7 +246,7 @@ func DecodeFloat32Repeated(r *JsonDecoder, p *[]float32) {
 	}
 }
 
-func DecodeFloat64Repeated(r *JsonDecoder, p *[]float64) {
+func DecodeDoubleRepeated(r *JsonDecoder, p *[]float64) {
 	switch r.token {
 	case ArrayBegin:
 		if *p == nil {

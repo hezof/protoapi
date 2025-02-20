@@ -5,10 +5,10 @@ xml语法:
 
 	<!ELEMENT resource (Code, Message, Status-Code)>
 	<!ATTLIST accept-language CDATA "">
-	<!ELEMENT Code (#PCDATA)>
-	<!ELEMENT Name (#PCDATA)>
-	<!ELEMENT Message (#PCDATA)>
-	<!ELEMENT Status-Code (#PCDATA)>
+	<!ELEMENT code (#PCDATA)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT message (#PCDATA)>
+	<!ELEMENT status (#PCDATA)>
 
 ]>
 <!-- accept-language使用 iso_language_code或iso_language_code-ISO_COUNTRY_CODE, 多值用逗号分割 -->
@@ -16,13 +16,13 @@ xml语法:
 
 	<resource>
 	    <!-- 必需: 错误代码 -->
-	    <Code>1001</Code>
+	    <code>1001</code>
 	    <!-- 可选: 错误名称 -->
-		<Name>test</Name>
+		<name>test</name>
 	    <!-- 可选: 错误消息 -->
-	    <Message>测试%v</Message>
+	    <message>测试%v</message>
 	    <!-- 可选: 状态码 -->
-	    <Status-Code>403</Status-Code>
+	    <status>403</status>
 	</resource>
 
 </resources>
@@ -32,17 +32,17 @@ package protoapi
 import (
 	"bytes"
 	"encoding/xml"
-	"ksogit.kingsoft.net/kgo/log"
+	"github.com/hezof/log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 type resource struct {
-	Status  uint32 `xml:"Status"`
-	Code    uint32 `xml:"Code"`
-	Name    string `xml:"Name"`
-	Message string `xml:"Message"`
+	Status  uint32 `xml:"status"`
+	Code    uint32 `xml:"code"`
+	Name    string `xml:"name"`
+	Message string `xml:"message"`
 }
 
 type resources struct {

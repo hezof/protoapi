@@ -1,4 +1,4 @@
-package kits
+package protoapi
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ const (
 	LayoutDateTimeLength = len(LayoutDatetime)
 )
 
-func Bool(v interface{}) (bool, bool) {
+func AsBool(v interface{}) (bool, bool) {
 
 	if v == nil {
 		return false, true
@@ -55,7 +55,7 @@ func Bool(v interface{}) (bool, bool) {
 	return false, false
 }
 
-func String(v interface{}) (string, bool) {
+func AsString(v interface{}) (string, bool) {
 
 	if v == nil {
 		return "", true
@@ -110,13 +110,13 @@ func String(v interface{}) (string, bool) {
 }
 
 func ToString(v interface{}) string {
-	if rt, ok := String(v); ok {
+	if rt, ok := AsString(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert string error: %#v", v))
 }
 
-func Int(v interface{}) (int, bool) {
+func AsInt(v interface{}) (int, bool) {
 
 	if v == nil {
 		return 0, true
@@ -161,13 +161,13 @@ func Int(v interface{}) (int, bool) {
 }
 
 func ToInt(v interface{}) int {
-	if rt, ok := Int(v); ok {
+	if rt, ok := AsInt(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert int error: %#v", v))
 }
 
-func Int32(v interface{}) (int32, bool) {
+func AsInt32(v interface{}) (int32, bool) {
 
 	if v == nil {
 		return 0, true
@@ -210,13 +210,13 @@ func Int32(v interface{}) (int32, bool) {
 }
 
 func ToInt32(v interface{}) int32 {
-	if rt, ok := Int32(v); ok {
+	if rt, ok := AsInt32(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert int32 error: %#v", v))
 }
 
-func Int64(v interface{}) (int64, bool) {
+func AsInt64(v interface{}) (int64, bool) {
 
 	if v == nil {
 		return 0, true
@@ -259,13 +259,13 @@ func Int64(v interface{}) (int64, bool) {
 }
 
 func ToInt64(v interface{}) int64 {
-	if rt, ok := Int64(v); ok {
+	if rt, ok := AsInt64(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert int64 error: %#v", v))
 }
 
-func Uint(v interface{}) (uint, bool) {
+func AsUint(v interface{}) (uint, bool) {
 
 	if v == nil {
 		return 0, true
@@ -308,13 +308,13 @@ func Uint(v interface{}) (uint, bool) {
 }
 
 func ToUint(v interface{}) uint {
-	if rt, ok := Uint(v); ok {
+	if rt, ok := AsUint(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert uint error: %#v", v))
 }
 
-func Uint32(v interface{}) (uint32, bool) {
+func AsUint32(v interface{}) (uint32, bool) {
 
 	if v == nil {
 		return 0, true
@@ -357,13 +357,13 @@ func Uint32(v interface{}) (uint32, bool) {
 }
 
 func ToUint32(v interface{}) uint32 {
-	if rt, ok := Uint32(v); ok {
+	if rt, ok := AsUint32(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert uint32 error: %#v", v))
 }
 
-func Uint64(v interface{}) (uint64, bool) {
+func AsUint64(v interface{}) (uint64, bool) {
 
 	if v == nil {
 		return 0, true
@@ -406,13 +406,13 @@ func Uint64(v interface{}) (uint64, bool) {
 }
 
 func ToUint64(v interface{}) uint64 {
-	if rt, ok := Uint64(v); ok {
+	if rt, ok := AsUint64(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert uint64 error: %#v", v))
 }
 
-func Float32(v interface{}) (float32, bool) {
+func AsFloat32(v interface{}) (float32, bool) {
 
 	if v == nil {
 		return 0, true
@@ -455,13 +455,13 @@ func Float32(v interface{}) (float32, bool) {
 }
 
 func ToFloat32(v interface{}) float32 {
-	if rt, ok := Float32(v); ok {
+	if rt, ok := AsFloat32(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert float32 error: %#v", v))
 }
 
-func Float64(v interface{}) (float64, bool) {
+func AsFloat64(v interface{}) (float64, bool) {
 
 	if v == nil {
 		return 0, true
@@ -504,7 +504,7 @@ func Float64(v interface{}) (float64, bool) {
 }
 
 func ToFloat64(v interface{}) float64 {
-	if rt, ok := Float64(v); ok {
+	if rt, ok := AsFloat64(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert float64 error: %#v", v))
@@ -512,7 +512,7 @@ func ToFloat64(v interface{}) float64 {
 
 var ZeroTime = time.Time{}
 
-func Time(v interface{}) (time.Time, bool) {
+func AsTime(v interface{}) (time.Time, bool) {
 
 	if v == nil {
 		return ZeroTime, true
@@ -557,13 +557,13 @@ func Time(v interface{}) (time.Time, bool) {
 }
 
 func ToTime(v interface{}) time.Time {
-	if rt, ok := Time(v); ok {
+	if rt, ok := AsTime(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert time error: %#v", v))
 }
 
-func Duration(v interface{}) (time.Duration, bool) {
+func AsDuration(v interface{}) (time.Duration, bool) {
 
 	if v == nil {
 		return 0, true
@@ -608,13 +608,13 @@ func Duration(v interface{}) (time.Duration, bool) {
 }
 
 func ToDuration(v interface{}) time.Duration {
-	if rt, ok := Duration(v); ok {
+	if rt, ok := AsDuration(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert duration error: %#v", v))
 }
 
-func Complex128(v interface{}) (complex128, bool) {
+func AsComplex128(v interface{}) (complex128, bool) {
 
 	if v == nil {
 		return 0, true
@@ -628,7 +628,7 @@ func Complex128(v interface{}) (complex128, bool) {
 	return 0, false
 }
 
-func Bytes(v interface{}) ([]byte, bool) {
+func AsBytes(v interface{}) ([]byte, bool) {
 
 	if v == nil {
 		return nil, true
@@ -642,7 +642,7 @@ func Bytes(v interface{}) ([]byte, bool) {
 	return nil, false
 }
 
-func Uintptr(v interface{}) (uintptr, bool) {
+func AsUintptr(v interface{}) (uintptr, bool) {
 	if v == nil {
 		return 0, true
 	}
@@ -655,7 +655,7 @@ func Uintptr(v interface{}) (uintptr, bool) {
 	return 0, false
 }
 
-func UnsafePointer(v interface{}) (unsafe.Pointer, bool) {
+func AsUnsafePointer(v interface{}) (unsafe.Pointer, bool) {
 	if v == nil {
 		return nil, true
 	}
@@ -668,7 +668,7 @@ func UnsafePointer(v interface{}) (unsafe.Pointer, bool) {
 	return nil, false
 }
 
-func Slice(v interface{}) ([]interface{}, bool) {
+func AsSlice(v interface{}) ([]interface{}, bool) {
 	switch v := v.(type) {
 	case nil:
 		return nil, true
@@ -735,7 +735,7 @@ func slice[T any](v []T) []interface{} {
 }
 
 func ToSlice(v interface{}) []interface{} {
-	if rt, ok := Slice(v); ok {
+	if rt, ok := AsSlice(v); ok {
 		return rt
 	}
 	panic(fmt.Sprintf("convert slice error: %#v", v))

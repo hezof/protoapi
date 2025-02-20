@@ -401,6 +401,7 @@ func EncodeEnumNameRepeated_OmitEmpty[E ~int32](w *JsonEncoder, name string, val
 			w.buff = append(w.buff, comma)
 		}
 		w.buff[len(w.buff)-1] = rightBracket
+		w.buff = append(w.buff, comma)
 	}
 }
 
@@ -420,6 +421,7 @@ func EncodeEnumNameRepeated_WithEmpty[E ~int32](w *JsonEncoder, name string, val
 			w.buff = append(w.buff, comma)
 		}
 		w.buff[len(w.buff)-1] = rightBracket
+		w.buff = append(w.buff, comma)
 	}
 }
 
@@ -437,6 +439,7 @@ func EncodeEnumNameRepeated_ConvEmpty[E ~int32](w *JsonEncoder, name string, val
 			w.buff = append(w.buff, comma)
 		}
 		w.buff[len(w.buff)-1] = rightBracket
+		w.buff = append(w.buff, comma)
 	}
 }
 
@@ -454,6 +457,7 @@ func EncodeEnumRepeated[Enum ~int32](w *JsonEncoder, value []Enum) {
 			w.buff = append(w.buff, comma)
 		}
 		w.buff[len(w.buff)-1] = rightBracket
+		w.buff = append(w.buff, comma)
 	}
 }
 
@@ -463,13 +467,12 @@ func EncodeEnumRepeated_OmitEmpty[Enum ~int32](w *JsonEncoder, name string, valu
 		w.buff = append(w.buff, quotes)
 		w.buff = append(w.buff, name...)
 		w.buff = append(w.buff, quotes, colon, leftBracket)
-		w.ensure(2)
-		w.buff = append(w.buff, leftBracket)
 		for _, v := range value {
 			EncodeEnum(w, v)
 			w.buff = append(w.buff, comma)
 		}
 		w.buff[len(w.buff)-1] = rightBracket
+		w.buff = append(w.buff, comma)
 	}
 }
 

@@ -16,7 +16,7 @@ func implementDecodeField(g *protogen.GeneratedFile, m *MessageExt) {
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") DecodeField(r *protoapi.JsonDecoder, f string) {")
 	g.P("switch f {")
 	for _, f := range m.Fields {
-		g.P("case `", f.PropName(), "`:")
+		g.P("case `", f.Name, "`:")
 		switch {
 		case IsKind(f, protoreflect.BoolKind):
 			switch {
@@ -31,7 +31,7 @@ func implementDecodeField(g *protogen.GeneratedFile, m *MessageExt) {
 			}
 		case IsKind(f, protoreflect.EnumKind):
 			enumGoName := g.QualifiedGoIdent(f.Enum.GoIdent)
-			if f.Prop != nil && f.Prop.EnumName {
+			if f.EnumName {
 				switch {
 				case f.HasOptional:
 					g.P("protoapi.DecodeEnumNameOptional(r, &x.", f.GoName, ", ", enumGoName, "_value)")
@@ -179,148 +179,148 @@ func implementEncodeField(g *protogen.GeneratedFile, m *MessageExt) {
 		case IsKind(f, protoreflect.BoolKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeBoolOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBoolOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeBoolRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBoolRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeBoolMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBoolMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeBool", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBool", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.EnumKind):
 			enumGoName := g.QualifiedGoIdent(f.Enum.GoIdent)
-			if f.Prop != nil && f.Prop.EnumName {
+			if f.EnumName {
 				switch {
 				case f.HasOptional:
-					g.P("protoapi.EncodeEnumNameOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ", ", enumGoName, "_name)")
+					g.P("protoapi.EncodeEnumNameOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ", ", enumGoName, "_name)")
 				case f.IsRepeated:
-					g.P("protoapi.EncodeEnumNameRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ", ", enumGoName, "_name)")
+					g.P("protoapi.EncodeEnumNameRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ", ", enumGoName, "_name)")
 				case f.IsMap:
-					g.P("protoapi.EncodeEnumNameMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ", ", enumGoName, "_name)")
+					g.P("protoapi.EncodeEnumNameMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ", ", enumGoName, "_name)")
 				default:
-					g.P("protoapi.EncodeEnumName", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ", ", enumGoName, "_name)")
+					g.P("protoapi.EncodeEnumName", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ", ", enumGoName, "_name)")
 				}
 			} else {
 				switch {
 				case f.HasOptional:
-					g.P("protoapi.EncodeEnumOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+					g.P("protoapi.EncodeEnumOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 				case f.IsRepeated:
-					g.P("protoapi.EncodeEnumRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+					g.P("protoapi.EncodeEnumRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 				case f.IsMap:
-					g.P("protoapi.EncodeEnumMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+					g.P("protoapi.EncodeEnumMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 				default:
-					g.P("protoapi.EncodeEnum", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+					g.P("protoapi.EncodeEnum", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 				}
 			}
 		case IsKind(f, protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeInt32Optional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt32Optional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeInt32Repeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt32Repeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeInt32Map", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt32Map", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeInt32", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt32", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.Uint32Kind, protoreflect.Fixed32Kind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeUint32Optional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint32Optional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeUint32Repeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint32Repeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeUint32Map", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint32Map", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeUint32", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint32", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeInt64Optional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt64Optional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeInt64Repeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt64Repeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeInt64Map", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt64Map", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeInt64", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeInt64", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.Uint64Kind, protoreflect.Fixed64Kind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeUint64Optional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint64Optional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeUint64Repeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint64Repeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeUint64Map", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint64Map", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeUint64", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeUint64", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.FloatKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeFloatOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeFloatOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeFloatRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeFloatRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeFloatMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeFloatMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeFloat", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeFloat", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.DoubleKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeDoubleOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeDoubleOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeDoubleRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeDoubleRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeDoubleMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeDoubleMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeDouble", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeDouble", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.StringKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeStringOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeStringOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeStringRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeStringRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeStringMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeStringMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeString", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeString", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.BytesKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeBytesOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBytesOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeBytesRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBytesRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeBytesMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBytesMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeBytes", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeBytes", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.MessageKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeMessageOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessageOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeMessageRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessageRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeMessageMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessageMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeMessage", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessage", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		case IsKind(f, protoreflect.GroupKind):
 			switch {
 			case f.HasOptional:
-				g.P("protoapi.EncodeMessageOptional", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessageOptional", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsRepeated:
-				g.P("protoapi.EncodeMessageRepeated", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessageRepeated", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			case f.IsMap:
-				g.P("protoapi.EncodeMessageMap", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessageMap", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			default:
-				g.P("protoapi.EncodeMessage", propZeroSuffix(f), "(w,`", f.PropName(), "`, x.", f.GoName, ")")
+				g.P("protoapi.EncodeMessage", propZeroSuffix(f), "(w,`", f.Name, "`, x.", f.GoName, ")")
 			}
 		}
 	}
@@ -328,17 +328,14 @@ func implementEncodeField(g *protogen.GeneratedFile, m *MessageExt) {
 }
 
 func propZeroSuffix(f *FieldExt) string {
-	if f.Prop == nil {
+	switch f.Zero {
+	case Zero_omit_empty:
 		return "_OmitEmpty"
-	}
-	switch f.Prop.Zero {
-	case Prop_omit_empty:
-		return "_OmitEmpty"
-	case Prop_with_empty:
-		return "_WitEmpty"
-	case Prop_conv_empty:
+	case Zero_with_empty:
+		return "_WithEmpty"
+	case Zero_conv_empty:
 		return "_ConvEmpty"
 	default:
-		panic("invalid zero: " + f.Prop.Zero.String())
+		panic("invalid zero: " + f.Zero.String())
 	}
 }

@@ -26,6 +26,9 @@ func newGroup(path string, filters ...HandleFunc) *_group {
 		settings: make(map[string]map[string]*RequestSetting),
 	}
 }
+func (rc *_group) BasePath() string {
+	return rc.path
+}
 
 func (rc *_group) Group(path string, hs ...HandleFunc) *_group {
 	child := newGroup(path, hs...)
@@ -114,8 +117,8 @@ func (rc *_group) StaticFile(path string, file string) *_group {
 	return rc
 }
 
-func (rc *_group) StaticDir(prefix string, dir string) *_group {
-	return rc.StaticFS(prefix, http.Dir(dir))
+func (rc *_group) Static(prefix string, root string) *_group {
+	return rc.StaticFS(prefix, http.Dir(root))
 }
 
 func (rc *_group) StaticFS(prefix string, fs http.FileSystem) *_group {

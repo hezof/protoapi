@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -17,10 +18,18 @@ import (
 *	form: style=form, explode=?
 ****************************************/
 
+// parsePostForm 同时适配multipart/form-data 与 application/x-www-form-urlencoded
+func parsePostForm(request *http.Request, maxMemory int64) error {
+	if strings.HasPrefix(request.Header.Get("Content-Type"), "multipart/form-data") {
+		return request.ParseMultipartForm(maxMemory)
+	}
+	return request.ParseForm()
+}
+
 // FormValue 获取首个form参数
 func (ctx *Context) FormValue(name string) (string, error) {
 	if ctx.Request.PostForm == nil {
-		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
+		err := parsePostForm(ctx.Request, ctx.Handler.FormMaxMemory)
 		if err != nil {
 			return "", err
 		}
@@ -34,7 +43,7 @@ func (ctx *Context) FormValue(name string) (string, error) {
 // FormValueRepeated 根据explode解析form array参数
 func (ctx *Context) FormValueRepeated(name string, explode bool) ([]string, error) {
 	if ctx.Request.PostForm == nil {
-		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
+		err := parsePostForm(ctx.Request, ctx.Handler.FormMaxMemory)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +63,7 @@ func (ctx *Context) FormValueRepeated(name string, explode bool) ([]string, erro
 // FormValueMap 根据explode解析form object参数
 func (ctx *Context) FormValueMap(name string, explode bool) (map[string]string, error) {
 	if ctx.Request.PostForm == nil {
-		err := ctx.Request.ParseMultipartForm(ctx.Handler.FormMaxMemory)
+		err := parsePostForm(ctx.Request, ctx.Handler.FormMaxMemory)
 		if err != nil {
 			return nil, err
 		}

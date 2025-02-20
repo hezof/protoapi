@@ -12,16 +12,16 @@ StatusResult统一结果与错误的数据结构, 并实现与Grpc Error的转�
 
 约定StatusResult Code取值范围:
 - [0,17)         表示保留错误码! grpc内置错误码, 参考codes._maxCode
-- [17,4194304)   表示业务错误码! 最大值(2^22 - 1)! 因为Grpc Code的前10位用于表示StatusResult Status
+- [17,4194393)   表示业务错误码! 最大值(2^22 - 1)! 因为Grpc Code的前10位用于表示StatusResult Status
 
 约定StatusResult Status取值范围:
-- (0,1023]
+- (0,511]
 */
 const (
 	_CodeBits   = 22
-	_CodeMask   = 2 << (_CodeBits - 1)
-	_StatusBits = 10
-	_StatusMask = 2 << (_StatusBits - 1)
+	_CodeMask   = 1<<_CodeBits - 1
+	_StatusBits = 9
+	_StatusMask = 1<<_StatusBits - 1
 )
 
 // StatusResult 带状态码的结果
@@ -44,12 +44,14 @@ type SimpleResult struct {
 	Code    uint32   // 错误代码. 0表示成功
 	Name    string   // 错误名称. OK表示成功
 	Message string   // 错误消息.
-	Details []string // 错误参数.
-	Data    any      // 结果数据
+	Details []string `json:"-"` // 错误参数.
+	Data    any      `json:"-"` // 结果数据
 }
 
 func (sr *SimpleResult) Error() string {
-	return ToJson(sr)
+	// 不能使用ToJson()会在EncodeField过程形成死循环
+	bs, _ := MarshalJSON(sr)
+	return UnsafeString(bs)
 }
 func (sr *SimpleResult) DecodeField(r *JsonDecoder, f string) {
 	switch f {

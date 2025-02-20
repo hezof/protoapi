@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
+const VERSION = `v1.0.0`
 const MODULE = `github.com/hezof/protoapi/cmd/protogen`
-const VERSION = `v0.6.3`
 
 func main() {
 

@@ -172,7 +172,7 @@ func (ctx *Context) WriteApplyResult(val any) error {
 // writeApplyResult 用于websocket写出请求结果
 func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 	switch ctx.Handler.Result {
-	case Http_simple:
+	case Result_normal:
 
 		ctx.result.Code = 0
 		ctx.result.Data = val
@@ -184,7 +184,7 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 
 		return err
 
-	case Http_unwrap:
+	case Result_unwrap:
 
 		return EncodeResponse(out, val)
 

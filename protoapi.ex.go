@@ -11,7 +11,9 @@ import (
  **********************************/
 
 func (e *Error) Error() string {
-	return ToJson(e)
+	// 不能使用ToJson()会在EncodeField过程形成死循环
+	bs, _ := MarshalJSON(e)
+	return UnsafeString(bs)
 }
 
 func (e *Error) DecodeField(r *JsonDecoder, f string) {

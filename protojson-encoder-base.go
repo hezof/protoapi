@@ -156,8 +156,6 @@ func EncodeUint64(w *JsonEncoder, value uint64) {
 func EncodeUint64_OmitEmpty(w *JsonEncoder, name string, value uint64) {
 	if value != 0 {
 		encodeUint64Member(w, name, value)
-	} else {
-		encodeZeroMember(w, name)
 	}
 }
 

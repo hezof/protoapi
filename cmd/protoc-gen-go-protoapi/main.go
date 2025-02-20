@@ -8,7 +8,8 @@ import (
 	"google.golang.org/protobuf/types/pluginpb"
 )
 
-const version = "v0.9.9" // 与发版相同
+const VERSION = "v1.0.0" // 与发版相同
+const IMPORT = "github.com/hezof/protoapi"
 
 var requireUnimplemented bool
 var useGenericStreams bool
@@ -18,14 +19,14 @@ func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
 	if *showVersion {
-		fmt.Printf("protoc-gen-go-protoapi %v\n", version)
+		fmt.Printf("protoc-gen-go-protoapi %v\n", VERSION)
 		return
 	}
 
 	var flags flag.FlagSet
 	flags.BoolVar(&requireUnimplemented, "require_unimplemented_servers", true, "set to false to match legacy behavior")
 	flags.BoolVar(&useGenericStreams, "use_generic_streams_experimental", true, "set to true to use generic types for streaming client and server objects; this flag is EXPERIMENTAL and may be changed or removed in a future release")
-	flags.StringVar(&protoapiImport, "import", "github.com/hezof/protoapi", "set import path to protoapi")
+	flags.StringVar(&protoapiImport, "import", IMPORT, "set import path to protoapi")
 
 	protogen.Options{
 		ParamFunc: flags.Set,

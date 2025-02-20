@@ -8,9 +8,10 @@ import (
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"ksogit.kingsoft.net/kgo/log"
+	"github.com/hezof/log"
 	"net"
 	"net/http"
+	"regexp"
 )
 
 /**
@@ -144,17 +145,45 @@ func (svr *Server) GrpcPanicFunc(f GrpcPanicFunc) {
 	服务注册
  **********************************************/
 
-func (svr *Server) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) *Server {
+func (svr *Server) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) error {
+
+	var finalError error
+	var err error
+
 	aspects = orderServiceAspects(svr._serviceAspect, aspects)
 	serviceSetting := registry(implement, aspects)
-	for _, methodSetting := range serviceSetting.Methods {
-		methodSetting.Service = serviceSetting
-		// MessagePlugins 初始化
-		// FieldPlugins 初始化
-		// FieldPatterns 初始化
+	for _, set := range serviceSetting.Methods {
+		set.Service = serviceSetting
+		// 初始化MessageExtend组件
+		if set.Meta.MessageExtend != "" {
+			// 即使错误也会继续初始化完成
+			set.MessageExtend, err = CompileMessageExtend(set.Meta.MessageExtend)
+			if err != nil && finalError == nil {
+				finalError = err
+			}
+		}
+		// 初始化FieldPlugin插件及Pattern实例
+		set.FieldPlugins = make([]FieldPlugin, len(set.Meta.FieldRules))
+		set.FiledPatterns = make([]*regexp.Regexp, len(set.Meta.FieldRules))
+		for i, r := range set.Meta.FieldRules {
+			// FieldPlugins 初始化
+			if r.Plugin != nil {
+				set.FieldPlugins[i], err = CompileFieldPlugin(r.Plugin.Val)
+				if err != nil && finalError == nil {
+					finalError = err
+				}
+			}
+			// FieldPatterns 初始化
+			if r.Pattern != nil {
+				set.FiledPatterns[i], err = regexp.Compile(r.Pattern.Val)
+				if err != nil && finalError == nil {
+					finalError = err
+				}
+			}
+		}
 	}
 	svr._serviceSetting = append(svr._serviceSetting, serviceSetting)
-	return svr
+	return finalError
 }
 
 /**********************************************
@@ -493,9 +522,9 @@ func (svr *Server) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStr
 	// 前置处理
 	idx, ctx, err := BeforeAspect(set, ctx, nil)
 
-	// 业务调用
+	// 业务调用(扩展ServerStream实现MessageValidator)
 	if err == nil {
-		err = handler(srv, ss)
+		err = handler(srv, &ServerStreamExtend{ServerStream: ss, MethodSetting: set})
 	}
 
 	// 后置处理
@@ -578,6 +607,7 @@ func i18nGrpcError(c context.Context, err error) error {
  **********************************************/
 
 var defaultHttpPanicHandler = &Handler{
+	Status: http.StatusInternalServerError,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
@@ -587,6 +617,7 @@ var defaultHttpPanicHandler = &Handler{
 }
 
 var defaultHttpNotFoundHandler = &Handler{
+	Status: http.StatusNotFound,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			_ = ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))

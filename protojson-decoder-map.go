@@ -265,7 +265,7 @@ func DecodeUint64Map(r *JsonDecoder, p *map[string]uint64) {
 	}
 }
 
-func DecodeFloat32Map(r *JsonDecoder, p *map[string]float32) {
+func DecodeFloatMap(r *JsonDecoder, p *map[string]float32) {
 	switch r.token {
 	case ObjectBegin:
 		if *p == nil {

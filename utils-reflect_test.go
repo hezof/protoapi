@@ -1,4 +1,4 @@
-package kits
+package protoapi
 
 import (
 	"encoding/json"

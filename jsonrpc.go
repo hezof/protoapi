@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -24,6 +25,9 @@ const (
 
 // JsonRpcConfig http配置
 type JsonRpcConfig struct {
+
+	// Debug 打印调试信息
+	Debug bool `json:"debug"`
 
 	// DialerTimeout 连接超时(默认3分钟)
 	DialerTimeout time.Duration `json:"dialer_timeout"`
@@ -60,13 +64,69 @@ type JsonRpcHeader interface {
 
 // JsonRpcClient rpc客户端
 type JsonRpcClient struct {
+	config   JsonRpcConfig
 	endpoint string
 	header   JsonRpcHeader
 	client   *http.Client
 }
 
-// Call 远程调用. 可以指定期望的status
-func (c *JsonRpcClient) Call(method string, uri string, req any, rsp any, status ...int) error {
+func NormalResult[V any](v *V) *SimpleResult {
+	if v == nil {
+		panic("NormalResult: unmarshal nil")
+	}
+	return &SimpleResult{
+		Data: v,
+	}
+}
+
+func UnwrapResult[V any](v *V) *V {
+	if v == nil {
+		panic("UnwrapResult: unmarshal nil")
+	}
+	return v
+}
+
+func EventsResult[V any](v *V) *V {
+	if v == nil {
+		panic("EventsResult: unmarshal nil")
+	}
+	return v
+}
+
+func (c *JsonRpcClient) GET(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodGet, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) POST(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodPost, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) PUT(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodPut, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) DELETE(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodDelete, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) HEAD(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodHead, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) PATCH(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodPatch, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) OPTIONS(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodOptions, uri, req, rsp, status...)
+}
+
+func (c *JsonRpcClient) CONNECT(uri string, req any, rsp any, status ...int) error {
+	return c.Do(http.MethodConnect, uri, req, rsp, status...)
+}
+
+// Do 远程调用. 可以指定期望的status
+func (c *JsonRpcClient) Do(method string, uri string, req any, rsp any, status ...int) error {
 	furl := c.endpoint + uri
 	var body []byte
 	if req != nil {
@@ -96,9 +156,30 @@ func (c *JsonRpcClient) Call(method string, uri string, req any, rsp any, status
 	}
 	defer discard(hrsp.Body)
 
+	if c.config.Debug {
+		fmt.Fprintln(os.Stderr, "------JsonRpcClient Request------")
+		fmt.Fprintln(os.Stderr, method, hreq.URL.String())
+		for k, vs := range hreq.Header {
+			fmt.Fprintln(os.Stderr, k, ":", vs)
+		}
+		os.Stderr.Write(body)
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr, "------JsonRpcClient Response------")
+		fmt.Fprintln(os.Stderr, hrsp.Proto, hrsp.Status)
+		for k, vs := range hrsp.Header {
+			fmt.Fprintln(os.Stderr, k, ":", vs)
+		}
+		data, _ := io.ReadAll(hrsp.Body)
+		hrsp.Body = &BuffBody{
+			data: data,
+		}
+		os.Stderr.Write(data)
+		fmt.Fprintln(os.Stderr)
+	}
+
 	if len(status) > 0 {
 		if !contains(hrsp.StatusCode, status) {
-			return fmt.Errorf("invalid status code: %v, expected %v", hrsp.StatusCode, status)
+			return fmt.Errorf("unexpected status code: %v, expected %v", hrsp.StatusCode, status)
 		}
 	}
 	if rsp != nil {
@@ -113,7 +194,11 @@ func (c *JsonRpcClient) Call(method string, uri string, req any, rsp any, status
 
 // NewJsonRpcClient 创建rpc客户端
 func NewJsonRpcClient(e string, h JsonRpcHeader, c *JsonRpcConfig) *JsonRpcClient {
+	if c == nil {
+		c = new(JsonRpcConfig)
+	}
 	return &JsonRpcClient{
+		config:   *c,
 		endpoint: e,
 		header:   h,
 		client: &http.Client{

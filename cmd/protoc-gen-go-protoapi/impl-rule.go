@@ -7,7 +7,7 @@ import (
 )
 
 func shouldMessageValidator(m *MessageExt) bool {
-	if m.Plugin != nil {
+	if m.Extend != "" {
 		return true
 	}
 	for _, f := range m.Fields {
@@ -51,8 +51,8 @@ func implementMessageValidator(g *protogen.GeneratedFile, m *MessageExt) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "context", GoImportPath: "context"})
 	g.P("func (x *", g.QualifiedGoIdent(m.GoIdent), ") Validate(set *protoapi.MethodSetting, ctx context.Context) error {")
-	if m.Plugin != nil {
-		g.P("if err:=set.MessagePlugin(ctx, x, set.Meta.MessagePlugin); err != nil {")
+	if m.Extend != "" {
+		g.P("if err:=set.MessageExtend(ctx, x); err != nil {")
 		g.P("return err")
 		g.P("}")
 	}
