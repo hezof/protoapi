@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	defer log.Close()
+	defer log.Flush()
 
 	// 0. 安装插件
 	protoapi.InstallMessageExtendProvider("message", func(args []string) protoapi.MessageExtend {

@@ -27,8 +27,6 @@ protogen工具封装了protoc及插件的复杂性, 自动下载安装所需插�
 - windows环境
 
 ```
-set GOPRIVATE=*.kingsoft.net
-set GOSUMDB=off
 set GOBIN=<PATH目录>
 go install github.com/hezof/protoapi/cmd/protogen@latest && protogen -update 
 ```
@@ -37,8 +35,6 @@ go install github.com/hezof/protoapi/cmd/protogen@latest && protogen -update
 
 ```
 env \
-GOPRIVATE=*.kingsoft.net \
-GOSUMDB=off \
 GOBIN=<PATH目录> \
 go install github.com/hezof/protoapi/cmd/protogen@latest && protogen -update
 ```
@@ -50,8 +46,6 @@ go install github.com/hezof/protoapi/cmd/protogen@latest && protogen -update
 protodoc是swagger文档的http服务器, 方便发布或浏览protobuf的swagger文档.
 
 ```
-set GOPRIVATE=*.kingsoft.net
-set GOSUMDB=off
 set GOBIN=<PATH目录>
 go install github.com/hezof/protoapi/cmd/protodoc@latest
 ```
@@ -60,8 +54,6 @@ go install github.com/hezof/protoapi/cmd/protodoc@latest
 
 ```
 env \
-GOPRIVATE=*.kingsoft.net \
-GOSUMDB=off \
 GOBIN=<PATH目录> \
 go install github.com/hezof/protoapi/cmd/protodoc@latest
 ```
