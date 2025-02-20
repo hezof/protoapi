@@ -2,7 +2,7 @@
 
 protoapi基于protobuf快捷开发微服务API.
 
-![image](https://github.com/hezof/protogen/-/raw/master/protoapi.jpg)
+![image](./demo/doc/protoapi.png)
 
 ## 一. 开发环境
 
@@ -975,13 +975,6 @@ Usage: protodoc [options] <yaml_dir|yaml_file> [...]
   -title string
         文档标题 (default "文档标题")
 ```
-
-5.2 kepler自动测试
-
-从protodoc下载swagger.json, 直接导入kepler生成自动化测试用例!
-
-![image](./demo/doc/kepler-import.png)
-![image](./demo/doc/kepler.png)
 
 ## 六. 用户FAQ
 - 
