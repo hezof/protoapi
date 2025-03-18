@@ -3,12 +3,12 @@ package protoapi
 import (
 	"context"
 	"fmt"
+	"github.com/hezof/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"github.com/hezof/log"
 	"net"
 	"net/http"
 	"regexp"
@@ -582,6 +582,8 @@ func i18nGrpcError(c context.Context, err error) error {
 			if vs, ok := md["accept-language"]; ok {
 				if resMap := fastGetResMapByAcceptLanguage(vs[0]); resMap != nil {
 					if rs, ok := resMap[result.GetCode()]; ok {
+						result.SetStatus(rs.Status)
+						result.SetName(rs.Name)
 						result.SetMessage(rs.Message)
 					}
 				}

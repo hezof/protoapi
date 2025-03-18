@@ -70,11 +70,11 @@ type JsonRpcClient struct {
 	client   *http.Client
 }
 
-func NormalResult[V any](v *V) *SimpleResult {
+func NormalResult[V any](v *V) *StatusResultModel {
 	if v == nil {
 		panic("NormalResult: unmarshal nil")
 	}
-	return &SimpleResult{
+	return &StatusResultModel{
 		Data: v,
 	}
 }

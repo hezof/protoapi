@@ -2,6 +2,7 @@ package protoapi
 
 import (
 	"fmt"
+	"github.com/hezof/core"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -18,28 +19,23 @@ StatusResult统一结果与错误的数据结构, 并实现与Grpc Error的转�
 - (0,511]
 */
 const (
-	_CodeBits   = 22
-	_CodeMask   = 1<<_CodeBits - 1
-	_StatusBits = 9
-	_StatusMask = 1<<_StatusBits - 1
+	_CodeBits   = core.CodeBits
+	_CodeMask   = core.CodeMask
+	_StatusBits = core.StatusBits
+	_StatusMask = core.StatusMask
 )
 
 // StatusResult 带状态码的结果
 type StatusResult interface {
-	error
-	FieldCodec
-	GRPCStatus() *status.Status
-	GetCode() uint32
+	core.Error
 	SetStatus(status uint32)
-	GetStatus() uint32
 	SetName(name string)
-	GetName() string
 	SetMessage(message string)
-	GetMessage() string
+	GRPCStatus() *status.Status
 }
 
-// SimpleResult 带状态的结果. 必须注意status与code的约定取值范围!
-type SimpleResult struct {
+// StatusResultModel 带状态的结果. 必须注意status与code的约定取值范围!
+type StatusResultModel struct {
 	Status  uint32   // 状态代码(http).
 	Code    uint32   // 错误代码. 0表示成功
 	Name    string   // 错误名称. OK表示成功
@@ -48,12 +44,55 @@ type SimpleResult struct {
 	Data    any      `json:"-"` // 结果数据
 }
 
-func (sr *SimpleResult) Error() string {
+func (sr *StatusResultModel) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
 	bs, _ := MarshalJSON(sr)
 	return UnsafeString(bs)
 }
-func (sr *SimpleResult) DecodeField(r *JsonDecoder, f string) {
+
+func (sr *StatusResultModel) GetCode() uint32 {
+	return sr.Code
+}
+
+func (sr *StatusResultModel) GetStatus() uint32 {
+	return sr.Status
+}
+
+func (sr *StatusResultModel) SetStatus(status uint32) {
+	sr.Status = status
+}
+
+func (sr *StatusResultModel) GetName() string {
+	return sr.Name
+}
+
+func (sr *StatusResultModel) SetName(name string) {
+	sr.Name = name
+}
+
+func (sr *StatusResultModel) GetMessage() string {
+	return sr.Message
+}
+
+func (sr *StatusResultModel) SetMessage(message string) {
+	if len(sr.Details) > 0 {
+		message = fmt.Sprintf(message, sr.Details)
+	}
+	sr.Message = message
+}
+
+func (sr *StatusResultModel) GetDetails() []string {
+	return sr.Details
+}
+
+// GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
+func (sr *StatusResultModel) GRPCStatus() *status.Status {
+	return status.New(codes.Code(sr.Status<<_CodeBits|sr.Code), sr.Message)
+}
+
+var _ StatusResult = (*StatusResultModel)(nil)
+
+func (sr *StatusResultModel) DecodeField(r *JsonDecoder, f string) {
 	switch f {
 	case profile.ResultCodeField:
 		DecodeUint32(r, &sr.Code)
@@ -66,50 +105,14 @@ func (sr *SimpleResult) DecodeField(r *JsonDecoder, f string) {
 	}
 }
 
-func (sr *SimpleResult) EncodeField(w *JsonEncoder) {
+func (sr *StatusResultModel) EncodeField(w *JsonEncoder) {
 	EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
 	EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
 	EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
 	EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
 }
 
-// GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
-func (sr *SimpleResult) GRPCStatus() *status.Status {
-	return status.New(codes.Code(sr.Status<<_CodeBits|sr.Code), sr.Message)
-}
-
-func (sr *SimpleResult) GetCode() uint32 {
-	return sr.Code
-}
-
-func (sr *SimpleResult) GetStatus() uint32 {
-	return sr.Status
-}
-
-func (sr *SimpleResult) SetStatus(status uint32) {
-	sr.Status = status
-}
-
-func (sr *SimpleResult) GetName() string {
-	return sr.Name
-}
-
-func (sr *SimpleResult) SetName(name string) {
-	sr.Name = name
-}
-
-func (sr *SimpleResult) GetMessage() string {
-	return sr.Message
-}
-
-func (sr *SimpleResult) SetMessage(message string) {
-	if len(sr.Details) > 0 {
-		message = fmt.Sprintf(message, sr.Details)
-	}
-	sr.Message = message
-}
-
-var _ StatusResult = (*SimpleResult)(nil)
+var _ FieldCodec = (*StatusResultModel)(nil)
 
 // StatusError 创建StatusResult错误实例. 必须注意status与code的取值范围:
 // - Status 取值范围(0,1024)
@@ -122,7 +125,7 @@ func StatusError(status uint32, code uint32, message string, details ...string) 
 	if len(details) > 0 {
 		message = fmt.Sprintf(message, as(details)...)
 	}
-	return &SimpleResult{
+	return &StatusResultModel{
 		Status:  status,
 		Code:    code,
 		Message: message,
@@ -134,13 +137,21 @@ func StatusError(status uint32, code uint32, message string, details ...string) 
 func StatusErrorFrom(err error) StatusResult {
 
 	// 内部错误
-	if result, ok := err.(StatusResult); ok {
-		return result
+	if val, ok := err.(StatusResult); ok {
+		return val
+	}
+	if val, ok := err.(core.Error); ok {
+		return &StatusResultModel{
+			Status:  val.GetStatus(),
+			Code:    val.GetCode(),
+			Message: val.GetMessage(),
+			Details: val.GetDetails(),
+		}
 	}
 	// grpc错误
 	if sta, ok := status.FromError(err); ok {
 		// Grpc Code转换为StatusResult的Status/Code
-		return &SimpleResult{
+		return &StatusResultModel{
 			Status:  uint32(sta.Code()) >> _CodeBits,
 			Code:    uint32(sta.Code()) & _CodeMask,
 			Message: sta.Message(),
@@ -148,7 +159,7 @@ func StatusErrorFrom(err error) StatusResult {
 	}
 
 	// 其他错误
-	return &SimpleResult{
+	return &StatusResultModel{
 		Status:  profile.DefaultErrorStatus,
 		Code:    uint32(codes.Unknown),
 		Message: err.Error(),

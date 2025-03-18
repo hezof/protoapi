@@ -3,6 +3,7 @@ module github.com/hezof/protoapi
 go 1.21
 
 require (
+	github.com/hezof/core v0.0.1
 	github.com/hezof/log v0.0.4
 	google.golang.org/grpc v1.67.3
 	google.golang.org/protobuf v1.36.5
