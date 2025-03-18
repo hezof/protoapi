@@ -3,6 +3,7 @@ package protoapi
 import (
 	"context"
 	"fmt"
+	"github.com/hezof/core"
 	"io"
 	"net/http"
 	"net/url"
@@ -241,7 +242,7 @@ func (ctx *Context) WriteJson(status uint32, val any) error {
 	return EncodeResponse(ctx.ResponseWriter.ResponseWriter, val)
 }
 func (ctx *Context) WritePlain(status int, data string) error {
-	return ctx.WritePlainBytes(status, UnsafeBytes(data))
+	return ctx.WritePlainBytes(status, core.UnsafeBytes(data))
 }
 
 func (ctx *Context) WritePlainBytes(status int, data []byte) error {
@@ -258,7 +259,7 @@ func (ctx *Context) WritePlainBytes(status int, data []byte) error {
 }
 
 func (ctx *Context) WriteHtml(status int, data string) error {
-	return ctx.WriteHtmlBytes(status, UnsafeBytes(data))
+	return ctx.WriteHtmlBytes(status, core.UnsafeBytes(data))
 }
 
 func (ctx *Context) WriteHtmlBytes(status int, data []byte) error {

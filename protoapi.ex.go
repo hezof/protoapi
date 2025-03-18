@@ -2,6 +2,7 @@ package protoapi
 
 import (
 	"fmt"
+	"github.com/hezof/core"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -12,8 +13,7 @@ import (
 
 func (e *Error) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	bs, _ := MarshalJSON(e)
-	return UnsafeString(bs)
+	return core.ToJson(e)
 }
 
 func (e *Error) DecodeField(r *JsonDecoder, f string) {
@@ -48,7 +48,7 @@ func (e *Error) SetName(name string) {
 
 func (e *Error) SetMessage(message string) {
 	if len(e.Details) > 0 {
-		e.Message = fmt.Sprintf(message, as(e.Details)...)
+		e.Message = fmt.Sprintf(message, core.AnySlice(e.Details)...)
 	} else {
 		e.Message = message
 	}

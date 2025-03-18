@@ -3,6 +3,7 @@ package protoapi
 import (
 	"context"
 	"fmt"
+	"github.com/hezof/core"
 	"github.com/hezof/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -12,6 +13,7 @@ import (
 	"net"
 	"net/http"
 	"regexp"
+	"sort"
 )
 
 /**
@@ -352,10 +354,10 @@ func (svr *Server) ListenAndServe() (err error) {
 	 ********************************************************/
 	for method, pathSetting := range _requestSetting {
 		for path, setting := range pathSetting {
-			setting.Handler.Status = NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
-			setting.Handler.BodyMaxBytes = NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, profile.HttpBodyMaxBytes, MAX_MEM)
-			setting.Handler.FormMaxMemory = NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, profile.HttpFormMaxMemory, MAX_MEM)
-			setting.Handler.HandleChain = Join(svr._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
+			setting.Handler.Status = core.NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
+			setting.Handler.BodyMaxBytes = core.NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, profile.HttpBodyMaxBytes, MAX_MEM)
+			setting.Handler.FormMaxMemory = core.NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, profile.HttpFormMaxMemory, MAX_MEM)
+			setting.Handler.HandleChain = joinHandleFunc(svr._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
 			svr.mux.route(method, path, setting.Handler) // 正式注册到mux
 		}
 	}
@@ -612,7 +614,7 @@ var defaultHttpPanicHandler = &Handler{
 	Status: http.StatusInternalServerError,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			log.Error("panic: %+v\n%v", ctx.panic, StackTrace(2, "\n"))
+			log.Error("panic: %+v\n%v", ctx.panic, core.StackTrace(2, "\n"))
 			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
 		},
 	},
@@ -631,15 +633,67 @@ var defaultHttpNotFoundHandler = &Handler{
 type GrpcPanicFunc func(set *MethodSetting, ctx context.Context, p interface{}) error
 
 func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
-	log.Error("panic: %+v\n%v", p, StackTrace(2, "\n"))
+	log.Error("panic: %+v\n%v", p, core.StackTrace(2, "\n"))
 	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
 }
 
 func protect(f func()) {
 	defer func() {
 		if per := recover(); per != nil {
-			log.Error("panic: %+v\n%v", per, StackTrace(1, "\n"))
+			log.Error("panic: %+v\n%v", per, core.StackTrace(1, "\n"))
 		}
 	}()
 	f()
+}
+
+/**********************************************
+	辅助函数
+ **********************************************/
+
+// FullMethod is the full RPC method string, i.e., /package.component/method.
+func FullMethod(meta *Meta) string {
+	return "/" + meta.Package + "." + meta.Service + "/" + meta.Method
+}
+
+func orderServiceAspects(v1 []ServiceAspect, v2 []ServiceAspect) []ServiceAspect {
+	n1, n2 := len(v1), len(v2)
+	if n1 == 0 && n2 == 0 {
+		return nil
+	}
+
+	vs := make([]ServiceAspect, n1+n2)
+	copy(vs, v1)
+	copy(vs[n1:], v2)
+	// 根据Order[0]与Order[1]排序
+	sort.SliceStable(vs, func(i, j int) bool {
+		ai := vs[i]
+		aj := vs[j]
+		if ai.Order()[0] > aj.Order()[0] {
+			return false
+		} else if ai.Order()[0] < aj.Order()[0] {
+			return true
+		} else {
+			if ai.Order()[1] > aj.Order()[1] {
+				return false
+			} else {
+				return true
+			}
+		}
+	})
+	return vs
+}
+
+func joinHandleFunc(cs ...[]HandleFunc) []HandleFunc {
+	sum := 0
+	for _, c := range cs {
+		sum += len(c)
+	}
+	if sum == 0 {
+		return nil
+	}
+	ct := make([]HandleFunc, 0, sum)
+	for _, c := range cs {
+		ct = append(ct, c...)
+	}
+	return ct
 }

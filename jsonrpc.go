@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
+	"github.com/hezof/core"
 	"io"
 	"net"
 	"net/http"
@@ -205,16 +206,16 @@ func NewJsonRpcClient(e string, h JsonRpcHeader, c *JsonRpcConfig) *JsonRpcClien
 			Transport: &http.Transport{
 				Proxy: http.ProxyFromEnvironment,
 				DialContext: (&net.Dialer{
-					Timeout:   NvlD(c.DialerTimeout, defaultDialerTimeout),
-					KeepAlive: NvlD(c.DialerKeepAlive, defaultDialerKeepAlive),
+					Timeout:   core.NvlD(c.DialerTimeout, defaultDialerTimeout),
+					KeepAlive: core.NvlD(c.DialerKeepAlive, defaultDialerKeepAlive),
 				}).DialContext,
 				TLSClientConfig:     &tls.Config{InsecureSkipVerify: c.InsecureSkipVerify},
-				TLSHandshakeTimeout: NvlD(c.TLSHandshakeTimeout, defaultTLSHandshakeTimeout),
-				MaxIdleConnsPerHost: NvlI(c.MaxIdleConnsPerHost, defaultMaxIdleConnsPerHost),
-				MaxConnsPerHost:     NvlI(c.MaxConnsPerHost, defaultMaxConnsPerHost),
-				IdleConnTimeout:     NvlD(c.IdleConnTimeout, defaultIdleConnTimeout),
-				WriteBufferSize:     NvlI(c.WriteBufferSize, defaultWriteBufferSize),
-				ReadBufferSize:      NvlI(c.ReadBufferSize, defaultReadBufferSize),
+				TLSHandshakeTimeout: core.NvlD(c.TLSHandshakeTimeout, defaultTLSHandshakeTimeout),
+				MaxIdleConnsPerHost: core.NvlI(c.MaxIdleConnsPerHost, defaultMaxIdleConnsPerHost),
+				MaxConnsPerHost:     core.NvlI(c.MaxConnsPerHost, defaultMaxConnsPerHost),
+				IdleConnTimeout:     core.NvlD(c.IdleConnTimeout, defaultIdleConnTimeout),
+				WriteBufferSize:     core.NvlI(c.WriteBufferSize, defaultWriteBufferSize),
+				ReadBufferSize:      core.NvlI(c.ReadBufferSize, defaultReadBufferSize),
 				DisableKeepAlives:   true, // 尝试解决UnexpectedEOF
 			},
 		},

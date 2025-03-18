@@ -2,6 +2,7 @@ package protoapi
 
 import (
 	"fmt"
+	"github.com/hezof/core"
 	"io"
 	"reflect"
 	"sync"
@@ -214,7 +215,7 @@ func PutEncoder(enc *JsonEncoder) {
 	encoders.Put(enc.Clean())
 }
 
-func DecodeJSON(in io.Reader, val any) error {
+func DecodeProtoJson(in io.Reader, val any) error {
 	// 加速实现JsonCodec
 	d := GetDecoder(in)
 	defer PutDecoder(d)
@@ -223,7 +224,7 @@ func DecodeJSON(in io.Reader, val any) error {
 	return d.Close()
 }
 
-func EncodeJSON(out io.Writer, val any) error {
+func EncodeProtoJson(out io.Writer, val any) error {
 	e := GetEncoder(out)
 	defer PutEncoder(e)
 
@@ -231,10 +232,10 @@ func EncodeJSON(out io.Writer, val any) error {
 	return e.Close()
 }
 
-// ToJson Json转换快捷方法
-func ToJson(v any) string {
+// ToProtoJson Json转换快捷方法
+func ToProtoJson(v any) string {
 	w := NewJsonEncoder(nil, 1024)
 	EncodeAny(w, v)
 	_ = w.Close()
-	return UnsafeString(w.buff)
+	return core.UnsafeString(w.buff)
 }

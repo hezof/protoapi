@@ -2,6 +2,7 @@ package protoapi
 
 import (
 	"fmt"
+	"github.com/hezof/core"
 	"io"
 	"strconv"
 	"unicode"
@@ -437,7 +438,7 @@ func (r *JsonDecoder) skipArray() {
 
 func (r *JsonDecoder) readInt64() int64 {
 	r.readNumber()
-	ret, err := strconv.ParseInt(UnsafeString(r.number), 10, 64)
+	ret, err := strconv.ParseInt(core.UnsafeString(r.number), 10, 64)
 	if err != nil && r.firstError == nil {
 		r.firstError = err
 	}
@@ -446,7 +447,7 @@ func (r *JsonDecoder) readInt64() int64 {
 
 func (r *JsonDecoder) readUint64() uint64 {
 	r.readNumber()
-	ret, err := strconv.ParseUint(UnsafeString(r.number), 10, 64)
+	ret, err := strconv.ParseUint(core.UnsafeString(r.number), 10, 64)
 	if err != nil && r.firstError == nil {
 		r.firstError = err
 	}
@@ -455,7 +456,7 @@ func (r *JsonDecoder) readUint64() uint64 {
 
 func (r *JsonDecoder) readFloat64() float64 {
 	r.readNumber()
-	ret, err := strconv.ParseFloat(UnsafeString(r.number), 64)
+	ret, err := strconv.ParseFloat(core.UnsafeString(r.number), 64)
 	if err != nil && r.firstError == nil {
 		r.firstError = err
 	}
@@ -616,7 +617,7 @@ __ENTRY__:
 					r.expectedDelimiterError()
 				}
 				r.unreadByte()
-				return UnsafeString(buf)
+				return core.UnsafeString(buf)
 			case c == '\\':
 				mark := r.mark
 				r.mark += i + 1
@@ -628,7 +629,7 @@ __ENTRY__:
 		buf = append(buf, r.buff[r.mark:r.size]...)
 		if !r.more() {
 			r.unexpectedEndError()
-			return UnsafeString(buf)
+			return core.UnsafeString(buf)
 		}
 	}
 }

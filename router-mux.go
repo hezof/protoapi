@@ -1,6 +1,7 @@
 package protoapi
 
 import (
+	"github.com/hezof/core"
 	"net/http"
 	"strconv"
 	"sync"
@@ -194,7 +195,7 @@ func (m *mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				c.cipath = make([]byte, 0, mx+1)
 			}
 			// 尝试忽略大小写等情况
-			if fixedPath := UnsafeString(t.findCaseInsensitivePathRec(
+			if fixedPath := core.UnsafeString(t.findCaseInsensitivePathRec(
 				cleanPath(path),
 				c.cipath,
 				c.cibuff,

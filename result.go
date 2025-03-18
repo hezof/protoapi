@@ -46,8 +46,7 @@ type StatusResultModel struct {
 
 func (sr *StatusResultModel) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	bs, _ := MarshalJSON(sr)
-	return UnsafeString(bs)
+	return core.ToJson(sr)
 }
 
 func (sr *StatusResultModel) GetCode() uint32 {
@@ -123,7 +122,7 @@ func StatusError(status uint32, code uint32, message string, details ...string) 
 	code &= _CodeMask
 
 	if len(details) > 0 {
-		message = fmt.Sprintf(message, as(details)...)
+		message = fmt.Sprintf(message, core.AnySlice(details)...)
 	}
 	return &StatusResultModel{
 		Status:  status,

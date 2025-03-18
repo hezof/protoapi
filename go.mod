@@ -15,3 +15,8 @@ require (
 	golang.org/x/text v0.17.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 )
+
+replace (
+	github.com/hezof/core v0.0.1 => ../core
+	github.com/hezof/log v0.0.4 => ../log
+)
