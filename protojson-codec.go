@@ -2,7 +2,6 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/core"
 	"io"
 	"reflect"
 	"sync"
@@ -232,10 +231,12 @@ func EncodeProtoJson(out io.Writer, val any) error {
 	return e.Close()
 }
 
-// ToProtoJson Json转换快捷方法
-func ToProtoJson(v any) string {
+func EncodeProtoJsonData(v any) ([]byte, error) {
 	w := NewJsonEncoder(nil, 1024)
 	EncodeAny(w, v)
-	_ = w.Close()
-	return core.UnsafeString(w.buff)
+	err := w.Close()
+	if err != nil {
+		return nil, err
+	}
+	return w.buff, nil
 }

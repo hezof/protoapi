@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/hezof/core"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/mdl"
 	"net/http"
@@ -25,7 +26,7 @@ func TestGET(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestPUT(t *testing.T) {
@@ -45,7 +46,7 @@ func TestPUT(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestPOST(t *testing.T) {
@@ -65,7 +66,7 @@ func TestPOST(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestDELETE(t *testing.T) {
@@ -85,7 +86,7 @@ func TestDELETE(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestPATCH(t *testing.T) {
@@ -105,7 +106,7 @@ func TestPATCH(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestHEAD(t *testing.T) {
@@ -125,7 +126,7 @@ func TestHEAD(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	//fmt.Println(protoapi.ToJson(rsp))
+	//fmt.Println(core.ToJson(rsp))
 }
 
 func TestOPTIONS(t *testing.T) {
@@ -145,7 +146,7 @@ func TestOPTIONS(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestCONNECT(t *testing.T) {
@@ -165,5 +166,5 @@ func TestCONNECT(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }

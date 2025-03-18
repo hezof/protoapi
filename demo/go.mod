@@ -10,8 +10,14 @@ require (
 )
 
 require (
+	github.com/hezof/core v0.0.1 // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
+)
+
+replace (
+	github.com/hezof/core => ../../core
+	github.com/hezof/protoapi => ../../protoapi
 )

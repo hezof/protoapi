@@ -3,9 +3,10 @@ package test
 import (
 	"bytes"
 	"fmt"
-	"io"
+	"github.com/hezof/core"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -86,7 +87,7 @@ func TestForm(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestPath(t *testing.T) {
@@ -112,7 +113,7 @@ func TestPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestQuery(t *testing.T) {
@@ -146,7 +147,7 @@ func TestQuery(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestHeader(t *testing.T) {
@@ -180,7 +181,7 @@ func TestHeader(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestCookie(t *testing.T) {
@@ -216,5 +217,5 @@ func TestCookie(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }

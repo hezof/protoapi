@@ -3,9 +3,10 @@ package test
 import (
 	"bytes"
 	"fmt"
-	"io"
+	"github.com/hezof/core"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -39,7 +40,7 @@ func TestHttpSimple(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestHttpClient(t *testing.T) {
@@ -48,7 +49,7 @@ func TestHttpClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestHttpServer(t *testing.T) {
@@ -57,7 +58,7 @@ func TestHttpServer(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestHttpDirectional(t *testing.T) {
@@ -66,7 +67,7 @@ func TestHttpDirectional(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 func TestHttpUploadCovert(t *testing.T) {
 	buffer := new(bytes.Buffer)

@@ -197,21 +197,21 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 
 // ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
 func (ctx *Context) ReadBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
-		return buff.data, nil
+	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
+		return buff.Data, nil
 	} else {
 		return io.ReadAll(ctx.Request.Body) // Transfer-Encoding: chunked的情况!
 	}
 }
 
 func (ctx *Context) CopyBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
-		buff.head = 0
-		return buff.data, nil
+	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
+		buff.Reset()
+		return buff.Data, nil
 	} else {
 		data, err := io.ReadAll(ctx.Request.Body)
 		if err == nil {
-			ctx.Request.Body = &BuffBody{data: data}
+			ctx.Request.Body = &core.BuffBody{Data: data}
 		}
 		return data, err
 	}
@@ -219,8 +219,8 @@ func (ctx *Context) CopyBody() ([]byte, error) {
 
 func (ctx *Context) ReadJson(val any) error {
 	// BuffBody允许重复读
-	if buff, ok := ctx.Request.Body.(*BuffBody); ok {
-		buff.head = 0
+	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
+		buff.Reset()
 	}
 	return DecodeRequest(ctx.Request.Body, val)
 }
@@ -289,28 +289,6 @@ var (
 	keepAliveConnection = []string{"keep-alive"}
 	closeConnection     = []string{"close"}
 )
-
-// BuffBody 一次性读写Body, 配合ReadBody()一块使用
-type BuffBody struct {
-	head int
-	data []byte
-}
-
-func (b *BuffBody) Read(p []byte) (int, error) {
-	if b.head >= len(b.data) {
-		return 0, io.EOF
-	}
-	n := copy(p, b.data[b.head:])
-	b.head += n
-	return n, nil
-}
-
-func (b *BuffBody) Close() error {
-	b.head = len(b.data)
-	return nil
-}
-
-var _ io.ReadCloser = (*BuffBody)(nil)
 
 // proxyResponseWriter 截获status用于拦截器(length已经去掉)
 type proxyResponseWriter struct {

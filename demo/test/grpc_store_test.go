@@ -3,10 +3,11 @@ package test
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/hezof/core"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"testing"
 )
 
@@ -26,7 +27,7 @@ func TestGrpcSimple(t *testing.T) {
 		serr := protoapi.StatusErrorFrom(err)
 		t.Fatal(serr)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestGrpcClient(t *testing.T) {
@@ -45,7 +46,7 @@ func TestGrpcClient(t *testing.T) {
 		serr := protoapi.StatusErrorFrom(err)
 		t.Fatal(serr)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestGrpcServer(t *testing.T) {
@@ -59,7 +60,7 @@ func TestGrpcServer(t *testing.T) {
 		serr := protoapi.StatusErrorFrom(err)
 		t.Fatal(serr)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
 
 func TestGrpcBidirectional(t *testing.T) {
@@ -78,5 +79,5 @@ func TestGrpcBidirectional(t *testing.T) {
 		serr := protoapi.StatusErrorFrom(err)
 		t.Fatal(serr)
 	}
-	fmt.Println(protoapi.ToJson(rsp))
+	fmt.Println(core.ToJson(rsp))
 }
