@@ -354,9 +354,9 @@ func (svr *Server) ListenAndServe() (err error) {
 	 ********************************************************/
 	for method, pathSetting := range _requestSetting {
 		for path, setting := range pathSetting {
-			setting.Handler.Status = core.NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
-			setting.Handler.BodyMaxBytes = core.NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, profile.HttpBodyMaxBytes, MAX_MEM)
-			setting.Handler.FormMaxMemory = core.NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, profile.HttpFormMaxMemory, MAX_MEM)
+			setting.Handler.Status = base.NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
+			setting.Handler.BodyMaxBytes = base.NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, profile.HttpBodyMaxBytes, MAX_MEM)
+			setting.Handler.FormMaxMemory = base.NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, profile.HttpFormMaxMemory, MAX_MEM)
 			setting.Handler.HandleChain = joinHandleFunc(svr._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
 			svr.mux.route(method, path, setting.Handler) // 正式注册到mux
 		}
@@ -614,7 +614,7 @@ var defaultHttpPanicHandler = &Handler{
 	Status: http.StatusInternalServerError,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			log.Error("panic: %+v\n%v", ctx.panic, core.StackTrace(2, "\n"))
+			log.Error("panic: %+v\n%v", ctx.panic, base.StackTrace(2, "\n"))
 			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
 		},
 	},
@@ -633,14 +633,14 @@ var defaultHttpNotFoundHandler = &Handler{
 type GrpcPanicFunc func(set *MethodSetting, ctx context.Context, p interface{}) error
 
 func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
-	log.Error("panic: %+v\n%v", p, core.StackTrace(2, "\n"))
+	log.Error("panic: %+v\n%v", p, base.StackTrace(2, "\n"))
 	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
 }
 
 func protect(f func()) {
 	defer func() {
 		if per := recover(); per != nil {
-			log.Error("panic: %+v\n%v", per, core.StackTrace(1, "\n"))
+			log.Error("panic: %+v\n%v", per, base.StackTrace(1, "\n"))
 		}
 	}()
 	f()

@@ -13,7 +13,7 @@ import (
 
 func (e *Error) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	return core.ToJson(e)
+	return base.ToJson(e)
 }
 
 func (e *Error) DecodeField(r *JsonDecoder, f string) {
@@ -48,7 +48,7 @@ func (e *Error) SetName(name string) {
 
 func (e *Error) SetMessage(message string) {
 	if len(e.Details) > 0 {
-		e.Message = fmt.Sprintf(message, core.AnySlice(e.Details)...)
+		e.Message = fmt.Sprintf(message, base.AnySlice(e.Details)...)
 	} else {
 		e.Message = message
 	}

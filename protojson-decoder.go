@@ -438,7 +438,7 @@ func (r *JsonDecoder) skipArray() {
 
 func (r *JsonDecoder) readInt64() int64 {
 	r.readNumber()
-	ret, err := strconv.ParseInt(core.UnsafeString(r.number), 10, 64)
+	ret, err := strconv.ParseInt(base.UnsafeString(r.number), 10, 64)
 	if err != nil && r.firstError == nil {
 		r.firstError = err
 	}
@@ -447,7 +447,7 @@ func (r *JsonDecoder) readInt64() int64 {
 
 func (r *JsonDecoder) readUint64() uint64 {
 	r.readNumber()
-	ret, err := strconv.ParseUint(core.UnsafeString(r.number), 10, 64)
+	ret, err := strconv.ParseUint(base.UnsafeString(r.number), 10, 64)
 	if err != nil && r.firstError == nil {
 		r.firstError = err
 	}
@@ -456,7 +456,7 @@ func (r *JsonDecoder) readUint64() uint64 {
 
 func (r *JsonDecoder) readFloat64() float64 {
 	r.readNumber()
-	ret, err := strconv.ParseFloat(core.UnsafeString(r.number), 64)
+	ret, err := strconv.ParseFloat(base.UnsafeString(r.number), 64)
 	if err != nil && r.firstError == nil {
 		r.firstError = err
 	}
@@ -617,7 +617,7 @@ __ENTRY__:
 					r.expectedDelimiterError()
 				}
 				r.unreadByte()
-				return core.UnsafeString(buf)
+				return base.UnsafeString(buf)
 			case c == '\\':
 				mark := r.mark
 				r.mark += i + 1
@@ -629,7 +629,7 @@ __ENTRY__:
 		buf = append(buf, r.buff[r.mark:r.size]...)
 		if !r.more() {
 			r.unexpectedEndError()
-			return core.UnsafeString(buf)
+			return base.UnsafeString(buf)
 		}
 	}
 }

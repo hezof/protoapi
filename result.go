@@ -19,15 +19,15 @@ StatusResult统一结果与错误的数据结构, 并实现与Grpc Error的转�
 - (0,511]
 */
 const (
-	_CodeBits   = core.CodeBits
-	_CodeMask   = core.CodeMask
-	_StatusBits = core.StatusBits
-	_StatusMask = core.StatusMask
+	_CodeBits   = base.CodeBits
+	_CodeMask   = base.CodeMask
+	_StatusBits = base.StatusBits
+	_StatusMask = base.StatusMask
 )
 
 // StatusResult 带状态码的结果
 type StatusResult interface {
-	core.Error
+	base.Error
 	SetStatus(status uint32)
 	SetName(name string)
 	SetMessage(message string)
@@ -46,7 +46,7 @@ type StatusResultModel struct {
 
 func (sr *StatusResultModel) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	return core.ToJson(sr)
+	return base.ToJson(sr)
 }
 
 func (sr *StatusResultModel) GetCode() uint32 {
@@ -122,7 +122,7 @@ func StatusError(status uint32, code uint32, message string, details ...string) 
 	code &= _CodeMask
 
 	if len(details) > 0 {
-		message = fmt.Sprintf(message, core.AnySlice(details)...)
+		message = fmt.Sprintf(message, base.AnySlice(details)...)
 	}
 	return &StatusResultModel{
 		Status:  status,
@@ -139,7 +139,7 @@ func StatusErrorFrom(err error) StatusResult {
 	if val, ok := err.(StatusResult); ok {
 		return val
 	}
-	if val, ok := err.(core.Error); ok {
+	if val, ok := err.(base.Error); ok {
 		return &StatusResultModel{
 			Status:  val.GetStatus(),
 			Code:    val.GetCode(),

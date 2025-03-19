@@ -197,7 +197,7 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 
 // ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
 func (ctx *Context) ReadBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
+	if buff, ok := ctx.Request.Body.(*base.BuffBody); ok {
 		return buff.Data, nil
 	} else {
 		return io.ReadAll(ctx.Request.Body) // Transfer-Encoding: chunked的情况!
@@ -205,13 +205,13 @@ func (ctx *Context) ReadBody() ([]byte, error) {
 }
 
 func (ctx *Context) CopyBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
+	if buff, ok := ctx.Request.Body.(*base.BuffBody); ok {
 		buff.Reset()
 		return buff.Data, nil
 	} else {
 		data, err := io.ReadAll(ctx.Request.Body)
 		if err == nil {
-			ctx.Request.Body = &core.BuffBody{Data: data}
+			ctx.Request.Body = &base.BuffBody{Data: data}
 		}
 		return data, err
 	}
@@ -219,7 +219,7 @@ func (ctx *Context) CopyBody() ([]byte, error) {
 
 func (ctx *Context) ReadJson(val any) error {
 	// BuffBody允许重复读
-	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
+	if buff, ok := ctx.Request.Body.(*base.BuffBody); ok {
 		buff.Reset()
 	}
 	return DecodeRequest(ctx.Request.Body, val)
@@ -242,7 +242,7 @@ func (ctx *Context) WriteJson(status uint32, val any) error {
 	return EncodeResponse(ctx.ResponseWriter.ResponseWriter, val)
 }
 func (ctx *Context) WritePlain(status int, data string) error {
-	return ctx.WritePlainBytes(status, core.UnsafeBytes(data))
+	return ctx.WritePlainBytes(status, base.UnsafeBytes(data))
 }
 
 func (ctx *Context) WritePlainBytes(status int, data []byte) error {
@@ -259,7 +259,7 @@ func (ctx *Context) WritePlainBytes(status int, data []byte) error {
 }
 
 func (ctx *Context) WriteHtml(status int, data string) error {
-	return ctx.WriteHtmlBytes(status, core.UnsafeBytes(data))
+	return ctx.WriteHtmlBytes(status, base.UnsafeBytes(data))
 }
 
 func (ctx *Context) WriteHtmlBytes(status int, data []byte) error {
