@@ -13,6 +13,6 @@ require (
 )
 
 replace (
-	github.com/hezof/core => ./../../base
+	github.com/hezof/base => ./../../base
 	github.com/hezof/protoapi => ../../protoapi
 )

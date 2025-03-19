@@ -5,15 +5,13 @@ import (
 	"time"
 )
 
-const MAX_MEM = 32 << 20 // 32M
+const DefMaxMem = 32 << 20 // 32M
 
 type Profile struct {
 	ResultCodeField              string        // code前缀, 默认: `"Code":`, 0表示成功
 	ResultNameField              string        // name前缀, 默认: `"Name":`, OK表示成功
 	ResultDataField              string        // data前缀, 默认: `"Data":`.
 	ResultMessageField           string        // message前缀, 默认: `"Message":`
-	DecoderBufferSize            int           // 默认8K
-	EncoderBufferSize            int           // 默认8K
 	HttpFormMaxMemory            int64         // 32 MB,同gin及多数web框架.
 	HttpBodyMaxBytes             int64         // 32 MB,默认请求体的字节数. 注意: 请求体不是响应体, 后者没有限制!
 	HttpKeepAlive                time.Duration // 3分钟
@@ -30,10 +28,8 @@ var profile = Profile{
 	ResultNameField:              `Name`,
 	ResultDataField:              `Data`,
 	ResultMessageField:           `Message`,
-	DecoderBufferSize:            8 * 1024,
-	EncoderBufferSize:            8 * 1024,
-	HttpFormMaxMemory:            MAX_MEM,
-	HttpBodyMaxBytes:             MAX_MEM,
+	HttpFormMaxMemory:            DefMaxMem,
+	HttpBodyMaxBytes:             DefMaxMem,
 	HttpKeepAlive:                3 * time.Minute,
 	GrpcKeepAlive:                5 * time.Minute,
 	GrpcKeepAlivePolicy:          5 * time.Minute,

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/hezof/base"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"io"
@@ -110,31 +111,8 @@ func DecodeMeta(b64 string) *Meta {
 
 // DecodeRequest 解码请求对象. DecodeMessage()很相似, 但不支持泛型!
 func DecodeRequest(in io.Reader, req any) error {
-	r := GetDecoder(in)
-	defer PutDecoder(r)
-
-	switch r.token {
-	case ObjectBegin:
-		if fc, ok := req.(FieldCodec); ok {
-			// 已实现JsonCodec使用protojson加速解码
-			r.readObject(fc)
-		} else {
-			// 未实现JsonCodec使用encoding/std反射解码
-			err := UnmarshalJSON(r.dumpObjectOrArray(ObjectBegin), &req)
-			if err != nil {
-				r.reportError(err)
-			}
-		}
-
-	case Null:
-		r.skipNull()
-	case 0:
-		r.unexpectedEndError()
-	case -1:
-	default:
-		r.expectedTokenError(ObjectBegin)
-	}
-	if err := r.Close(); err != nil {
+	err := base.DecodeJsonReader(in, req)
+	if err != nil {
 		return StatusError(http.StatusBadRequest, profile.DefaultBadRequestErrorCode, err.Error())
 	}
 	return nil
@@ -142,11 +120,7 @@ func DecodeRequest(in io.Reader, req any) error {
 
 // EncodeResponse 编码请求对象
 func EncodeResponse(out io.Writer, rsp any) error {
-	w := GetEncoder(out)
-	defer PutEncoder(w)
-
-	encodeObject(w, rsp)
-	return w.Close()
+	return base.EncodeProtoJsonWriter(out, rsp)
 }
 
 /*************************************************
@@ -171,9 +145,9 @@ func ParamBoolOptional(f func(string) (string, error), key string, ptr **bool) e
 		return nil
 	}
 	if val == "true" {
-		*ptr = &_true
+		*ptr = &base.TRUE
 	} else {
-		*ptr = &_false
+		*ptr = &base.FALSE
 	}
 	return nil
 }

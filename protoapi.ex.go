@@ -16,21 +16,21 @@ func (e *Error) Error() string {
 	return base.ToJson(e)
 }
 
-func (e *Error) DecodeField(r *JsonDecoder, f string) {
+func (e *Error) DecodeField(r *base.JsonDecoder, f string) {
 	switch f {
 	case profile.ResultCodeField:
-		DecodeUint32(r, &e.Code)
+		base.DecodeUint32(r, &e.Code)
 	case profile.ResultNameField:
-		DecodeString(r, &e.Name)
+		base.DecodeString(r, &e.Name)
 	case profile.ResultMessageField:
-		DecodeString(r, &e.Message)
+		base.DecodeString(r, &e.Message)
 	}
 }
 
-func (e *Error) EncodeField(w *JsonEncoder) {
-	EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
-	EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
-	EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
+func (e *Error) EncodeField(w *base.JsonEncoder) {
+	base.EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
+	base.EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
+	base.EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
 }
 
 // GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换

@@ -26,5 +26,5 @@ func EventsResult[V any](v *V) *V {
 }
 
 func NewJsonRpcClient(endpoint string, config *base.HttpConfig, header base.HttpHeader) *base.JsonRpcClient {
-	return base.NewJsonRpcClient(endpoint, config, header, EncodeProtoJsonData, DecodeProtoJson)
+	return base.NewJsonRpcClient(endpoint, config, header, nil, nil)
 }

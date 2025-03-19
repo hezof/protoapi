@@ -91,27 +91,27 @@ func (sr *StatusResultModel) GRPCStatus() *status.Status {
 
 var _ StatusResult = (*StatusResultModel)(nil)
 
-func (sr *StatusResultModel) DecodeField(r *JsonDecoder, f string) {
+func (sr *StatusResultModel) DecodeField(r *base.JsonDecoder, f string) {
 	switch f {
 	case profile.ResultCodeField:
-		DecodeUint32(r, &sr.Code)
+		base.DecodeUint32(r, &sr.Code)
 	case profile.ResultNameField:
-		DecodeString(r, &sr.Name)
+		base.DecodeString(r, &sr.Name)
 	case profile.ResultMessageField:
-		DecodeString(r, &sr.Message)
+		base.DecodeString(r, &sr.Message)
 	case profile.ResultDataField:
-		DecodeAny(r, sr.Data)
+		base.DecodeAny(r, sr.Data)
 	}
 }
 
-func (sr *StatusResultModel) EncodeField(w *JsonEncoder) {
-	EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
-	EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
-	EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
-	EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
+func (sr *StatusResultModel) EncodeField(w *base.JsonEncoder) {
+	base.EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
+	base.EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
+	base.EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
+	base.EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
 }
 
-var _ FieldCodec = (*StatusResultModel)(nil)
+var _ base.FieldCodec = (*StatusResultModel)(nil)
 
 // StatusError 创建StatusResult错误实例. 必须注意status与code的取值范围:
 // - Status 取值范围(0,1024)
