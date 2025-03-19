@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
 	"math"

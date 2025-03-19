@@ -1,7 +1,7 @@
 package protoapi
 
 import (
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"net/http"
 	"strconv"
 	"sync"

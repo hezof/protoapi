@@ -1,6 +1,6 @@
 package protoapi
 
-import "github.com/hezof/core"
+import "github.com/hezof/base"
 
 func NormalResult[V any](v *V) *StatusResultModel {
 	if v == nil {

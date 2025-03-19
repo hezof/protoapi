@@ -3,7 +3,7 @@ package protoapi
 import (
 	"context"
 	"fmt"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"io"
 	"net/http"
 	"net/url"

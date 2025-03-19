@@ -3,7 +3,7 @@ package protoapi
 import (
 	"context"
 	"fmt"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"github.com/hezof/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

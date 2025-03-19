@@ -32,7 +32,7 @@ package protoapi
 import (
 	"bytes"
 	"encoding/xml"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"github.com/hezof/log"
 	"os"
 	"path/filepath"

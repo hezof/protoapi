@@ -3,7 +3,7 @@ package protoapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"io"
 	"net/url"
 	"reflect"

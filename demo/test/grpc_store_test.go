@@ -3,7 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
 	"google.golang.org/grpc"

@@ -6,7 +6,7 @@ package protoapi
 
 import (
 	"bytes"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"strings"
 	"unicode"
 	"unicode/utf8"

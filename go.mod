@@ -17,6 +17,6 @@ require (
 )
 
 replace (
-	github.com/hezof/core v0.0.1 => ../core
+	github.com/hezof/core v0.0.1 => ./../base
 	github.com/hezof/log v0.0.4 => ../log
 )

@@ -2,7 +2,7 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/core"
+	"github.com/hezof/base"
 	"io"
 	"strconv"
 	"unicode"
