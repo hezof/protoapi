@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"google.golang.org/grpc"
-	"io"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
+	"google.golang.org/grpc"
+	"io"
 	"os"
 )
 
@@ -39,7 +39,7 @@ func (ps *StoreImplement) Client(svr grpc.ClientStreamingServer[api.Book, api.Bo
 	return
 }
 
-// Server api.Store.Server. 通过该方法可以流式返回指书籍信息
+// Server api.Store.GraceServer. 通过该方法可以流式返回指书籍信息
 // POST /server/book
 // WEBSOCKET /server/book
 func (ps *StoreImplement) Server(req *api.Book, svr grpc.ServerStreamingServer[api.Book]) (err error) {

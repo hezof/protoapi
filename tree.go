@@ -1,7 +1,3 @@
-// Copyright 2013 Julien Schmidt. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be found
-// at https://github.com/julienschmidt/httprouter/blob/master/LICENSE
-
 package protoapi
 
 import (
@@ -63,17 +59,10 @@ func (trees methodTrees) get(method string) *node {
 	return nil
 }
 
-func min(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
-}
-
 func longestCommonPrefix(a, b string) int {
 	i := 0
-	max := min(len(a), len(b))
-	for i < max && a[i] == b[i] {
+	max_ := min(len(a), len(b))
+	for i < max_ && a[i] == b[i] {
 		i++
 	}
 	return i
@@ -267,7 +256,19 @@ walk:
 // Returns -1 as index, if no wildcard was found.
 func findWildcard(path string) (wildcard string, i int, valid bool) {
 	// Find start
+	escapeColon := false
 	for start, c := range []byte(path) {
+		if escapeColon {
+			escapeColon = false
+			if c == ':' {
+				continue
+			}
+			panic("invalid escape string in path '" + path + "'")
+		}
+		if c == '\\' {
+			escapeColon = true
+			continue
+		}
 		// A wildcard starts with ':' (param) or '*' (catch-all)
 		if c != ':' && c != '*' {
 			continue
@@ -362,7 +363,7 @@ func (n *node) insertChild(path string, fullPath string, handlers *Handler) {
 
 		// currently fixed width 1 for '/'
 		i--
-		if path[i] != '/' {
+		if i < 0 || path[i] != '/' {
 			panic("no / before catch-all in path '" + fullPath + "'")
 		}
 
@@ -717,7 +718,7 @@ walk: // Outer loop for walking the tree
 				// Runes are up to 4 byte long,
 				// -4 would definitely be another rune.
 				var off int
-				for max := min(npLen, 3); off < max; off++ {
+				for max_ := min(npLen, 3); off < max_; off++ {
 					if i := npLen - off; utf8.RuneStart(oldPath[i]) {
 						// read rune from cached path
 						rv, _ = utf8.DecodeRuneInString(oldPath[i:])

@@ -1,8 +1,3 @@
-// Copyright 2013 Julien Schmidt. All rights reserved.
-// Based on the path package, Copyright 2009 The Go Authors.
-// Use of this source Code is governed by a BSD-style license that can be found
-// at https://github.com/julienschmidt/httprouter/blob/master/LICENSE.
-
 package protoapi
 
 // cleanPath is the URL version of path.Clean, it returns a canonical URL path
@@ -11,8 +6,8 @@ package protoapi
 // The following rules are applied iteratively until no further processing can
 // be done:
 //  1. Replace multiple slashes with a single slash.
-//  2. Eliminate each . path Name element (the current directory).
-//  3. Eliminate each inner .. path Name element (the parent directory)
+//  2. Eliminate each . path name element (the current directory).
+//  3. Eliminate each inner .. path name element (the parent directory)
 //     along with the non-.. element that precedes it.
 //  4. Eliminate .. elements that begin a rooted path:
 //     that is, replace "/.." by "/" at the beginning of a path.

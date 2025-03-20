@@ -498,13 +498,13 @@ var file_store_proto_depIdxs = []int32{
 	2, // 2: api.Book.author:type_name -> api.Author
 	1, // 3: api.Store.Simple:input_type -> api.Book
 	1, // 4: api.Store.Client:input_type -> api.Book
-	1, // 5: api.Store.Server:input_type -> api.Book
+	1, // 5: api.Store.GraceServer:input_type -> api.Book
 	1, // 6: api.Store.Bidirectional:input_type -> api.Book
 	3, // 7: api.Store.UploadCovert:input_type -> api.Void
 	3, // 8: api.Store.ReviewCovert:input_type -> api.Void
 	1, // 9: api.Store.Simple:output_type -> api.Book
 	1, // 10: api.Store.Client:output_type -> api.Book
-	1, // 11: api.Store.Server:output_type -> api.Book
+	1, // 11: api.Store.GraceServer:output_type -> api.Book
 	1, // 12: api.Store.Bidirectional:output_type -> api.Book
 	3, // 13: api.Store.UploadCovert:output_type -> api.Void
 	3, // 14: api.Store.ReviewCovert:output_type -> api.Void
