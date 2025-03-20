@@ -15,7 +15,7 @@ import (
 // Context 处理上下文.必须注意:Context IS NON-THREAD-SAFE!!!
 type Context struct {
 	mux            *mux                 // (不用清理)创建Context的mux实例(不能重置)
-	result         StatusResultModel    // (不用清理)仅仅用于wrap apply result避免反复创建临时Result! 不作其他用途!
+	result         StatusResult         // (不用清理)仅仅用于wrap apply result避免反复创建临时Result! 不作其他用途!
 	params         Params               // (不用清理)Params, 每次调用node.getValue()都必须重置
 	skippedNodes   []skippedNode        // (不用清理)配合gin-tree使用
 	cipath         []byte               // (不用清理)case-insensitive lookup path
@@ -127,7 +127,7 @@ func (ctx *Context) resource(code uint32) *resource {
 }
 
 // WriteErrorResult 用于restful写出错误结果
-func (ctx *Context) WriteErrorResult(result StatusResult) error {
+func (ctx *Context) WriteErrorResult(result base.Error) error {
 	// graceful关闭期间断开keepalive连接
 	if ctx.mux.closed != 0 {
 		ctx.ResponseWriter.Header()["Connection"] = closeConnection
@@ -140,7 +140,7 @@ func (ctx *Context) WriteErrorResult(result StatusResult) error {
 }
 
 // writeErrorResult 用于websocket写出错误结果
-func (ctx *Context) writeErrorResult(out io.Writer, result StatusResult) error {
+func (ctx *Context) writeErrorResult(out io.Writer, result base.Error) error {
 	// 国际化错误消息(延后初始化)
 	if hasResMap {
 		if rs := ctx.resource(result.GetCode()); rs != nil {

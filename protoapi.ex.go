@@ -35,7 +35,7 @@ func (e *Error) EncodeField(w *base.JsonEncoder) {
 
 // GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
 func (e *Error) GRPCStatus() *status.Status {
-	return status.New(codes.Code(e.Status<<_CodeBits|e.Code), e.Message)
+	return status.New(codes.Code(e.Status<<base.ErrorCodeBits|e.Code), e.Message)
 }
 
 func (e *Error) SetStatus(status uint32) {
@@ -54,4 +54,4 @@ func (e *Error) SetMessage(message string) {
 	}
 }
 
-var _ StatusResult = (*Error)(nil)
+var _ base.Error = (*Error)(nil)

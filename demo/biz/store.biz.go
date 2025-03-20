@@ -39,7 +39,7 @@ func (ps *StoreImplement) Client(svr grpc.ClientStreamingServer[api.Book, api.Bo
 	return
 }
 
-// Server api.Store.GraceServer. 通过该方法可以流式返回指书籍信息
+// Server api.Store.ConfigServer. 通过该方法可以流式返回指书籍信息
 // POST /server/book
 // WEBSOCKET /server/book
 func (ps *StoreImplement) Server(req *api.Book, svr grpc.ServerStreamingServer[api.Book]) (err error) {

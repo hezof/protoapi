@@ -22,7 +22,7 @@ import (
 - http-grpc网关
 */
 
-type GraceServer struct {
+type ConfigServer struct {
 	mux                                                      // 多路
 	config                *Config                            // 配置
 	settings              map[string]*MethodSetting          // 方法设置(过程数据)
@@ -46,7 +46,7 @@ type GraceServer struct {
 }
 
 // 清理运行过程不再需要的中间变量
-func (svr *GraceServer) clean() {
+func (svr *ConfigServer) clean() {
 	svr._group = nil
 	svr._serviceSetting = nil
 	svr._serviceAspect = nil
@@ -58,8 +58,8 @@ func (svr *GraceServer) clean() {
 	_globalRegister = nil
 }
 
-func NewServer(c *Config) *GraceServer {
-	return &GraceServer{
+func NewServer(c *Config) *ConfigServer {
+	return &ConfigServer{
 		mux: mux{
 			httpPanic:    defaultHttpPanicHandler,
 			httpNotFound: defaultHttpNotFoundHandler,
@@ -75,7 +75,7 @@ func NewServer(c *Config) *GraceServer {
 	元数据加载
  **********************************************/
 
-func (svr *GraceServer) Config() *Config {
+func (svr *ConfigServer) Config() *Config {
 	return svr.config
 }
 
@@ -84,27 +84,27 @@ func (svr *GraceServer) Config() *Config {
  **********************************************/
 
 // OnInit 服务器启动时回调
-func (svr *GraceServer) OnInit(fs ...func()) {
+func (svr *ConfigServer) OnInit(fs ...func()) {
 	svr.onInit = append(svr.onInit, fs...)
 }
 
 // OnReady 服务器完成时回调
-func (svr *GraceServer) OnReady(fs ...func()) {
+func (svr *ConfigServer) OnReady(fs ...func()) {
 	svr.onReady = append(svr.onReady, fs...)
 }
 
 // OnExit 服务器退出时回调
-func (svr *GraceServer) OnExit(fs ...func()) {
+func (svr *ConfigServer) OnExit(fs ...func()) {
 	svr.onExit = append(svr.onExit, fs...)
 }
 
 // OnRegisterGrpcService 注册GRPC服务回调
-func (svr *GraceServer) OnRegisterGrpcService(f func(name, addr string, undo bool)) {
+func (svr *ConfigServer) OnRegisterGrpcService(f func(name, addr string, undo bool)) {
 	svr.onRegisterGrpcService = f
 }
 
 // OnRegisterHttpService 注册HTTP服务回调
-func (svr *GraceServer) OnRegisterHttpService(f func(name, addr string, undo bool)) {
+func (svr *ConfigServer) OnRegisterHttpService(f func(name, addr string, undo bool)) {
 	svr.onRegisterHttpService = f
 }
 
@@ -112,31 +112,31 @@ func (svr *GraceServer) OnRegisterHttpService(f func(name, addr string, undo boo
 	配置添加
  **********************************************/
 
-func (svr *GraceServer) ServiceAspect(vs ...ServiceAspect) {
+func (svr *ConfigServer) ServiceAspect(vs ...ServiceAspect) {
 	svr._serviceAspect = append(svr._serviceAspect, vs...)
 }
 
-func (svr *GraceServer) ServicePlugin(vs ...ServicePlugin) {
+func (svr *ConfigServer) ServicePlugin(vs ...ServicePlugin) {
 	svr._servicePlugin = append(svr._servicePlugin, vs...)
 }
 
-func (svr *GraceServer) RequestPlugin(vs ...RequestPlugin) {
+func (svr *ConfigServer) RequestPlugin(vs ...RequestPlugin) {
 	svr._requestPlugin = append(svr._requestPlugin, vs...)
 }
 
-func (svr *GraceServer) GrpcServerOption(vs ...grpc.ServerOption) {
+func (svr *ConfigServer) GrpcServerOption(vs ...grpc.ServerOption) {
 	svr._grpcServerOption = append(svr._grpcServerOption, vs...)
 }
 
-func (svr *GraceServer) HttpServerOption(vs ...HandleFunc) {
+func (svr *ConfigServer) HttpServerOption(vs ...HandleFunc) {
 	svr._httpServerOption = append(svr._httpServerOption, vs...)
 }
 
-func (svr *GraceServer) GrpcServerInvoke(vs ...func(server *grpc.Server)) {
+func (svr *ConfigServer) GrpcServerInvoke(vs ...func(server *grpc.Server)) {
 	svr._grpcServerInvoke = append(svr._grpcServerInvoke, vs...)
 }
 
-func (svr *GraceServer) GrpcPanicFunc(f GrpcPanicFunc) {
+func (svr *ConfigServer) GrpcPanicFunc(f GrpcPanicFunc) {
 	// 不能为空
 	if f != nil {
 		svr.grpcPanicFunc = f
@@ -147,7 +147,7 @@ func (svr *GraceServer) GrpcPanicFunc(f GrpcPanicFunc) {
 	服务注册
  **********************************************/
 
-func (svr *GraceServer) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) error {
+func (svr *ConfigServer) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) error {
 
 	var finalError error
 	var err error
@@ -192,7 +192,7 @@ func (svr *GraceServer) RegisterService(registry ServiceRegistry, implement inte
 	启动监听
  **********************************************/
 
-func (svr *GraceServer) ListenAndServe() (err error) {
+func (svr *ConfigServer) ListenAndServe() (err error) {
 
 	/********************************************************
 	* 如果没有配置grpc或http地址则自动结束服务初始化流程!
@@ -511,12 +511,12 @@ func (svr *GraceServer) ListenAndServe() (err error) {
 * 流式拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
-func (svr *GraceServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
+func (svr *ConfigServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 
 	set := svr.settings[info.FullMethod]
 	ctx := ss.Context()
 	if set == nil {
-		return StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+		return base.StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
 	defer func(set *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
@@ -548,11 +548,11 @@ func (svr *GraceServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.Serv
 * 一元拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 一元拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainUnaryInterceptor设置).
  **********************************************/
-func (svr *GraceServer) bootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
+func (svr *ConfigServer) bootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
 	set := svr.settings[info.FullMethod]
 	if set == nil {
-		return nil, StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+		return nil, base.StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
 	defer func(set *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
@@ -582,7 +582,7 @@ func (svr *GraceServer) bootstrapUnaryInterceptor(ctx context.Context, req inter
 
 func i18nGrpcError(c context.Context, err error) error {
 
-	if result, ok := err.(StatusResult); ok {
+	if result, ok := err.(base.Error); ok {
 		if md, ok := metadata.FromIncomingContext(c); ok {
 			if vs, ok := md["accept-language"]; ok {
 				if resMap := fastGetResMapByAcceptLanguage(vs[0]); resMap != nil {
@@ -618,7 +618,7 @@ var defaultHttpPanicHandler = &Handler{
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
 			log.Error("panic: %+v\n%v", ctx.panic, base.StackTrace(2, "\n"))
-			_ = ctx.WriteErrorResult(StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
+			_ = ctx.WriteErrorResult(base.StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
 		},
 	},
 }
@@ -627,7 +627,7 @@ var defaultHttpNotFoundHandler = &Handler{
 	Status: http.StatusNotFound,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			_ = ctx.WriteErrorResult(StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
+			_ = ctx.WriteErrorResult(base.StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
 		},
 	},
 }
