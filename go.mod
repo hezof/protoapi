@@ -3,7 +3,7 @@ module github.com/hezof/protoapi
 go 1.21
 
 require (
-	github.com/hezof/framework v0.0.0
+	github.com/hezof/core v0.0.0
 	github.com/hezof/log v0.0.0
 	github.com/hezof/protojson v0.0.0
 	google.golang.org/grpc v1.67.3
@@ -18,7 +18,7 @@ require (
 )
 
 replace (
-	github.com/hezof/framework v0.0.0 => ../framework
+	github.com/hezof/core v0.0.0 => ./../core
 	github.com/hezof/log v0.0.0 => ../log
 	github.com/hezof/protojson v0.0.0 => ../protojson
 )

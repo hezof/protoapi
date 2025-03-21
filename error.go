@@ -2,18 +2,18 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/framework"
+	"github.com/hezof/core"
 	"github.com/hezof/protojson"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // StatusResult 带状态的结果. 必须注意status与code的约定取值范围!
-type StatusResult framework.StatusResult
+type StatusResult core.StatusResult
 
 func (sr *StatusResult) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	return framework.ToJson(sr)
+	return core.ToJson(sr)
 }
 
 func (sr *StatusResult) GetCode() uint32 {
@@ -64,10 +64,10 @@ func (sr *StatusResult) GRPCStatus() *status.Status {
 		约定StatusResult Status取值范围:
 		- (0,511]
 	*/
-	return status.New(codes.Code(sr.Status<<framework.ErrorCodeBits|sr.Code), sr.Message)
+	return status.New(codes.Code(sr.Status<<core.ErrorCodeBits|sr.Code), sr.Message)
 }
 
-var _ framework.Error = (*StatusResult)(nil)
+var _ core.Error = (*StatusResult)(nil)
 
 func (sr *StatusResult) DecodeField(r *protojson.JsonDecoder, f string) {
 	switch f {
@@ -100,12 +100,12 @@ func StatusErrorFrom(err error) *StatusResult {
 	}
 
 	// 错误框架
-	if val, ok := err.(*framework.StatusResult); ok {
+	if val, ok := err.(*core.StatusResult); ok {
 		return (*StatusResult)(val)
 	}
 
 	// 外部错误
-	if val, ok := err.(framework.Error); ok {
+	if val, ok := err.(core.Error); ok {
 		return &StatusResult{
 			Status:  val.GetStatus(),
 			Code:    val.GetCode(),
@@ -128,8 +128,8 @@ func StatusErrorFrom(err error) *StatusResult {
 			- (0,511]
 		*/
 		return &StatusResult{
-			Status:  uint32(sta.Code()) >> framework.ErrorCodeBits,
-			Code:    uint32(sta.Code()) & framework.ErrorCodeMask,
+			Status:  uint32(sta.Code()) >> core.ErrorCodeBits,
+			Code:    uint32(sta.Code()) & core.ErrorCodeMask,
 			Message: sta.Message(),
 		}
 	}

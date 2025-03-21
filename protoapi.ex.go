@@ -2,7 +2,7 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/framework"
+	"github.com/hezof/core"
 	"github.com/hezof/protojson"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +14,7 @@ import (
 
 func (e *Error) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	return framework.ToJson(e)
+	return core.ToJson(e)
 }
 
 func (e *Error) DecodeField(r *protojson.JsonDecoder, f string) {
@@ -36,7 +36,7 @@ func (e *Error) EncodeField(w *protojson.JsonEncoder) {
 
 // GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
 func (e *Error) GRPCStatus() *status.Status {
-	return status.New(codes.Code(e.Status<<framework.ErrorCodeBits|e.Code), e.Message)
+	return status.New(codes.Code(e.Status<<core.ErrorCodeBits|e.Code), e.Message)
 }
 
 func (e *Error) SetStatus(status uint32) {
@@ -49,10 +49,10 @@ func (e *Error) SetName(name string) {
 
 func (e *Error) SetMessage(message string) {
 	if len(e.Details) > 0 {
-		e.Message = fmt.Sprintf(message, framework.AnySlice(e.Details)...)
+		e.Message = fmt.Sprintf(message, core.AnySlice(e.Details)...)
 	} else {
 		e.Message = message
 	}
 }
 
-var _ framework.Error = (*Error)(nil)
+var _ core.Error = (*Error)(nil)

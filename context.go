@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hezof/framework"
+	"github.com/hezof/core"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -127,7 +127,7 @@ func (ctx *Context) resource(code uint32) *resource {
 }
 
 // WriteErrorResult 用于restful写出错误结果
-func (ctx *Context) WriteErrorResult(result framework.Error) error {
+func (ctx *Context) WriteErrorResult(result core.Error) error {
 	// graceful关闭期间断开keepalive连接
 	if ctx.mux.closed != 0 {
 		ctx.ResponseWriter.Header()["Connection"] = closeConnection
@@ -140,7 +140,7 @@ func (ctx *Context) WriteErrorResult(result framework.Error) error {
 }
 
 // writeErrorResult 用于websocket写出错误结果
-func (ctx *Context) writeErrorResult(out io.Writer, result framework.Error) error {
+func (ctx *Context) writeErrorResult(out io.Writer, result core.Error) error {
 	// 国际化错误消息(延后初始化)
 	if hasResMap {
 		if rs := ctx.resource(result.GetCode()); rs != nil {
@@ -199,7 +199,7 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 
 // ReadBody 读取后可能导致body流指针指向最后导致后面无法读取!
 func (ctx *Context) ReadBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*framework.BuffBody); ok {
+	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
 		return buff.Data, nil
 	} else {
 		return io.ReadAll(ctx.Request.Body) // Transfer-Encoding: chunked的情况!
@@ -207,13 +207,13 @@ func (ctx *Context) ReadBody() ([]byte, error) {
 }
 
 func (ctx *Context) CopyBody() ([]byte, error) {
-	if buff, ok := ctx.Request.Body.(*framework.BuffBody); ok {
+	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
 		buff.Reset()
 		return buff.Data, nil
 	} else {
 		data, err := io.ReadAll(ctx.Request.Body)
 		if err == nil {
-			ctx.Request.Body = &framework.BuffBody{Data: data}
+			ctx.Request.Body = &core.BuffBody{Data: data}
 		}
 		return data, err
 	}
@@ -221,7 +221,7 @@ func (ctx *Context) CopyBody() ([]byte, error) {
 
 func (ctx *Context) ReadJson(val any) error {
 	// BuffBody允许重复读
-	if buff, ok := ctx.Request.Body.(*framework.BuffBody); ok {
+	if buff, ok := ctx.Request.Body.(*core.BuffBody); ok {
 		buff.Reset()
 	}
 	return DecodeRequest(ctx.Request.Body, val)
@@ -244,7 +244,7 @@ func (ctx *Context) WriteJson(status uint32, val any) error {
 	return EncodeResponse(ctx.ResponseWriter.ResponseWriter, val)
 }
 func (ctx *Context) WritePlain(status int, data string) error {
-	return ctx.WritePlainBytes(status, framework.UnsafeBytes(data))
+	return ctx.WritePlainBytes(status, core.UnsafeBytes(data))
 }
 
 func (ctx *Context) WritePlainBytes(status int, data []byte) error {
@@ -261,7 +261,7 @@ func (ctx *Context) WritePlainBytes(status int, data []byte) error {
 }
 
 func (ctx *Context) WriteHtml(status int, data string) error {
-	return ctx.WriteHtmlBytes(status, framework.UnsafeBytes(data))
+	return ctx.WriteHtmlBytes(status, core.UnsafeBytes(data))
 }
 
 func (ctx *Context) WriteHtmlBytes(status int, data []byte) error {

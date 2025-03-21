@@ -3,7 +3,7 @@ package protoapi
 import (
 	"context"
 	"fmt"
-	"github.com/hezof/framework"
+	"github.com/hezof/core"
 	"github.com/hezof/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -357,9 +357,9 @@ func (svr *ConfigServer) ListenAndServe() (err error) {
 	 ********************************************************/
 	for method, pathSetting := range _requestSetting {
 		for path, setting := range pathSetting {
-			setting.Handler.Status = framework.NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
-			setting.Handler.BodyMaxBytes = framework.NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, DefMaxMem)
-			setting.Handler.FormMaxMemory = framework.NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, DefMaxMem)
+			setting.Handler.Status = core.NvlI(setting.Handler.Status, profile.DefaultApplyStatus, http.StatusOK) // 很关键: 不能为0!
+			setting.Handler.BodyMaxBytes = core.NvlI(setting.Handler.BodyMaxBytes, svr.config.HttpBodyMaxBytes, DefMaxMem)
+			setting.Handler.FormMaxMemory = core.NvlI(setting.Handler.FormMaxMemory, svr.config.HttpFormMaxMemory, DefMaxMem)
 			setting.Handler.HandleChain = joinHandleFunc(svr._httpServerOption, setting.Plugins, setting.Filters, setting.Handler.HandleChain)
 			svr.mux.route(method, path, setting.Handler) // 正式注册到mux
 		}
@@ -516,7 +516,7 @@ func (svr *ConfigServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.Ser
 	set := svr.settings[info.FullMethod]
 	ctx := ss.Context()
 	if set == nil {
-		return framework.StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+		return core.StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
 	defer func(set *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
@@ -552,7 +552,7 @@ func (svr *ConfigServer) bootstrapUnaryInterceptor(ctx context.Context, req inte
 
 	set := svr.settings[info.FullMethod]
 	if set == nil {
-		return nil, framework.StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
+		return nil, core.StatusError(http.StatusNotFound, uint32(codes.NotFound), "Meta not found: %v", info.FullMethod)
 	}
 	defer func(set *MethodSetting, ctx context.Context, grpcPanicFunc GrpcPanicFunc) {
 		if p := recover(); p != nil {
@@ -582,7 +582,7 @@ func (svr *ConfigServer) bootstrapUnaryInterceptor(ctx context.Context, req inte
 
 func i18nGrpcError(c context.Context, err error) error {
 
-	if result, ok := err.(framework.Error); ok {
+	if result, ok := err.(core.Error); ok {
 		if md, ok := metadata.FromIncomingContext(c); ok {
 			if vs, ok := md["accept-language"]; ok {
 				if resMap := fastGetResMapByAcceptLanguage(vs[0]); resMap != nil {
@@ -617,8 +617,8 @@ var defaultHttpPanicHandler = &Handler{
 	Status: http.StatusInternalServerError,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			log.Error("panic: %+v\n%v", ctx.panic, framework.StackTrace(2, "\n"))
-			_ = ctx.WriteErrorResult(framework.StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
+			log.Error("panic: %+v\n%v", ctx.panic, core.StackTrace(2, "\n"))
+			_ = ctx.WriteErrorResult(core.StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
 		},
 	},
 }
@@ -627,7 +627,7 @@ var defaultHttpNotFoundHandler = &Handler{
 	Status: http.StatusNotFound,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			_ = ctx.WriteErrorResult(framework.StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
+			_ = ctx.WriteErrorResult(core.StatusError(http.StatusNotFound, http.StatusNotFound, "not found"))
 		},
 	},
 }
@@ -636,14 +636,14 @@ var defaultHttpNotFoundHandler = &Handler{
 type GrpcPanicFunc func(set *MethodSetting, ctx context.Context, p interface{}) error
 
 func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
-	log.Error("panic: %+v\n%v", p, framework.StackTrace(2, "\n"))
+	log.Error("panic: %+v\n%v", p, core.StackTrace(2, "\n"))
 	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
 }
 
 func protect(f func()) {
 	defer func() {
 		if per := recover(); per != nil {
-			log.Error("panic: %+v\n%v", per, framework.StackTrace(1, "\n"))
+			log.Error("panic: %+v\n%v", per, core.StackTrace(1, "\n"))
 		}
 	}()
 	f()

@@ -32,7 +32,7 @@ package protoapi
 import (
 	"bytes"
 	"encoding/xml"
-	"github.com/hezof/framework"
+	"github.com/hezof/core"
 	"github.com/hezof/log"
 	"os"
 	"path/filepath"
@@ -63,7 +63,7 @@ var (
 
 func InitResourceBundle(resDir, defLang string) error {
 
-	dir, _ := framework.LocatePath(resDir)
+	dir, _ := core.LocatePath(resDir)
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 
 		if err != nil {
@@ -136,7 +136,7 @@ func LoadResourceBundle(code uint32, languages ...string) (uint32, string, strin
 // 根据Accept-Language快速获取(从左到右,不按q排序). 该方法性能优于parseAcceptLanguage!
 func fastGetResMapByAcceptLanguage(acceptLanguage string) map[uint32]*resource {
 	// 语法Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
-	var data = framework.UnsafeBytes(acceptLanguage)
+	var data = core.UnsafeBytes(acceptLanguage)
 	var temp []byte
 	var idx int
 	for len(data) > 0 {
@@ -152,7 +152,7 @@ func fastGetResMapByAcceptLanguage(acceptLanguage string) map[uint32]*resource {
 		if idx > 0 {
 			temp = temp[:idx]
 		}
-		if ret := allResMap[framework.UnsafeString(temp)]; ret != nil {
+		if ret := allResMap[core.UnsafeString(temp)]; ret != nil {
 			return ret
 		}
 	}
