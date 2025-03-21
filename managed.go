@@ -100,14 +100,16 @@ func (s *ServerFactory) Destroy(t core.ManagedTarget) error {
 
 var _ core.ManagedFactory = (*ServerFactory)(nil)
 
-func init() {
-	core.Register("protoapi", new(ServerFactory))
-}
-
 /********************************************
  * 辅助函数
  ********************************************/
 
+const ComponentBase = "protoapi"
+
 func GetServer() Server {
-	return core.Component[Server]("protoapi", "")
+	return core.Component[Server](ComponentBase, "")
+}
+
+func init() {
+	core.Register(ComponentBase, new(ServerFactory))
 }
