@@ -100,7 +100,7 @@ func (ctx *Context) GoGet(config *Config, module, version string, mode Mode) {
 		`GOPRIVATE=`+config.GOPRIVATE,
 	)
 	cmd.Dir = ctx.HomeDir
-	PrintInfo("downloading %v@%v", module, version)
+	PrintInfo("downloading %v %v", module, version)
 	if err := cmd.Run(); err != nil {
 		PrintExit("downloading %v error, %v", module, err)
 	}
@@ -190,7 +190,7 @@ func (ctx *Context) HttpGetProtoc(config *Config, module, version string) {
 		sysARCH = `s390x`
 	}
 
-	PrintInfo("downloading %v@%v", module, version)
+	PrintInfo("downloading %v %v", module, version)
 
 	furl := config.MAVEN_CENTRAL + `/com/google/protobuf/protoc/` + version[1:] + `/protoc-` + version[1:] + `-` + sysOS + `-` + sysARCH + `.exe`
 	rsp, err := http.Get(furl)
