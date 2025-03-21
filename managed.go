@@ -103,3 +103,11 @@ var _ core.ManagedFactory = (*ServerFactory)(nil)
 func init() {
 	core.Register("protoapi", new(ServerFactory))
 }
+
+/********************************************
+ * 辅助函数
+ ********************************************/
+
+func GetServer() Server {
+	return core.Component[Server]("protoapi", "")
+}

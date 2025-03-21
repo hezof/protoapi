@@ -617,7 +617,7 @@ var defaultHttpPanicHandler = &Handler{
 	Status: http.StatusInternalServerError,
 	HandleChain: []HandleFunc{
 		func(ctx *Context) {
-			log.Error("panic: %+v\n%v", ctx.panic, core.StackTrace(2, "\n"))
+			log.Error("panic: %+v|%v", ctx.panic, core.StackTrace(2, `|`))
 			_ = ctx.WriteErrorResult(core.StatusError(http.StatusInternalServerError, http.StatusInternalServerError, fmt.Sprintf("internal server error: %+v", ctx.panic)))
 		},
 	},
@@ -636,14 +636,14 @@ var defaultHttpNotFoundHandler = &Handler{
 type GrpcPanicFunc func(set *MethodSetting, ctx context.Context, p interface{}) error
 
 func defaultGrpcPanicFunc(meta *MethodSetting, ctx context.Context, p interface{}) error {
-	log.Error("panic: %+v\n%v", p, core.StackTrace(2, "\n"))
+	log.Error("panic: %+v|%v", p, core.StackTrace(2, "|"))
 	return status.Error(codes.Internal, fmt.Sprintf("panic: %v", p))
 }
 
 func protect(f func()) {
 	defer func() {
 		if per := recover(); per != nil {
-			log.Error("panic: %+v\n%v", per, core.StackTrace(1, "\n"))
+			log.Error("panic: %+v|%v", per, core.StackTrace(1, "|"))
 		}
 	}()
 	f()

@@ -15,6 +15,9 @@ func main() {
 
 	defer log.Flush()
 
+	core.Init()
+	defer core.Exit()
+
 	// 0. 安装插件
 	protoapi.InstallMessageExtendProvider("message", func(args []string) protoapi.MessageExtend {
 		return func(ctx context.Context, req any) error {
@@ -32,10 +35,7 @@ func main() {
 		}
 	})
 
-	svr := protoapi.NewServer(&protoapi.Config{
-		HttpAddr: ":8080",
-		GrpcAddr: ":9090",
-	})
+	svr := protoapi.GetServer()
 
 	// 1. 测试martini-like api
 	svr.GET("/student", student)
