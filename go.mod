@@ -1,12 +1,11 @@
 module github.com/hezof/protoapi
 
-go 1.23.0
-
-toolchain go1.23.6
+go 1.21
 
 require (
-	github.com/hezof/base v0.0.1
-	github.com/hezof/log v0.0.4
+	github.com/hezof/framework v0.0.0
+	github.com/hezof/log v0.0.0
+	github.com/hezof/protojson v0.0.0
 	google.golang.org/grpc v1.67.3
 	google.golang.org/protobuf v1.36.5
 )
@@ -19,6 +18,7 @@ require (
 )
 
 replace (
-	github.com/hezof/base v0.0.1 => ./../base
-	github.com/hezof/log v0.0.4 => ../log
+	github.com/hezof/framework v0.0.0 => ../framework
+	github.com/hezof/log v0.0.0 => ../log
+	github.com/hezof/protojson v0.0.0 => ../protojson
 )

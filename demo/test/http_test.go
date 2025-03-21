@@ -4,8 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/hezof/base"
-	"github.com/hezof/protoapi"
+	"github.com/hezof/framework"
 	"github.com/hezof/protoapi/demo/api"
 	"math"
 	"os"
@@ -13,7 +12,7 @@ import (
 	"testing"
 )
 
-var cli = protoapi.NewJsonRpcClient("http://localhost:8080", &core.HttpConfig{Debug: os.Stdout}, nil)
+var cli = base.NewJsonRpcClient("http://localhost:8080", &base.HttpConfig{Debug: os.Stdout}, nil, nil, nil)
 
 var (
 	TRUE             = true

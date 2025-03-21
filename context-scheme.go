@@ -3,7 +3,7 @@ package protoapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hezof/base"
+	"github.com/hezof/framework"
 	"io"
 	"net/url"
 	"reflect"
@@ -36,12 +36,12 @@ func (ctx *Context) Scheme(dst interface{}, tag string) error {
 	 *************************************/
 	dstTyp := reflect.TypeOf(dst)
 	if dstTyp == nil || dstTyp.Kind() != reflect.Ptr {
-		return base.ErrInvalidStructPointer
+		return framework.ErrInvalidStructPointer
 	}
 
 	dstVal := reflect.ValueOf(dst)
 	if dstVal.IsNil() {
-		return base.ErrInvalidMemoryOrNilPointer
+		return framework.ErrInvalidMemoryOrNilPointer
 	}
 
 	dstTyp = dstTyp.Elem()
@@ -54,7 +54,7 @@ func (ctx *Context) Scheme(dst interface{}, tag string) error {
 		dstVal = dstVal.Elem()
 	}
 	if dstTyp.Kind() != reflect.Struct {
-		return base.ErrInvalidStructPointer
+		return framework.ErrInvalidStructPointer
 	}
 	/*************************************
 	 * 解析上下文数值
@@ -72,7 +72,7 @@ func adaptStruct(vs *values, dstTyp reflect.Type, dstVal *reflect.Value, tag str
 	 * 反射字段列表
 	 *************************************/
 __NEXT__:
-	for _, fld := range base.CacheStructField(dstTyp) {
+	for _, fld := range framework.CacheStructField(dstTyp) {
 		fldKey := fld.Tags[tag]
 		if fldKey == "-" {
 			continue __NEXT__
@@ -121,7 +121,7 @@ __NEXT__:
 		}
 
 		if ss, ok := vs.form[fldKey]; ok {
-			if fldTyp.Kind() == reflect.Slice && fldTyp != base.RTypeBytes {
+			if fldTyp.Kind() == reflect.Slice && fldTyp != framework.RTypeBytes {
 				if err = adaptSlice(ss, fldTyp, &fldVal); err != nil {
 					return
 				} else {
@@ -138,7 +138,7 @@ __NEXT__:
 		}
 
 		if ps, ok := vs.path.Get(fldKey); ok {
-			if fldTyp.Kind() == reflect.Slice && fldTyp != base.RTypeBytes {
+			if fldTyp.Kind() == reflect.Slice && fldTyp != framework.RTypeBytes {
 				if err = adaptSlice([]string{ps}, fldTyp, &fldVal); err != nil {
 					return
 				} else {
@@ -155,7 +155,7 @@ __NEXT__:
 		}
 
 		if ss, ok := vs.query[fldKey]; ok {
-			if fldTyp.Kind() == reflect.Slice && fldTyp != base.RTypeBytes {
+			if fldTyp.Kind() == reflect.Slice && fldTyp != framework.RTypeBytes {
 				if err = adaptSlice(ss, fldTyp, &fldVal); err != nil {
 					return
 				} else {
@@ -178,7 +178,7 @@ func adaptSlice(ss []string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 
 	// 优化
 	subTyp := dstTyp.Elem()
-	if subTyp == base.RTypeString {
+	if subTyp == framework.RTypeString {
 		dstVal.Set(reflect.ValueOf(ss))
 		return nil
 	}
@@ -214,22 +214,22 @@ func adaptSlice(ss []string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 func adaptValue(org string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 
 	// 优化几种常见特殊的类型
-	if dstTyp == base.RTypeDuration {
-		if x, err := base.AsDuration(org); err != nil {
+	if dstTyp == framework.RTypeDuration {
+		if x, err := framework.AsDuration(org); err != nil {
 			return err
 		} else {
 			dstVal.SetInt(int64(x))
 			return nil
 		}
-	} else if dstTyp == base.RTypeTime {
-		if x, err := base.AsTime(org); err != nil {
+	} else if dstTyp == framework.RTypeTime {
+		if x, err := framework.AsTime(org); err != nil {
 			return err
 		} else {
 			dstVal.Set(reflect.ValueOf(x))
 			return nil
 		}
-	} else if dstTyp == base.RTypeBytes {
-		if x, err := base.AsBytes(org); err != nil {
+	} else if dstTyp == framework.RTypeBytes {
+		if x, err := framework.AsBytes(org); err != nil {
 			return err
 		} else {
 			dstVal.Set(reflect.ValueOf(x))
@@ -242,42 +242,42 @@ func adaptValue(org string, dstTyp reflect.Type, dstVal *reflect.Value) error {
 		dstVal.SetString(org)
 		return nil
 	case reflect.Bool:
-		if x, err := base.AsBool(org); err != nil {
+		if x, err := framework.AsBool(org); err != nil {
 			return err
 		} else {
 			dstVal.SetBool(x)
 			return nil
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		if x, err := base.AsInt64(org); err != nil {
+		if x, err := framework.AsInt64(org); err != nil {
 			return err
 		} else {
 			dstVal.SetInt(x)
 			return nil
 		}
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		if x, err := base.AsUint64(org); err != nil {
+		if x, err := framework.AsUint64(org); err != nil {
 			return err
 		} else {
 			dstVal.SetUint(x)
 			return nil
 		}
 	case reflect.Uintptr:
-		if x, err := base.AsUintptr(org); err != nil {
+		if x, err := framework.AsUintptr(org); err != nil {
 			return err
 		} else {
 			dstVal.Set(reflect.ValueOf(x))
 			return nil
 		}
 	case reflect.Float32, reflect.Float64:
-		if x, err := base.AsFloat64(org); err != nil {
+		if x, err := framework.AsFloat64(org); err != nil {
 			return err
 		} else {
 			dstVal.SetFloat(x)
 			return nil
 		}
 	case reflect.Complex64, reflect.Complex128:
-		if x, err := base.AsComplex128(org); err != nil {
+		if x, err := framework.AsComplex128(org); err != nil {
 			return err
 		} else {
 			dstVal.SetComplex(x)

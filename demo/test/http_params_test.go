@@ -3,7 +3,7 @@ package test
 import (
 	"bytes"
 	"fmt"
-	"github.com/hezof/base"
+	"github.com/hezof/framework"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
 	"io"

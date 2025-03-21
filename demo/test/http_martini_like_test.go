@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/hezof/base"
+	"github.com/hezof/framework"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/mdl"
 	"net/http"

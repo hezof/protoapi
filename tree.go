@@ -2,7 +2,7 @@ package protoapi
 
 import (
 	"bytes"
-	"github.com/hezof/base"
+	"github.com/hezof/framework"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -80,14 +80,14 @@ func (n *node) addChild(child *node) {
 
 func countParams(path string) uint16 {
 	var n uint16
-	s := base.UnsafeBytes(path)
+	s := framework.UnsafeBytes(path)
 	n += uint16(bytes.Count(s, strColon))
 	n += uint16(bytes.Count(s, strStar))
 	return n
 }
 
 func countSections(path string) uint16 {
-	s := base.UnsafeBytes(path)
+	s := framework.UnsafeBytes(path)
 	return uint16(bytes.Count(s, strSlash))
 }
 
@@ -171,7 +171,7 @@ walk:
 
 			n.children = []*node{&child}
 			// []byte for proper unicode char conversion, see #65
-			n.indices = base.UnsafeString([]byte{n.path[i]})
+			n.indices = framework.UnsafeString([]byte{n.path[i]})
 			n.path = path[:i]
 			n.handlers = nil
 			n.wildChild = false
@@ -204,7 +204,7 @@ walk:
 			// Otherwise insert it
 			if c != ':' && c != '*' && n.nType != catchAll {
 				// []byte for proper unicode char conversion, see #65
-				n.indices += base.UnsafeString([]byte{c})
+				n.indices += framework.UnsafeString([]byte{c})
 				child := &node{
 					fullPath: fullPath,
 				}

@@ -2,17 +2,18 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/base"
+	"github.com/hezof/framework"
+	"github.com/hezof/protojson"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // StatusResult 带状态的结果. 必须注意status与code的约定取值范围!
-type StatusResult base.StatusResult
+type StatusResult framework.StatusResult
 
 func (sr *StatusResult) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	return base.ToJson(sr)
+	return framework.ToJson(sr)
 }
 
 func (sr *StatusResult) GetCode() uint32 {
@@ -63,32 +64,32 @@ func (sr *StatusResult) GRPCStatus() *status.Status {
 		约定StatusResult Status取值范围:
 		- (0,511]
 	*/
-	return status.New(codes.Code(sr.Status<<base.ErrorCodeBits|sr.Code), sr.Message)
+	return status.New(codes.Code(sr.Status<<framework.ErrorCodeBits|sr.Code), sr.Message)
 }
 
-var _ base.Error = (*StatusResult)(nil)
+var _ framework.Error = (*StatusResult)(nil)
 
-func (sr *StatusResult) DecodeField(r *base.JsonDecoder, f string) {
+func (sr *StatusResult) DecodeField(r *protojson.JsonDecoder, f string) {
 	switch f {
 	case profile.ResultCodeField:
-		base.DecodeUint32(r, &sr.Code)
+		protojson.DecodeUint32(r, &sr.Code)
 	case profile.ResultNameField:
-		base.DecodeString(r, &sr.Name)
+		protojson.DecodeString(r, &sr.Name)
 	case profile.ResultMessageField:
-		base.DecodeString(r, &sr.Message)
+		protojson.DecodeString(r, &sr.Message)
 	case profile.ResultDataField:
-		base.DecodeAny(r, sr.Data)
+		protojson.DecodeAny(r, sr.Data)
 	}
 }
 
-func (sr *StatusResult) EncodeField(w *base.JsonEncoder) {
-	base.EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
-	base.EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
-	base.EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
-	base.EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
+func (sr *StatusResult) EncodeField(w *protojson.JsonEncoder) {
+	protojson.EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
+	protojson.EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
+	protojson.EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
+	protojson.EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
 }
 
-var _ base.FieldCodec = (*StatusResult)(nil)
+var _ protojson.FieldCodec = (*StatusResult)(nil)
 
 // StatusErrorFrom 定义统一的error转换为*Result规则
 func StatusErrorFrom(err error) *StatusResult {
@@ -99,12 +100,12 @@ func StatusErrorFrom(err error) *StatusResult {
 	}
 
 	// 错误框架
-	if val, ok := err.(*base.StatusResult); ok {
+	if val, ok := err.(*framework.StatusResult); ok {
 		return (*StatusResult)(val)
 	}
 
 	// 外部错误
-	if val, ok := err.(base.Error); ok {
+	if val, ok := err.(framework.Error); ok {
 		return &StatusResult{
 			Status:  val.GetStatus(),
 			Code:    val.GetCode(),
@@ -127,8 +128,8 @@ func StatusErrorFrom(err error) *StatusResult {
 			- (0,511]
 		*/
 		return &StatusResult{
-			Status:  uint32(sta.Code()) >> base.ErrorCodeBits,
-			Code:    uint32(sta.Code()) & base.ErrorCodeMask,
+			Status:  uint32(sta.Code()) >> framework.ErrorCodeBits,
+			Code:    uint32(sta.Code()) & framework.ErrorCodeMask,
 			Message: sta.Message(),
 		}
 	}

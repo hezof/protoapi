@@ -2,7 +2,8 @@ package protoapi
 
 import (
 	"fmt"
-	"github.com/hezof/base"
+	"github.com/hezof/framework"
+	"github.com/hezof/protojson"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -13,29 +14,29 @@ import (
 
 func (e *Error) Error() string {
 	// 不能使用ToJson()会在EncodeField过程形成死循环
-	return base.ToJson(e)
+	return framework.ToJson(e)
 }
 
-func (e *Error) DecodeField(r *base.JsonDecoder, f string) {
+func (e *Error) DecodeField(r *protojson.JsonDecoder, f string) {
 	switch f {
 	case profile.ResultCodeField:
-		base.DecodeUint32(r, &e.Code)
+		protojson.DecodeUint32(r, &e.Code)
 	case profile.ResultNameField:
-		base.DecodeString(r, &e.Name)
+		protojson.DecodeString(r, &e.Name)
 	case profile.ResultMessageField:
-		base.DecodeString(r, &e.Message)
+		protojson.DecodeString(r, &e.Message)
 	}
 }
 
-func (e *Error) EncodeField(w *base.JsonEncoder) {
-	base.EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
-	base.EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
-	base.EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
+func (e *Error) EncodeField(w *protojson.JsonEncoder) {
+	protojson.EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
+	protojson.EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
+	protojson.EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
 }
 
 // GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换
 func (e *Error) GRPCStatus() *status.Status {
-	return status.New(codes.Code(e.Status<<base.ErrorCodeBits|e.Code), e.Message)
+	return status.New(codes.Code(e.Status<<framework.ErrorCodeBits|e.Code), e.Message)
 }
 
 func (e *Error) SetStatus(status uint32) {
@@ -48,10 +49,10 @@ func (e *Error) SetName(name string) {
 
 func (e *Error) SetMessage(message string) {
 	if len(e.Details) > 0 {
-		e.Message = fmt.Sprintf(message, base.AnySlice(e.Details)...)
+		e.Message = fmt.Sprintf(message, framework.AnySlice(e.Details)...)
 	} else {
 		e.Message = message
 	}
 }
 
-var _ base.Error = (*Error)(nil)
+var _ framework.Error = (*Error)(nil)
