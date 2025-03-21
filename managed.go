@@ -58,39 +58,48 @@ type Server interface {
  * 托管组件
  ********************************************/
 
-type ServerManagedComponent struct {
+type ServerComponent struct {
 	Server
 }
 
-func (m *ServerManagedComponent) GetTarget() core.ManagedTarget {
+func (m *ServerComponent) GetTarget() core.ManagedTarget {
 	return m.Server
 }
 
-func (m *ServerManagedComponent) SetTarget(target core.ManagedTarget) {
+func (m *ServerComponent) SetTarget(target core.ManagedTarget) {
 	m.Server = target.(Server)
 }
 
-var _ Server = (*ServerManagedComponent)(nil)
-var _ core.ManagedComponent = (*ServerManagedComponent)(nil)
+var _ Server = (*ServerComponent)(nil)
+var _ core.ManagedComponent = (*ServerComponent)(nil)
 
 /********************************************
  * 托管工厂
  ********************************************/
 
-type ServerManagedFactory struct {
+type ServerFactory struct {
 }
 
-func (s ServerManagedFactory) Manage(name string) core.ManagedComponent {
-	return new(ServerManagedComponent)
+func (s *ServerFactory) Manage(n string) core.ManagedComponent {
+	return new(ServerComponent)
 }
 
-func (s ServerManagedFactory) Create(c *core.ManagedConfig) (core.ManagedTarget, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *ServerFactory) Create(c *core.ManagedConfig) (core.ManagedTarget, error) {
+	cfg := new(Config)
+	err := core.SimpleStructBinder.MapStruct(c.Value, &cfg, "")
+	if err != nil {
+		return nil, err
+	}
+	return NewServer(cfg), nil
 }
 
-func (s ServerManagedFactory) Destroy(v core.ManagedTarget) error {
+func (s *ServerFactory) Destroy(t core.ManagedTarget) error {
+	// server会一直阻塞
 	return nil
 }
 
-var _ core.ManagedFactory = (*ServerManagedFactory)(nil)
+var _ core.ManagedFactory = (*ServerFactory)(nil)
+
+func init() {
+	core.Register("protoapi", new(ServerFactory))
+}
