@@ -11,16 +11,17 @@ import (
 
 // CustomOptions 用户选项
 type CustomOptions struct {
-	Help      bool   // 打印帮助
-	Debug     bool   // 打印调试
-	Update    bool   // 更新插件
-	Clean     bool   // 清理文件(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
-	Config    string // 配置变量, 例如: "VERSION=0.5.1;GOPROXY=https://goproxy.cn;GOPRIVATE=*.net,*.cn"
-	Import    string // protoapi引入路径
-	GoOut     string // GO输出目录
-	ProtoBase string // PB基准目录
-	ProtoPath string // PB查找目录,多值逗号分隔
-	GrpcV2    bool   // 生成GRPCv2代码[require_unimplemented_servers=true]
+	Help                bool   // 打印帮助
+	Debug               bool   // 打印调试
+	Update              bool   // 更新插件
+	Clean               bool   // 清理文件(*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.json)
+	Config              string // 配置变量, 例如: "VERSION=0.5.1;GOPROXY=https://goproxy.cn;GOPRIVATE=*.net,*.cn"
+	ProtoapiImportPath  string // protoapi引入路径
+	ProtojsonImportPath string // protojson引入路径
+	GoOut               string // GO输出目录
+	ProtoBase           string // PB基准目录
+	ProtoPath           string // PB查找目录,多值逗号分隔
+	GrpcV2              bool   // 生成GRPCv2代码[require_unimplemented_servers=true]
 }
 
 // SystemOptions 系统选项
@@ -51,7 +52,8 @@ func initCustomOptions(ops *Context) {
 	ops.flagset.BoolVar(&ops.Update, `update`, false, `更新插件`)
 	ops.flagset.BoolVar(&ops.Clean, `clean`, false, `清理文件[*.pb.go, *_grpc.pb.go, *_protoapi.pb.go, *_protoapi.yaml]`)
 	ops.flagset.StringVar(&ops.Config, `config`, ``, fmt.Sprintf(`配置变量.默认"VERSION=%v;GOPROXY=%v;GOPRIVATE=%v;MAVEN_CENTRAL=%v"`, VERSION, `https://goproxy.cn`, `*.net,*.cn`, `https://maven.aliyun.com/repository/central`))
-	ops.flagset.StringVar(&ops.Import, `import`, ``, `protoapi引入路径`)
+	ops.flagset.StringVar(&ops.ProtoapiImportPath, `protoapi`, ``, `protoapi引入路径`)
+	ops.flagset.StringVar(&ops.ProtojsonImportPath, `protojson`, ``, `protojson引入路径`)
 	ops.flagset.StringVar(&ops.GoOut, `go_out`, ``, `GO输出目录,默认--proto_base`)
 	ops.flagset.StringVar(&ops.ProtoBase, `proto_base`, ``, `PB基准目录,默认当前目录`)
 	ops.flagset.StringVar(&ops.ProtoPath, `proto_path`, ``, `PB查找目录[逗号分隔]`)

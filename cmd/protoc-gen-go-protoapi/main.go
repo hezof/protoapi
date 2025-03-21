@@ -9,11 +9,11 @@ import (
 )
 
 const VERSION = "v1.0.0" // 与发版相同
-const IMPORT = "github.com/hezof/protoapi"
 
 var requireUnimplemented bool
 var useGenericStreams bool
-var protoapiImport string
+var protoapiImportPath string
+var protojsonImportPath string
 
 func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
@@ -26,7 +26,8 @@ func main() {
 	var flags flag.FlagSet
 	flags.BoolVar(&requireUnimplemented, "require_unimplemented_servers", true, "set to false to match legacy behavior")
 	flags.BoolVar(&useGenericStreams, "use_generic_streams_experimental", true, "set to true to use generic types for streaming client and server objects; this flag is EXPERIMENTAL and may be changed or removed in a future release")
-	flags.StringVar(&protoapiImport, "import", IMPORT, "set import path to protoapi")
+	flags.StringVar(&protoapiImportPath, "protoapi", "github.com/hezof/protoapi", "set import path to protoapi")
+	flags.StringVar(&protojsonImportPath, "protojson", "github.com/hezof/protojson", "set import path to protojson")
 
 	protogen.Options{
 		ParamFunc: flags.Set,

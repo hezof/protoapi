@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

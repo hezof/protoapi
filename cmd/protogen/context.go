@@ -308,6 +308,19 @@ func (ctx *Context) Generate(config *Config, protoPaths []string, protoFiles []s
 	}
 }
 
+func ext(ctx *Context) string {
+	var sb strings.Builder
+	if ctx.ProtoapiImportPath != `` {
+		sb.WriteString(`,protoapi=`)
+		sb.WriteString(ctx.ProtoapiImportPath)
+	}
+	if ctx.ProtojsonImportPath != `` {
+		sb.WriteString(`,protojson=`)
+		sb.WriteString(ctx.ProtojsonImportPath)
+	}
+	return sb.String()
+}
+
 func (ctx *Context) generate(config *Config, protoPath []string, protoFile string) {
 	// 转成linux路径格式
 	protoFile = strings.ReplaceAll(protoFile, `\`, `/`)
@@ -320,20 +333,11 @@ func (ctx *Context) generate(config *Config, protoPath []string, protoFile strin
 
 	args = append(args, `--go_out=`+ctx.GoOut)
 	if ctx.GrpcV2 {
-		args = append(args, `--go-grpc_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
-		if ctx.Import == `` {
-			args = append(args, `--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true:`+ctx.GoOut)
-		} else {
-			args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true,import=%v:%v`, ctx.Import, ctx.GoOut))
-		}
+		args = append(args, `--go-grpc_out=require_unimplemented_servers=true,use_generic_streams_experimental=true`+`:`+ctx.GoOut)
+		args = append(args, `--go-protoapi_out=require_unimplemented_servers=true,use_generic_streams_experimental=true`+ext(ctx)+`:`+ctx.GoOut)
 	} else {
-
-		args = append(args, `--go-grpc_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
-		if ctx.Import == `` {
-			args = append(args, `--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true:`+ctx.GoOut)
-		} else {
-			args = append(args, fmt.Sprintf(`--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true,import=%v:%v`, ctx.Import, ctx.GoOut))
-		}
+		args = append(args, `--go-grpc_out=require_unimplemented_servers=false,use_generic_streams_experimental=true`+`:`+ctx.GoOut)
+		args = append(args, `--go-protoapi_out=require_unimplemented_servers=false,use_generic_streams_experimental=true`+ext(ctx)+`:`+ctx.GoOut)
 	}
 
 	for _, path := range protoPath {

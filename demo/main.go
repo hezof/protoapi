@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/hezof/core"
 	"github.com/hezof/log"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
@@ -18,7 +19,7 @@ func main() {
 	protoapi.InstallMessageExtendProvider("message", func(args []string) protoapi.MessageExtend {
 		return func(ctx context.Context, req any) error {
 			if book, ok := req.(*api.Book); ok {
-				fmt.Println(protoapi.ToJson(book))
+				fmt.Println(core.ToJson(book))
 			}
 			return nil
 		}
@@ -26,7 +27,7 @@ func main() {
 
 	protoapi.InstallFieldPluginProvider("check_sale", func(args []string) protoapi.FieldPlugin {
 		return func(ctx context.Context, key string, val any, plg *protoapi.Plugin) error {
-			fmt.Println(key, protoapi.ToJson(val))
+			fmt.Println(key, core.ToJson(val))
 			return nil
 		}
 	})
@@ -64,7 +65,7 @@ func student(ctx *protoapi.Context) {
 		log.Error("Scheme error: %v", err)
 		return
 	}
-	fmt.Println("/demo/get: " + protoapi.ToJson(student))
+	fmt.Println("/demo/get: " + core.ToJson(student))
 	if err := ctx.WriteApplyResult(student); err != nil {
 		log.Error("WriteApplyResult error: %v", err)
 		return

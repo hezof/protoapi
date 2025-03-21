@@ -6,7 +6,7 @@ import (
 )
 
 func implementServiceRegistry(g *protogen.GeneratedFile, file *FileExt, service *ServiceExt) {
-	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protoapiImport)})
+	g.QualifiedGoIdent(protogen.GoIdent{GoName: "protoapi", GoImportPath: protogen.GoImportPath(protojsonImportPath)})
 	g.QualifiedGoIdent(protogen.GoIdent{GoName: "io", GoImportPath: "io"})
 
 	g.P("func ", service.GoName, "Registry(impl interface{}, aspects []protoapi.ServiceAspect) *protoapi.ServiceSetting {")
