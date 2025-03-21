@@ -8,10 +8,6 @@ import (
 const DefMaxMem = 32 << 20 // 32M
 
 type Profile struct {
-	ResultCodeField              string        // code前缀, 默认: `"Code":`, 0表示成功
-	ResultNameField              string        // name前缀, 默认: `"Name":`, OK表示成功
-	ResultDataField              string        // data前缀, 默认: `"Data":`.
-	ResultMessageField           string        // message前缀, 默认: `"Message":`
 	HttpFormMaxMemory            int64         // 32 MB,同gin及多数web框架.
 	HttpBodyMaxBytes             int64         // 32 MB,默认请求体的字节数. 注意: 请求体不是响应体, 后者没有限制!
 	HttpKeepAlive                time.Duration // 3分钟
@@ -24,10 +20,6 @@ type Profile struct {
 }
 
 var profile = Profile{
-	ResultCodeField:              `Code`,
-	ResultNameField:              `Name`,
-	ResultDataField:              `Data`,
-	ResultMessageField:           `Message`,
 	HttpFormMaxMemory:            DefMaxMem,
 	HttpBodyMaxBytes:             DefMaxMem,
 	HttpKeepAlive:                3 * time.Minute,

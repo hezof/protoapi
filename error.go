@@ -71,22 +71,22 @@ var _ core.Error = (*StatusResult)(nil)
 
 func (sr *StatusResult) DecodeField(r *protojson.JsonDecoder, f string) {
 	switch f {
-	case profile.ResultCodeField:
+	case core.ResultCodeField:
 		protojson.DecodeUint32(r, &sr.Code)
-	case profile.ResultNameField:
+	case core.ResultNameField:
 		protojson.DecodeString(r, &sr.Name)
-	case profile.ResultMessageField:
+	case core.ResultMessageField:
 		protojson.DecodeString(r, &sr.Message)
-	case profile.ResultDataField:
+	case core.ResultDataField:
 		protojson.DecodeAny(r, sr.Data)
 	}
 }
 
 func (sr *StatusResult) EncodeField(w *protojson.JsonEncoder) {
-	protojson.EncodeUint32_WithEmpty(w, profile.ResultCodeField, sr.Code)
-	protojson.EncodeString_OmitEmpty(w, profile.ResultNameField, sr.Name)
-	protojson.EncodeString_OmitEmpty(w, profile.ResultMessageField, sr.Message)
-	protojson.EncodeAny_OmitEmpty(w, profile.ResultDataField, sr.Data)
+	protojson.EncodeUint32_WithEmpty(w, core.ResultCodeField, sr.Code)
+	protojson.EncodeString_OmitEmpty(w, core.ResultNameField, sr.Name)
+	protojson.EncodeString_OmitEmpty(w, core.ResultMessageField, sr.Message)
+	protojson.EncodeAny_OmitEmpty(w, core.ResultDataField, sr.Data)
 }
 
 var _ protojson.FieldCodec = (*StatusResult)(nil)

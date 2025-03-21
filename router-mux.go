@@ -209,7 +209,7 @@ func (m *mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if c.Handler != nil {
-		if c.Handler.BodyMaxBytes > 0 {
+		if 0 < c.Handler.BodyMaxBytes && c.Handler.BodyMaxBytes < r.ContentLength {
 			// 根据MaxBodyBytes限制请求体大小. 保护request解析过程被恶意攻击!
 			r.Body = http.MaxBytesReader(w, r.Body, c.Handler.BodyMaxBytes)
 			r.ContentLength = c.Handler.BodyMaxBytes

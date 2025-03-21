@@ -19,19 +19,19 @@ func (e *Error) Error() string {
 
 func (e *Error) DecodeField(r *protojson.JsonDecoder, f string) {
 	switch f {
-	case profile.ResultCodeField:
+	case core.ResultCodeField:
 		protojson.DecodeUint32(r, &e.Code)
-	case profile.ResultNameField:
+	case core.ResultNameField:
 		protojson.DecodeString(r, &e.Name)
-	case profile.ResultMessageField:
+	case core.ResultMessageField:
 		protojson.DecodeString(r, &e.Message)
 	}
 }
 
 func (e *Error) EncodeField(w *protojson.JsonEncoder) {
-	protojson.EncodeUint32_WithEmpty(w, profile.ResultCodeField, e.Code)
-	protojson.EncodeString_OmitEmpty(w, profile.ResultNameField, e.Name)
-	protojson.EncodeString_OmitEmpty(w, profile.ResultMessageField, e.Message)
+	protojson.EncodeUint32_WithEmpty(w, core.ResultCodeField, e.Code)
+	protojson.EncodeString_OmitEmpty(w, core.ResultNameField, e.Name)
+	protojson.EncodeString_OmitEmpty(w, core.ResultMessageField, e.Message)
 }
 
 // GRPCStatus 支持status.FromError, 实现StatusResult到grpc Status的转换

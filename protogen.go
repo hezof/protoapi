@@ -119,11 +119,6 @@ func DecodeRequest(in io.Reader, req any) error {
 	return nil
 }
 
-// EncodeResponse 编码请求对象
-func EncodeResponse(out io.Writer, rsp any) error {
-	return protojson.EncodeProtoJsonWriter(out, rsp)
-}
-
 /*************************************************
 * bool:
 **************************************************/

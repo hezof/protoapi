@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hezof/core"
+	"github.com/hezof/protojson"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -156,7 +157,7 @@ func (ctx *Context) writeErrorResult(out io.Writer, result core.Error) error {
 			}
 		}
 	}
-	return EncodeResponse(out, result)
+	return protojson.EncodeProtoJsonWriter(out, result)
 }
 
 // WriteApplyResult 用于restful写出请求结果
@@ -180,7 +181,7 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 		ctx.result.Code = 0
 		ctx.result.Data = val
 
-		err := EncodeResponse(out, &ctx.result)
+		err := protojson.EncodeProtoJsonWriter(out, &ctx.result)
 
 		// 及时清理避免引用
 		ctx.result.Data = nil
@@ -189,7 +190,7 @@ func (ctx *Context) writeApplyResult(out io.Writer, val any) error {
 
 	case Result_unwrap:
 
-		return EncodeResponse(out, val)
+		return protojson.EncodeProtoJsonWriter(out, val)
 
 	default:
 		return fmt.Errorf("invalid result type: %v", ctx.Handler.Setting.Meta.Http.Result)
@@ -241,7 +242,7 @@ func (ctx *Context) WriteJson(status uint32, val any) error {
 	}
 	ctx.ResponseWriter.Header()["Content-Type"] = jsonContentType
 	ctx.ResponseWriter.WriteStatus(status)
-	return EncodeResponse(ctx.ResponseWriter.ResponseWriter, val)
+	return protojson.EncodeProtoJsonWriter(ctx.ResponseWriter.ResponseWriter, val)
 }
 func (ctx *Context) WritePlain(status int, data string) error {
 	return ctx.WritePlainBytes(status, core.UnsafeBytes(data))
