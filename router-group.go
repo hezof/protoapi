@@ -30,18 +30,18 @@ func (rc *_group) BasePath() string {
 	return rc.path
 }
 
-func (rc *_group) Group(path string, hs ...HandleFunc) *_group {
+func (rc *_group) Group(path string, hs ...HandleFunc) GroupRouter {
 	child := newGroup(path, hs...)
 	rc.children = append(rc.children, child)
 	return child
 }
 
-func (rc *_group) Use(filters ...HandleFunc) *_group {
+func (rc *_group) Use(filters ...HandleFunc) GroupRouter {
 	rc.filters = append(rc.filters, filters...)
 	return rc
 }
 
-func (rc *_group) HandleFunc(method string, path string, hs ...HandleFunc) *_group {
+func (rc *_group) HandleFunc(method string, path string, hs ...HandleFunc) GroupRouter {
 	return rc.Handle(&Handler{
 		Method:      method,
 		Path:        path,
@@ -49,7 +49,7 @@ func (rc *_group) HandleFunc(method string, path string, hs ...HandleFunc) *_gro
 	})
 }
 
-func (rc *_group) Handle(hd *Handler) *_group {
+func (rc *_group) Handle(hd *Handler) GroupRouter {
 
 	setting, ok := rc.settings[hd.Method]
 	if !ok {
@@ -65,7 +65,7 @@ func (rc *_group) Handle(hd *Handler) *_group {
 
 }
 
-func (rc *_group) Any(path string, f ...HandleFunc) *_group {
+func (rc *_group) Any(path string, f ...HandleFunc) GroupRouter {
 	rc.HandleFunc(http.MethodGet, path, f...)
 	rc.HandleFunc(http.MethodPost, path, f...)
 	rc.HandleFunc(http.MethodPut, path, f...)
@@ -77,35 +77,35 @@ func (rc *_group) Any(path string, f ...HandleFunc) *_group {
 	rc.HandleFunc(http.MethodTrace, path, f...)
 	return rc
 }
-func (rc *_group) GET(path string, f ...HandleFunc) *_group {
+func (rc *_group) GET(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodGet, path, f...)
 }
-func (rc *_group) POST(path string, f ...HandleFunc) *_group {
+func (rc *_group) POST(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodPost, path, f...)
 }
-func (rc *_group) PUT(path string, f ...HandleFunc) *_group {
+func (rc *_group) PUT(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodPut, path, f...)
 }
-func (rc *_group) DELETE(path string, f ...HandleFunc) *_group {
+func (rc *_group) DELETE(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodDelete, path, f...)
 }
-func (rc *_group) HEAD(path string, f ...HandleFunc) *_group {
+func (rc *_group) HEAD(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodHead, path, f...)
 }
-func (rc *_group) PATCH(path string, f ...HandleFunc) *_group {
+func (rc *_group) PATCH(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodPatch, path, f...)
 }
-func (rc *_group) OPTIONS(path string, f ...HandleFunc) *_group {
+func (rc *_group) OPTIONS(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodOptions, path, f...)
 }
-func (rc *_group) CONNECT(path string, f ...HandleFunc) *_group {
+func (rc *_group) CONNECT(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodConnect, path, f...)
 }
-func (rc *_group) TRACE(path string, f ...HandleFunc) *_group {
+func (rc *_group) TRACE(path string, f ...HandleFunc) GroupRouter {
 	return rc.HandleFunc(http.MethodTrace, path, f...)
 }
 
-func (rc *_group) StaticFile(path string, file string) *_group {
+func (rc *_group) StaticFile(path string, file string) GroupRouter {
 	if strings.Contains(path, ":") || strings.Contains(path, "*") {
 		panic("URL parameters can not be used when serving a static file")
 	}
@@ -117,11 +117,11 @@ func (rc *_group) StaticFile(path string, file string) *_group {
 	return rc
 }
 
-func (rc *_group) Static(prefix string, root string) *_group {
+func (rc *_group) Static(prefix string, root string) GroupRouter {
 	return rc.StaticFS(prefix, http.Dir(root))
 }
 
-func (rc *_group) StaticFS(prefix string, fs http.FileSystem) *_group {
+func (rc *_group) StaticFS(prefix string, fs http.FileSystem) GroupRouter {
 	if strings.Contains(prefix, ":") || strings.Contains(prefix, "*") {
 		panic("URL parameters can not be used when serving a static folder")
 	}

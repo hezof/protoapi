@@ -22,7 +22,7 @@ import (
 - http-grpc网关
 */
 
-type ConfigServer struct {
+type HybridServer struct {
 	mux                                                      // 多路
 	config                *Config                            // 配置
 	settings              map[string]*MethodSetting          // 方法设置(过程数据)
@@ -46,7 +46,7 @@ type ConfigServer struct {
 }
 
 // 清理运行过程不再需要的中间变量
-func (svr *ConfigServer) clean() {
+func (svr *HybridServer) clean() {
 	svr._group = nil
 	svr._serviceSetting = nil
 	svr._serviceAspect = nil
@@ -58,8 +58,8 @@ func (svr *ConfigServer) clean() {
 	_globalRegister = nil
 }
 
-func NewServer(c *Config) *ConfigServer {
-	return &ConfigServer{
+func NewServer(c *Config) Server {
+	return &HybridServer{
 		mux: mux{
 			httpPanic:    defaultHttpPanicHandler,
 			httpNotFound: defaultHttpNotFoundHandler,
@@ -75,7 +75,7 @@ func NewServer(c *Config) *ConfigServer {
 	元数据加载
  **********************************************/
 
-func (svr *ConfigServer) Config() *Config {
+func (svr *HybridServer) Config() *Config {
 	return svr.config
 }
 
@@ -84,27 +84,27 @@ func (svr *ConfigServer) Config() *Config {
  **********************************************/
 
 // OnInit 服务器启动时回调
-func (svr *ConfigServer) OnInit(fs ...func()) {
+func (svr *HybridServer) OnInit(fs ...func()) {
 	svr.onInit = append(svr.onInit, fs...)
 }
 
 // OnReady 服务器完成时回调
-func (svr *ConfigServer) OnReady(fs ...func()) {
+func (svr *HybridServer) OnReady(fs ...func()) {
 	svr.onReady = append(svr.onReady, fs...)
 }
 
 // OnExit 服务器退出时回调
-func (svr *ConfigServer) OnExit(fs ...func()) {
+func (svr *HybridServer) OnExit(fs ...func()) {
 	svr.onExit = append(svr.onExit, fs...)
 }
 
 // OnRegisterGrpcService 注册GRPC服务回调
-func (svr *ConfigServer) OnRegisterGrpcService(f func(name, addr string, undo bool)) {
+func (svr *HybridServer) OnRegisterGrpcService(f func(name, addr string, undo bool)) {
 	svr.onRegisterGrpcService = f
 }
 
 // OnRegisterHttpService 注册HTTP服务回调
-func (svr *ConfigServer) OnRegisterHttpService(f func(name, addr string, undo bool)) {
+func (svr *HybridServer) OnRegisterHttpService(f func(name, addr string, undo bool)) {
 	svr.onRegisterHttpService = f
 }
 
@@ -112,31 +112,31 @@ func (svr *ConfigServer) OnRegisterHttpService(f func(name, addr string, undo bo
 	配置添加
  **********************************************/
 
-func (svr *ConfigServer) ServiceAspect(vs ...ServiceAspect) {
+func (svr *HybridServer) ServiceAspect(vs ...ServiceAspect) {
 	svr._serviceAspect = append(svr._serviceAspect, vs...)
 }
 
-func (svr *ConfigServer) ServicePlugin(vs ...ServicePlugin) {
+func (svr *HybridServer) ServicePlugin(vs ...ServicePlugin) {
 	svr._servicePlugin = append(svr._servicePlugin, vs...)
 }
 
-func (svr *ConfigServer) RequestPlugin(vs ...RequestPlugin) {
+func (svr *HybridServer) RequestPlugin(vs ...RequestPlugin) {
 	svr._requestPlugin = append(svr._requestPlugin, vs...)
 }
 
-func (svr *ConfigServer) GrpcServerOption(vs ...grpc.ServerOption) {
+func (svr *HybridServer) GrpcServerOption(vs ...grpc.ServerOption) {
 	svr._grpcServerOption = append(svr._grpcServerOption, vs...)
 }
 
-func (svr *ConfigServer) HttpServerOption(vs ...HandleFunc) {
+func (svr *HybridServer) HttpServerOption(vs ...HandleFunc) {
 	svr._httpServerOption = append(svr._httpServerOption, vs...)
 }
 
-func (svr *ConfigServer) GrpcServerInvoke(vs ...func(server *grpc.Server)) {
+func (svr *HybridServer) GrpcServerInvoke(vs ...func(server *grpc.Server)) {
 	svr._grpcServerInvoke = append(svr._grpcServerInvoke, vs...)
 }
 
-func (svr *ConfigServer) GrpcPanicFunc(f GrpcPanicFunc) {
+func (svr *HybridServer) GrpcPanicFunc(f GrpcPanicFunc) {
 	// 不能为空
 	if f != nil {
 		svr.grpcPanicFunc = f
@@ -147,7 +147,7 @@ func (svr *ConfigServer) GrpcPanicFunc(f GrpcPanicFunc) {
 	服务注册
  **********************************************/
 
-func (svr *ConfigServer) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) error {
+func (svr *HybridServer) RegisterService(registry ServiceRegistry, implement interface{}, aspects ...ServiceAspect) error {
 
 	var finalError error
 	var err error
@@ -192,7 +192,7 @@ func (svr *ConfigServer) RegisterService(registry ServiceRegistry, implement int
 	启动监听
  **********************************************/
 
-func (svr *ConfigServer) ListenAndServe() (err error) {
+func (svr *HybridServer) ListenAndServe() (err error) {
 
 	/********************************************************
 	* 如果没有配置grpc或http地址则自动结束服务初始化流程!
@@ -511,7 +511,7 @@ func (svr *ConfigServer) ListenAndServe() (err error) {
 * 流式拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 流式拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainStreamInterceptor设置).
  **********************************************/
-func (svr *ConfigServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
+func (svr *HybridServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 
 	set := svr.settings[info.FullMethod]
 	ctx := ss.Context()
@@ -548,7 +548,7 @@ func (svr *ConfigServer) bootstrapStreamInterceptor(srv interface{}, ss grpc.Ser
 * 一元拦截链尾部控制整体执行流程, 包括ErrorResult及Localize处理.
 * 一元拦截链尾部必须位于拦截链尾位置(即通过grpc.ChainUnaryInterceptor设置).
  **********************************************/
-func (svr *ConfigServer) bootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
+func (svr *HybridServer) bootstrapUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (rsp interface{}, err error) {
 
 	set := svr.settings[info.FullMethod]
 	if set == nil {
