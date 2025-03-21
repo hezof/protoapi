@@ -83,7 +83,7 @@ func TestForm(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, protoapi.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -109,7 +109,7 @@ func TestPath(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, protoapi.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +143,7 @@ func TestQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, protoapi.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestHeader(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, protoapi.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -213,7 +213,7 @@ func TestCookie(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, protoapi.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}

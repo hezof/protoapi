@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/hezof/core"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
 	"google.golang.org/grpc"
@@ -74,7 +75,7 @@ func (ps *StoreImplement) UploadCovert(ctx context.Context, req *api.Void) (rsp 
 	if err != nil {
 		return
 	}
-	fmt.Println(protoapi.ToJson(info))
+	fmt.Println(core.ToJson(info))
 	_, err = io.Copy(os.Stdout, file)
 	if err != nil {
 		return
