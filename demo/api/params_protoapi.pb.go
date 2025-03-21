@@ -3,11 +3,12 @@
 // - protoc-gen-go-protoapi v1.0.0
 // - protoc                 v3.21.12
 // source: params.proto
-// create: 2025-03-21 16:44:02
+// create: 2025-03-21 16:47:25
 
 package api
 
 import (
+	protoapi "github.com/hezof/protoapi"
 	protojson "github.com/hezof/protojson"
 	io "io"
 )
