@@ -30,19 +30,19 @@ func mergeConfig(c *Config) *Config {
 		c = new(Config)
 	}
 	if c.GrpcKeepAlive == 0 {
-		c.GrpcKeepAlive = profile.GrpcKeepAlive
+		c.GrpcKeepAlive = 5 * time.Minute
 	}
 	if c.GrpcKeepAlivePolicy == 0 {
-		c.GrpcKeepAlivePolicy = profile.GrpcKeepAlivePolicy
+		c.GrpcKeepAlivePolicy = 5 * time.Minute
 	}
 	if c.HttpKeepAlive == 0 {
-		c.HttpKeepAlive = profile.HttpKeepAlive
+		c.HttpKeepAlive = 3 * time.Minute
 	}
 	if c.HttpBodyMaxBytes == 0 {
-		c.HttpBodyMaxBytes = profile.HttpBodyMaxBytes
+		c.HttpBodyMaxBytes = DefMaxMem
 	}
 	if c.HttpFormMaxMemory == 0 {
-		c.HttpFormMaxMemory = profile.HttpFormMaxMemory
+		c.HttpFormMaxMemory = DefMaxMem
 	}
 	return c
 }

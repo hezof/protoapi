@@ -8,10 +8,10 @@
 package api
 
 import (
-	context "context"
-	protoapi "github.com/hezof/protoapi"
-	protojson "github.com/hezof/protojson"
-	io "io"
+	"context"
+	"github.com/hezof/protoapi"
+	"github.com/hezof/protojson"
+	"io"
 )
 
 func (x *Book) DecodeField(r *protojson.JsonDecoder, f string) {

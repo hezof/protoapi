@@ -1,8 +1,8 @@
 swagger: "2.0"
 tags:
-- x-order: 1
-  name: 参数服务
-  description: 参数服务用于测试通过form/path/query/header/cookie传递的参数.该服务仅用于http!
+  - x-order: 1
+    name: 参数服务
+    description: 参数服务用于测试通过form/path/query/header/cookie传递的参数.该服务仅用于http!
 paths:
   /params/form:
     x-order: 1
@@ -12,15 +12,15 @@ paths:
       summary: 读取form参数
       description: POST /params/form<br/><br/>通过form/body传递参数
       tags:
-      - 参数服务
+        - 参数服务
       parameters:
-      - x-order: 1
-        name: body
-        in: body
-        schema:
-          x-order: 1
-          $ref: '#/definitions/api.ParamsInForm'
-        required: true
+        - x-order: 1
+          name: body
+          in: body
+          schema:
+            x-order: 1
+            $ref: '#/definitions/api.ParamsInForm'
+          required: true
       responses:
         "200":
           x-order: 1
@@ -59,7 +59,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /params/path/:genre_map/:genre_name_map:
     x-order: 2
     post:
@@ -68,410 +68,410 @@ paths:
       summary: 读取path参数
       description: POST /params/path/:genre_map/:genre_name_map<br/><br/>通过path传递参数
       tags:
-      - 参数服务
+        - 参数服务
       parameters:
-      - x-order: 4
-        type: boolean
-        description: api.ParamsInPath.bool
-        name: bool
-        in: path
-        required: true
-      - x-order: 5
-        type: integer
-        format: int32
-        description: api.ParamsInPath.int32
-        name: int32
-        in: path
-        required: true
-      - x-order: 6
-        type: integer
-        format: int64
-        description: api.ParamsInPath.int64
-        name: int64
-        in: path
-        required: true
-      - x-order: 7
-        type: integer
-        format: int32
-        description: api.ParamsInPath.uint32
-        name: uint32
-        in: path
-        required: true
-      - x-order: 8
-        type: integer
-        format: int64
-        description: api.ParamsInPath.uint64
-        name: uint64
-        in: path
-        required: true
-      - x-order: 9
-        type: number
-        format: float
-        description: api.ParamsInPath.float
-        name: float
-        in: path
-        required: true
-      - x-order: 10
-        type: number
-        format: double
-        description: api.ParamsInPath.double
-        name: double
-        in: path
-        required: true
-      - x-order: 11
-        type: string
-        description: api.ParamsInPath.string
-        name: string
-        in: path
-        required: true
-      - x-order: 12
-        type: string
-        format: binary
-        description: api.ParamsInPath.bytes
-        name: bytes
-        in: path
-        required: true
-      - x-order: 13
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInPath.genre
-        name: genre
-        in: path
-        required: true
-      - x-order: 14
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInPath.genre_name
-        name: genre_name
-        in: path
-        required: true
-      - x-order: 15
-        type: boolean
-        description: api.ParamsInPath.bool_optional
-        name: bool_optional
-        in: path
-        required: true
-      - x-order: 16
-        type: integer
-        format: int32
-        description: api.ParamsInPath.int32_optional
-        name: int32_optional
-        in: path
-        required: true
-      - x-order: 17
-        type: integer
-        format: int64
-        description: api.ParamsInPath.int64_optional
-        name: int64_optional
-        in: path
-        required: true
-      - x-order: 18
-        type: integer
-        format: int32
-        description: api.ParamsInPath.uint32_optional
-        name: uint32_optional
-        in: path
-        required: true
-      - x-order: 19
-        type: integer
-        format: int64
-        description: api.ParamsInPath.uint64_optional
-        name: uint64_optional
-        in: path
-        required: true
-      - x-order: 20
-        type: number
-        format: float
-        description: api.ParamsInPath.float_optional
-        name: float_optional
-        in: path
-        required: true
-      - x-order: 21
-        type: number
-        format: double
-        description: api.ParamsInPath.double_optional
-        name: double_optional
-        in: path
-        required: true
-      - x-order: 22
-        type: string
-        description: api.ParamsInPath.string_optional
-        name: string_optional
-        in: path
-        required: true
-      - x-order: 23
-        type: string
-        format: binary
-        description: api.ParamsInPath.bytes_optional
-        name: bytes_optional
-        in: path
-        required: true
-      - x-order: 24
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInPath.genre_optional
-        name: genre_optional
-        in: path
-        required: true
-      - x-order: 25
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInPath.genre_name_optional
-        name: genre_name_optional
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 26
+        - x-order: 4
           type: boolean
-        collectionFormat: csv
-        description: api.ParamsInPath.bool_repeated
-        name: bool_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 27
+          description: api.ParamsInPath.bool
+          name: bool
+          in: path
+          required: true
+        - x-order: 5
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInPath.int32_repeated
-        name: int32_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 28
+          description: api.ParamsInPath.int32
+          name: int32
+          in: path
+          required: true
+        - x-order: 6
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInPath.int64_repeated
-        name: int64_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 29
+          description: api.ParamsInPath.int64
+          name: int64
+          in: path
+          required: true
+        - x-order: 7
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInPath.uint32_repeated
-        name: uint32_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 30
+          description: api.ParamsInPath.uint32
+          name: uint32
+          in: path
+          required: true
+        - x-order: 8
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInPath.uint64_repeated
-        name: uint64_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 31
+          description: api.ParamsInPath.uint64
+          name: uint64
+          in: path
+          required: true
+        - x-order: 9
           type: number
           format: float
-        collectionFormat: csv
-        description: api.ParamsInPath.float_repeated
-        name: float_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 32
+          description: api.ParamsInPath.float
+          name: float
+          in: path
+          required: true
+        - x-order: 10
           type: number
           format: double
-        collectionFormat: csv
-        description: api.ParamsInPath.double_repeated
-        name: double_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 33
+          description: api.ParamsInPath.double
+          name: double
+          in: path
+          required: true
+        - x-order: 11
           type: string
-        collectionFormat: csv
-        description: api.ParamsInPath.string_repeated
-        name: string_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 34
+          description: api.ParamsInPath.string
+          name: string
+          in: path
+          required: true
+        - x-order: 12
           type: string
           format: binary
-        collectionFormat: csv
-        description: api.ParamsInPath.bytes_repeated
-        name: bytes_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 35
+          description: api.ParamsInPath.bytes
+          name: bytes
+          in: path
+          required: true
+        - x-order: 13
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        collectionFormat: csv
-        description: api.ParamsInPath.genre_repeated
-        name: genre_repeated
-        in: path
-        required: true
-      - type: array
-        items:
-          x-order: 36
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInPath.genre
+          name: genre
+          in: path
+          required: true
+        - x-order: 14
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        collectionFormat: csv
-        description: api.ParamsInPath.genre_name_repeated
-        name: genre_name_repeated
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 37
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInPath.genre_name
+          name: genre_name
+          in: path
+          required: true
+        - x-order: 15
           type: boolean
-        description: api.ParamsInPath.bool_map
-        name: bool_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 38
+          description: api.ParamsInPath.bool_optional
+          name: bool_optional
+          in: path
+          required: true
+        - x-order: 16
           type: integer
           format: int32
-        description: api.ParamsInPath.int32_map
-        name: int32_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 39
+          description: api.ParamsInPath.int32_optional
+          name: int32_optional
+          in: path
+          required: true
+        - x-order: 17
           type: integer
           format: int64
-        description: api.ParamsInPath.int64_map
-        name: int64_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 40
+          description: api.ParamsInPath.int64_optional
+          name: int64_optional
+          in: path
+          required: true
+        - x-order: 18
           type: integer
           format: int32
-        description: api.ParamsInPath.uint32_map
-        name: uint32_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 41
+          description: api.ParamsInPath.uint32_optional
+          name: uint32_optional
+          in: path
+          required: true
+        - x-order: 19
           type: integer
           format: int64
-        description: api.ParamsInPath.uint64_map
-        name: uint64_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 42
+          description: api.ParamsInPath.uint64_optional
+          name: uint64_optional
+          in: path
+          required: true
+        - x-order: 20
           type: number
           format: float
-        description: api.ParamsInPath.float_map
-        name: float_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 43
+          description: api.ParamsInPath.float_optional
+          name: float_optional
+          in: path
+          required: true
+        - x-order: 21
           type: number
           format: double
-        description: api.ParamsInPath.double_map
-        name: double_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 44
+          description: api.ParamsInPath.double_optional
+          name: double_optional
+          in: path
+          required: true
+        - x-order: 22
           type: string
-        description: api.ParamsInPath.string_map
-        name: string_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 45
+          description: api.ParamsInPath.string_optional
+          name: string_optional
+          in: path
+          required: true
+        - x-order: 23
           type: string
           format: binary
-        description: api.ParamsInPath.bytes_map
-        name: bytes_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 46
+          description: api.ParamsInPath.bytes_optional
+          name: bytes_optional
+          in: path
+          required: true
+        - x-order: 24
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        description: api.ParamsInPath.genre_map
-        name: genre_map
-        in: path
-        required: true
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 47
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInPath.genre_optional
+          name: genre_optional
+          in: path
+          required: true
+        - x-order: 25
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        description: api.ParamsInPath.genre_name_map
-        name: genre_name_map
-        in: path
-        required: true
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInPath.genre_name_optional
+          name: genre_name_optional
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 26
+            type: boolean
+          collectionFormat: csv
+          description: api.ParamsInPath.bool_repeated
+          name: bool_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 27
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInPath.int32_repeated
+          name: int32_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 28
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInPath.int64_repeated
+          name: int64_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 29
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInPath.uint32_repeated
+          name: uint32_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 30
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInPath.uint64_repeated
+          name: uint64_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 31
+            type: number
+            format: float
+          collectionFormat: csv
+          description: api.ParamsInPath.float_repeated
+          name: float_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 32
+            type: number
+            format: double
+          collectionFormat: csv
+          description: api.ParamsInPath.double_repeated
+          name: double_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 33
+            type: string
+          collectionFormat: csv
+          description: api.ParamsInPath.string_repeated
+          name: string_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 34
+            type: string
+            format: binary
+          collectionFormat: csv
+          description: api.ParamsInPath.bytes_repeated
+          name: bytes_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 35
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          collectionFormat: csv
+          description: api.ParamsInPath.genre_repeated
+          name: genre_repeated
+          in: path
+          required: true
+        - type: array
+          items:
+            x-order: 36
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          collectionFormat: csv
+          description: api.ParamsInPath.genre_name_repeated
+          name: genre_name_repeated
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 37
+            type: boolean
+          description: api.ParamsInPath.bool_map
+          name: bool_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 38
+            type: integer
+            format: int32
+          description: api.ParamsInPath.int32_map
+          name: int32_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 39
+            type: integer
+            format: int64
+          description: api.ParamsInPath.int64_map
+          name: int64_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 40
+            type: integer
+            format: int32
+          description: api.ParamsInPath.uint32_map
+          name: uint32_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 41
+            type: integer
+            format: int64
+          description: api.ParamsInPath.uint64_map
+          name: uint64_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 42
+            type: number
+            format: float
+          description: api.ParamsInPath.float_map
+          name: float_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 43
+            type: number
+            format: double
+          description: api.ParamsInPath.double_map
+          name: double_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 44
+            type: string
+          description: api.ParamsInPath.string_map
+          name: string_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 45
+            type: string
+            format: binary
+          description: api.ParamsInPath.bytes_map
+          name: bytes_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 46
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          description: api.ParamsInPath.genre_map
+          name: genre_map
+          in: path
+          required: true
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 47
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          description: api.ParamsInPath.genre_name_map
+          name: genre_name_map
+          in: path
+          required: true
       responses:
         "200":
           x-order: 3
@@ -510,7 +510,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /params/query:
     x-order: 3
     post:
@@ -519,366 +519,366 @@ paths:
       summary: 读取query参数
       description: POST /params/query<br/><br/>通过path传递参数
       tags:
-      - 参数服务
+        - 参数服务
       parameters:
-      - x-order: 50
-        type: boolean
-        description: api.ParamsInQuery.bool
-        name: bool
-        in: query
-      - x-order: 51
-        type: integer
-        format: int32
-        description: api.ParamsInQuery.int32
-        name: int32
-        in: query
-      - x-order: 52
-        type: integer
-        format: int64
-        description: api.ParamsInQuery.int64
-        name: int64
-        in: query
-      - x-order: 53
-        type: integer
-        format: int32
-        description: api.ParamsInQuery.uint32
-        name: uint32
-        in: query
-      - x-order: 54
-        type: integer
-        format: int64
-        description: api.ParamsInQuery.uint64
-        name: uint64
-        in: query
-      - x-order: 55
-        type: number
-        format: float
-        description: api.ParamsInQuery.float
-        name: float
-        in: query
-      - x-order: 56
-        type: number
-        format: double
-        description: api.ParamsInQuery.double
-        name: double
-        in: query
-      - x-order: 57
-        type: string
-        description: api.ParamsInQuery.string
-        name: string
-        in: query
-      - x-order: 58
-        type: string
-        format: binary
-        description: api.ParamsInQuery.bytes
-        name: bytes
-        in: query
-      - x-order: 59
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInQuery.genre
-        name: genre
-        in: query
-      - x-order: 60
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInQuery.genre_name
-        name: genre_name
-        in: query
-      - x-order: 61
-        type: boolean
-        description: api.ParamsInQuery.bool_optional
-        name: bool_optional
-        in: query
-      - x-order: 62
-        type: integer
-        format: int32
-        description: api.ParamsInQuery.int32_optional
-        name: int32_optional
-        in: query
-      - x-order: 63
-        type: integer
-        format: int64
-        description: api.ParamsInQuery.int64_optional
-        name: int64_optional
-        in: query
-      - x-order: 64
-        type: integer
-        format: int32
-        description: api.ParamsInQuery.uint32_optional
-        name: uint32_optional
-        in: query
-      - x-order: 65
-        type: integer
-        format: int64
-        description: api.ParamsInQuery.uint64_optional
-        name: uint64_optional
-        in: query
-      - x-order: 66
-        type: number
-        format: float
-        description: api.ParamsInQuery.float_optional
-        name: float_optional
-        in: query
-      - x-order: 67
-        type: number
-        format: double
-        description: api.ParamsInQuery.double_optional
-        name: double_optional
-        in: query
-      - x-order: 68
-        type: string
-        description: api.ParamsInQuery.string_optional
-        name: string_optional
-        in: query
-      - x-order: 69
-        type: string
-        format: binary
-        description: api.ParamsInQuery.bytes_optional
-        name: bytes_optional
-        in: query
-      - x-order: 70
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInQuery.genre_optional
-        name: genre_optional
-        in: query
-      - x-order: 71
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInQuery.genre_name_optional
-        name: genre_name_optional
-        in: query
-      - type: array
-        items:
-          x-order: 72
+        - x-order: 50
           type: boolean
-        collectionFormat: csv
-        description: api.ParamsInQuery.bool_repeated
-        name: bool_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 73
+          description: api.ParamsInQuery.bool
+          name: bool
+          in: query
+        - x-order: 51
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInQuery.int32_repeated
-        name: int32_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 74
+          description: api.ParamsInQuery.int32
+          name: int32
+          in: query
+        - x-order: 52
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInQuery.int64_repeated
-        name: int64_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 75
+          description: api.ParamsInQuery.int64
+          name: int64
+          in: query
+        - x-order: 53
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInQuery.uint32_repeated
-        name: uint32_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 76
+          description: api.ParamsInQuery.uint32
+          name: uint32
+          in: query
+        - x-order: 54
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInQuery.uint64_repeated
-        name: uint64_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 77
+          description: api.ParamsInQuery.uint64
+          name: uint64
+          in: query
+        - x-order: 55
           type: number
           format: float
-        collectionFormat: csv
-        description: api.ParamsInQuery.float_repeated
-        name: float_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 78
+          description: api.ParamsInQuery.float
+          name: float
+          in: query
+        - x-order: 56
           type: number
           format: double
-        collectionFormat: csv
-        description: api.ParamsInQuery.double_repeated
-        name: double_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 79
+          description: api.ParamsInQuery.double
+          name: double
+          in: query
+        - x-order: 57
           type: string
-        collectionFormat: csv
-        description: api.ParamsInQuery.string_repeated
-        name: string_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 80
+          description: api.ParamsInQuery.string
+          name: string
+          in: query
+        - x-order: 58
           type: string
           format: binary
-        collectionFormat: csv
-        description: api.ParamsInQuery.bytes_repeated
-        name: bytes_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 81
+          description: api.ParamsInQuery.bytes
+          name: bytes
+          in: query
+        - x-order: 59
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        collectionFormat: csv
-        description: api.ParamsInQuery.genre_repeated
-        name: genre_repeated
-        in: query
-      - type: array
-        items:
-          x-order: 82
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInQuery.genre
+          name: genre
+          in: query
+        - x-order: 60
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        collectionFormat: csv
-        description: api.ParamsInQuery.genre_name_repeated
-        name: genre_name_repeated
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 83
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInQuery.genre_name
+          name: genre_name
+          in: query
+        - x-order: 61
           type: boolean
-        description: api.ParamsInQuery.bool_map
-        name: bool_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 84
+          description: api.ParamsInQuery.bool_optional
+          name: bool_optional
+          in: query
+        - x-order: 62
           type: integer
           format: int32
-        description: api.ParamsInQuery.int32_map
-        name: int32_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 85
+          description: api.ParamsInQuery.int32_optional
+          name: int32_optional
+          in: query
+        - x-order: 63
           type: integer
           format: int64
-        description: api.ParamsInQuery.int64_map
-        name: int64_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 86
+          description: api.ParamsInQuery.int64_optional
+          name: int64_optional
+          in: query
+        - x-order: 64
           type: integer
           format: int32
-        description: api.ParamsInQuery.uint32_map
-        name: uint32_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 87
+          description: api.ParamsInQuery.uint32_optional
+          name: uint32_optional
+          in: query
+        - x-order: 65
           type: integer
           format: int64
-        description: api.ParamsInQuery.uint64_map
-        name: uint64_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 88
+          description: api.ParamsInQuery.uint64_optional
+          name: uint64_optional
+          in: query
+        - x-order: 66
           type: number
           format: float
-        description: api.ParamsInQuery.float_map
-        name: float_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 89
+          description: api.ParamsInQuery.float_optional
+          name: float_optional
+          in: query
+        - x-order: 67
           type: number
           format: double
-        description: api.ParamsInQuery.double_map
-        name: double_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 90
+          description: api.ParamsInQuery.double_optional
+          name: double_optional
+          in: query
+        - x-order: 68
           type: string
-        description: api.ParamsInQuery.string_map
-        name: string_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 91
+          description: api.ParamsInQuery.string_optional
+          name: string_optional
+          in: query
+        - x-order: 69
           type: string
           format: binary
-        description: api.ParamsInQuery.bytes_map
-        name: bytes_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 92
+          description: api.ParamsInQuery.bytes_optional
+          name: bytes_optional
+          in: query
+        - x-order: 70
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        description: api.ParamsInQuery.genre_map
-        name: genre_map
-        in: query
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 93
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInQuery.genre_optional
+          name: genre_optional
+          in: query
+        - x-order: 71
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        description: api.ParamsInQuery.genre_name_map
-        name: genre_name_map
-        in: query
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInQuery.genre_name_optional
+          name: genre_name_optional
+          in: query
+        - type: array
+          items:
+            x-order: 72
+            type: boolean
+          collectionFormat: csv
+          description: api.ParamsInQuery.bool_repeated
+          name: bool_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 73
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInQuery.int32_repeated
+          name: int32_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 74
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInQuery.int64_repeated
+          name: int64_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 75
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInQuery.uint32_repeated
+          name: uint32_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 76
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInQuery.uint64_repeated
+          name: uint64_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 77
+            type: number
+            format: float
+          collectionFormat: csv
+          description: api.ParamsInQuery.float_repeated
+          name: float_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 78
+            type: number
+            format: double
+          collectionFormat: csv
+          description: api.ParamsInQuery.double_repeated
+          name: double_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 79
+            type: string
+          collectionFormat: csv
+          description: api.ParamsInQuery.string_repeated
+          name: string_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 80
+            type: string
+            format: binary
+          collectionFormat: csv
+          description: api.ParamsInQuery.bytes_repeated
+          name: bytes_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 81
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          collectionFormat: csv
+          description: api.ParamsInQuery.genre_repeated
+          name: genre_repeated
+          in: query
+        - type: array
+          items:
+            x-order: 82
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          collectionFormat: csv
+          description: api.ParamsInQuery.genre_name_repeated
+          name: genre_name_repeated
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 83
+            type: boolean
+          description: api.ParamsInQuery.bool_map
+          name: bool_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 84
+            type: integer
+            format: int32
+          description: api.ParamsInQuery.int32_map
+          name: int32_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 85
+            type: integer
+            format: int64
+          description: api.ParamsInQuery.int64_map
+          name: int64_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 86
+            type: integer
+            format: int32
+          description: api.ParamsInQuery.uint32_map
+          name: uint32_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 87
+            type: integer
+            format: int64
+          description: api.ParamsInQuery.uint64_map
+          name: uint64_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 88
+            type: number
+            format: float
+          description: api.ParamsInQuery.float_map
+          name: float_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 89
+            type: number
+            format: double
+          description: api.ParamsInQuery.double_map
+          name: double_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 90
+            type: string
+          description: api.ParamsInQuery.string_map
+          name: string_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 91
+            type: string
+            format: binary
+          description: api.ParamsInQuery.bytes_map
+          name: bytes_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 92
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          description: api.ParamsInQuery.genre_map
+          name: genre_map
+          in: query
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 93
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          description: api.ParamsInQuery.genre_name_map
+          name: genre_name_map
+          in: query
       responses:
         "200":
           x-order: 5
@@ -917,7 +917,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /params/header:
     x-order: 4
     post:
@@ -926,366 +926,366 @@ paths:
       summary: 读取header参数
       description: POST /params/header<br/><br/>通过header传递参数
       tags:
-      - 参数服务
+        - 参数服务
       parameters:
-      - x-order: 96
-        type: boolean
-        description: api.ParamsInHeader.bool
-        name: bool
-        in: header
-      - x-order: 97
-        type: integer
-        format: int32
-        description: api.ParamsInHeader.int32
-        name: int32
-        in: header
-      - x-order: 98
-        type: integer
-        format: int64
-        description: api.ParamsInHeader.int64
-        name: int64
-        in: header
-      - x-order: 99
-        type: integer
-        format: int32
-        description: api.ParamsInHeader.uint32
-        name: uint32
-        in: header
-      - x-order: 100
-        type: integer
-        format: int64
-        description: api.ParamsInHeader.uint64
-        name: uint64
-        in: header
-      - x-order: 101
-        type: number
-        format: float
-        description: api.ParamsInHeader.float
-        name: float
-        in: header
-      - x-order: 102
-        type: number
-        format: double
-        description: api.ParamsInHeader.double
-        name: double
-        in: header
-      - x-order: 103
-        type: string
-        description: api.ParamsInHeader.string
-        name: string
-        in: header
-      - x-order: 104
-        type: string
-        format: binary
-        description: api.ParamsInHeader.bytes
-        name: bytes
-        in: header
-      - x-order: 105
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInHeader.genre
-        name: genre
-        in: header
-      - x-order: 106
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInHeader.genre_name
-        name: genre_name
-        in: header
-      - x-order: 107
-        type: boolean
-        description: api.ParamsInHeader.bool_optional
-        name: bool_optional
-        in: header
-      - x-order: 108
-        type: integer
-        format: int32
-        description: api.ParamsInHeader.int32_optional
-        name: int32_optional
-        in: header
-      - x-order: 109
-        type: integer
-        format: int64
-        description: api.ParamsInHeader.int64_optional
-        name: int64_optional
-        in: header
-      - x-order: 110
-        type: integer
-        format: int32
-        description: api.ParamsInHeader.uint32_optional
-        name: uint32_optional
-        in: header
-      - x-order: 111
-        type: integer
-        format: int64
-        description: api.ParamsInHeader.uint64_optional
-        name: uint64_optional
-        in: header
-      - x-order: 112
-        type: number
-        format: float
-        description: api.ParamsInHeader.float_optional
-        name: float_optional
-        in: header
-      - x-order: 113
-        type: number
-        format: double
-        description: api.ParamsInHeader.double_optional
-        name: double_optional
-        in: header
-      - x-order: 114
-        type: string
-        description: api.ParamsInHeader.string_optional
-        name: string_optional
-        in: header
-      - x-order: 115
-        type: string
-        format: binary
-        description: api.ParamsInHeader.bytes_optional
-        name: bytes_optional
-        in: header
-      - x-order: 116
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInHeader.genre_optional
-        name: genre_optional
-        in: header
-      - x-order: 117
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInHeader.genre_name_optional
-        name: genre_name_optional
-        in: header
-      - type: array
-        items:
-          x-order: 118
+        - x-order: 96
           type: boolean
-        collectionFormat: csv
-        description: api.ParamsInHeader.bool_repeated
-        name: bool_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 119
+          description: api.ParamsInHeader.bool
+          name: bool
+          in: header
+        - x-order: 97
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInHeader.int32_repeated
-        name: int32_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 120
+          description: api.ParamsInHeader.int32
+          name: int32
+          in: header
+        - x-order: 98
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInHeader.int64_repeated
-        name: int64_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 121
+          description: api.ParamsInHeader.int64
+          name: int64
+          in: header
+        - x-order: 99
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInHeader.uint32_repeated
-        name: uint32_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 122
+          description: api.ParamsInHeader.uint32
+          name: uint32
+          in: header
+        - x-order: 100
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInHeader.uint64_repeated
-        name: uint64_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 123
+          description: api.ParamsInHeader.uint64
+          name: uint64
+          in: header
+        - x-order: 101
           type: number
           format: float
-        collectionFormat: csv
-        description: api.ParamsInHeader.float_repeated
-        name: float_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 124
+          description: api.ParamsInHeader.float
+          name: float
+          in: header
+        - x-order: 102
           type: number
           format: double
-        collectionFormat: csv
-        description: api.ParamsInHeader.double_repeated
-        name: double_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 125
+          description: api.ParamsInHeader.double
+          name: double
+          in: header
+        - x-order: 103
           type: string
-        collectionFormat: csv
-        description: api.ParamsInHeader.string_repeated
-        name: string_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 126
+          description: api.ParamsInHeader.string
+          name: string
+          in: header
+        - x-order: 104
           type: string
           format: binary
-        collectionFormat: csv
-        description: api.ParamsInHeader.bytes_repeated
-        name: bytes_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 127
+          description: api.ParamsInHeader.bytes
+          name: bytes
+          in: header
+        - x-order: 105
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        collectionFormat: csv
-        description: api.ParamsInHeader.genre_repeated
-        name: genre_repeated
-        in: header
-      - type: array
-        items:
-          x-order: 128
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInHeader.genre
+          name: genre
+          in: header
+        - x-order: 106
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        collectionFormat: csv
-        description: api.ParamsInHeader.genre_name_repeated
-        name: genre_name_repeated
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 129
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInHeader.genre_name
+          name: genre_name
+          in: header
+        - x-order: 107
           type: boolean
-        description: api.ParamsInHeader.bool_map
-        name: bool_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 130
+          description: api.ParamsInHeader.bool_optional
+          name: bool_optional
+          in: header
+        - x-order: 108
           type: integer
           format: int32
-        description: api.ParamsInHeader.int32_map
-        name: int32_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 131
+          description: api.ParamsInHeader.int32_optional
+          name: int32_optional
+          in: header
+        - x-order: 109
           type: integer
           format: int64
-        description: api.ParamsInHeader.int64_map
-        name: int64_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 132
+          description: api.ParamsInHeader.int64_optional
+          name: int64_optional
+          in: header
+        - x-order: 110
           type: integer
           format: int32
-        description: api.ParamsInHeader.uint32_map
-        name: uint32_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 133
+          description: api.ParamsInHeader.uint32_optional
+          name: uint32_optional
+          in: header
+        - x-order: 111
           type: integer
           format: int64
-        description: api.ParamsInHeader.uint64_map
-        name: uint64_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 134
+          description: api.ParamsInHeader.uint64_optional
+          name: uint64_optional
+          in: header
+        - x-order: 112
           type: number
           format: float
-        description: api.ParamsInHeader.float_map
-        name: float_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 135
+          description: api.ParamsInHeader.float_optional
+          name: float_optional
+          in: header
+        - x-order: 113
           type: number
           format: double
-        description: api.ParamsInHeader.double_map
-        name: double_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 136
+          description: api.ParamsInHeader.double_optional
+          name: double_optional
+          in: header
+        - x-order: 114
           type: string
-        description: api.ParamsInHeader.string_map
-        name: string_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 137
+          description: api.ParamsInHeader.string_optional
+          name: string_optional
+          in: header
+        - x-order: 115
           type: string
           format: binary
-        description: api.ParamsInHeader.bytes_map
-        name: bytes_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 138
+          description: api.ParamsInHeader.bytes_optional
+          name: bytes_optional
+          in: header
+        - x-order: 116
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        description: api.ParamsInHeader.genre_map
-        name: genre_map
-        in: header
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 139
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInHeader.genre_optional
+          name: genre_optional
+          in: header
+        - x-order: 117
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        description: api.ParamsInHeader.genre_name_map
-        name: genre_name_map
-        in: header
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInHeader.genre_name_optional
+          name: genre_name_optional
+          in: header
+        - type: array
+          items:
+            x-order: 118
+            type: boolean
+          collectionFormat: csv
+          description: api.ParamsInHeader.bool_repeated
+          name: bool_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 119
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInHeader.int32_repeated
+          name: int32_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 120
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInHeader.int64_repeated
+          name: int64_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 121
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInHeader.uint32_repeated
+          name: uint32_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 122
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInHeader.uint64_repeated
+          name: uint64_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 123
+            type: number
+            format: float
+          collectionFormat: csv
+          description: api.ParamsInHeader.float_repeated
+          name: float_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 124
+            type: number
+            format: double
+          collectionFormat: csv
+          description: api.ParamsInHeader.double_repeated
+          name: double_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 125
+            type: string
+          collectionFormat: csv
+          description: api.ParamsInHeader.string_repeated
+          name: string_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 126
+            type: string
+            format: binary
+          collectionFormat: csv
+          description: api.ParamsInHeader.bytes_repeated
+          name: bytes_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 127
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          collectionFormat: csv
+          description: api.ParamsInHeader.genre_repeated
+          name: genre_repeated
+          in: header
+        - type: array
+          items:
+            x-order: 128
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          collectionFormat: csv
+          description: api.ParamsInHeader.genre_name_repeated
+          name: genre_name_repeated
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 129
+            type: boolean
+          description: api.ParamsInHeader.bool_map
+          name: bool_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 130
+            type: integer
+            format: int32
+          description: api.ParamsInHeader.int32_map
+          name: int32_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 131
+            type: integer
+            format: int64
+          description: api.ParamsInHeader.int64_map
+          name: int64_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 132
+            type: integer
+            format: int32
+          description: api.ParamsInHeader.uint32_map
+          name: uint32_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 133
+            type: integer
+            format: int64
+          description: api.ParamsInHeader.uint64_map
+          name: uint64_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 134
+            type: number
+            format: float
+          description: api.ParamsInHeader.float_map
+          name: float_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 135
+            type: number
+            format: double
+          description: api.ParamsInHeader.double_map
+          name: double_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 136
+            type: string
+          description: api.ParamsInHeader.string_map
+          name: string_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 137
+            type: string
+            format: binary
+          description: api.ParamsInHeader.bytes_map
+          name: bytes_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 138
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          description: api.ParamsInHeader.genre_map
+          name: genre_map
+          in: header
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 139
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          description: api.ParamsInHeader.genre_name_map
+          name: genre_name_map
+          in: header
       responses:
         "200":
           x-order: 7
@@ -1324,7 +1324,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /params/cookie:
     x-order: 5
     post:
@@ -1333,366 +1333,366 @@ paths:
       summary: 读取cookie参数
       description: POST /params/cookie<br/><br/>通过cookie传递参数
       tags:
-      - 参数服务
+        - 参数服务
       parameters:
-      - x-order: 142
-        type: boolean
-        description: api.ParamsInCookie.bool
-        name: bool
-        in: cookie
-      - x-order: 143
-        type: integer
-        format: int32
-        description: api.ParamsInCookie.int32
-        name: int32
-        in: cookie
-      - x-order: 144
-        type: integer
-        format: int64
-        description: api.ParamsInCookie.int64
-        name: int64
-        in: cookie
-      - x-order: 145
-        type: integer
-        format: int32
-        description: api.ParamsInCookie.uint32
-        name: uint32
-        in: cookie
-      - x-order: 146
-        type: integer
-        format: int64
-        description: api.ParamsInCookie.uint64
-        name: uint64
-        in: cookie
-      - x-order: 147
-        type: number
-        format: float
-        description: api.ParamsInCookie.float
-        name: float
-        in: cookie
-      - x-order: 148
-        type: number
-        format: double
-        description: api.ParamsInCookie.double
-        name: double
-        in: cookie
-      - x-order: 149
-        type: string
-        description: api.ParamsInCookie.string
-        name: string
-        in: cookie
-      - x-order: 150
-        type: string
-        format: binary
-        description: api.ParamsInCookie.bytes
-        name: bytes
-        in: cookie
-      - x-order: 151
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInCookie.genre
-        name: genre
-        in: cookie
-      - x-order: 152
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInCookie.genre_name
-        name: genre_name
-        in: cookie
-      - x-order: 153
-        type: boolean
-        description: api.ParamsInCookie.bool_optional
-        name: bool_optional
-        in: cookie
-      - x-order: 154
-        type: integer
-        format: int32
-        description: api.ParamsInCookie.int32_optional
-        name: int32_optional
-        in: cookie
-      - x-order: 155
-        type: integer
-        format: int64
-        description: api.ParamsInCookie.int64_optional
-        name: int64_optional
-        in: cookie
-      - x-order: 156
-        type: integer
-        format: int32
-        description: api.ParamsInCookie.uint32_optional
-        name: uint32_optional
-        in: cookie
-      - x-order: 157
-        type: integer
-        format: int64
-        description: api.ParamsInCookie.uint64_optional
-        name: uint64_optional
-        in: cookie
-      - x-order: 158
-        type: number
-        format: float
-        description: api.ParamsInCookie.float_optional
-        name: float_optional
-        in: cookie
-      - x-order: 159
-        type: number
-        format: double
-        description: api.ParamsInCookie.double_optional
-        name: double_optional
-        in: cookie
-      - x-order: 160
-        type: string
-        description: api.ParamsInCookie.string_optional
-        name: string_optional
-        in: cookie
-      - x-order: 161
-        type: string
-        format: binary
-        description: api.ParamsInCookie.bytes_optional
-        name: bytes_optional
-        in: cookie
-      - x-order: 162
-        type: integer
-        format: int32
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        description: api.ParamsInCookie.genre_optional
-        name: genre_optional
-        in: cookie
-      - x-order: 163
-        type: string
-        enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
-        description: api.ParamsInCookie.genre_name_optional
-        name: genre_name_optional
-        in: cookie
-      - type: array
-        items:
-          x-order: 164
+        - x-order: 142
           type: boolean
-        collectionFormat: csv
-        description: api.ParamsInCookie.bool_repeated
-        name: bool_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 165
+          description: api.ParamsInCookie.bool
+          name: bool
+          in: cookie
+        - x-order: 143
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInCookie.int32_repeated
-        name: int32_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 166
+          description: api.ParamsInCookie.int32
+          name: int32
+          in: cookie
+        - x-order: 144
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInCookie.int64_repeated
-        name: int64_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 167
+          description: api.ParamsInCookie.int64
+          name: int64
+          in: cookie
+        - x-order: 145
           type: integer
           format: int32
-        collectionFormat: csv
-        description: api.ParamsInCookie.uint32_repeated
-        name: uint32_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 168
+          description: api.ParamsInCookie.uint32
+          name: uint32
+          in: cookie
+        - x-order: 146
           type: integer
           format: int64
-        collectionFormat: csv
-        description: api.ParamsInCookie.uint64_repeated
-        name: uint64_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 169
+          description: api.ParamsInCookie.uint64
+          name: uint64
+          in: cookie
+        - x-order: 147
           type: number
           format: float
-        collectionFormat: csv
-        description: api.ParamsInCookie.float_repeated
-        name: float_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 170
+          description: api.ParamsInCookie.float
+          name: float
+          in: cookie
+        - x-order: 148
           type: number
           format: double
-        collectionFormat: csv
-        description: api.ParamsInCookie.double_repeated
-        name: double_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 171
+          description: api.ParamsInCookie.double
+          name: double
+          in: cookie
+        - x-order: 149
           type: string
-        collectionFormat: csv
-        description: api.ParamsInCookie.string_repeated
-        name: string_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 172
+          description: api.ParamsInCookie.string
+          name: string
+          in: cookie
+        - x-order: 150
           type: string
           format: binary
-        collectionFormat: csv
-        description: api.ParamsInCookie.bytes_repeated
-        name: bytes_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 173
+          description: api.ParamsInCookie.bytes
+          name: bytes
+          in: cookie
+        - x-order: 151
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        collectionFormat: csv
-        description: api.ParamsInCookie.genre_repeated
-        name: genre_repeated
-        in: cookie
-      - type: array
-        items:
-          x-order: 174
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInCookie.genre
+          name: genre
+          in: cookie
+        - x-order: 152
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        collectionFormat: csv
-        description: api.ParamsInCookie.genre_name_repeated
-        name: genre_name_repeated
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 175
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInCookie.genre_name
+          name: genre_name
+          in: cookie
+        - x-order: 153
           type: boolean
-        description: api.ParamsInCookie.bool_map
-        name: bool_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 176
+          description: api.ParamsInCookie.bool_optional
+          name: bool_optional
+          in: cookie
+        - x-order: 154
           type: integer
           format: int32
-        description: api.ParamsInCookie.int32_map
-        name: int32_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 177
+          description: api.ParamsInCookie.int32_optional
+          name: int32_optional
+          in: cookie
+        - x-order: 155
           type: integer
           format: int64
-        description: api.ParamsInCookie.int64_map
-        name: int64_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 178
+          description: api.ParamsInCookie.int64_optional
+          name: int64_optional
+          in: cookie
+        - x-order: 156
           type: integer
           format: int32
-        description: api.ParamsInCookie.uint32_map
-        name: uint32_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 179
+          description: api.ParamsInCookie.uint32_optional
+          name: uint32_optional
+          in: cookie
+        - x-order: 157
           type: integer
           format: int64
-        description: api.ParamsInCookie.uint64_map
-        name: uint64_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 180
+          description: api.ParamsInCookie.uint64_optional
+          name: uint64_optional
+          in: cookie
+        - x-order: 158
           type: number
           format: float
-        description: api.ParamsInCookie.float_map
-        name: float_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 181
+          description: api.ParamsInCookie.float_optional
+          name: float_optional
+          in: cookie
+        - x-order: 159
           type: number
           format: double
-        description: api.ParamsInCookie.double_map
-        name: double_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 182
+          description: api.ParamsInCookie.double_optional
+          name: double_optional
+          in: cookie
+        - x-order: 160
           type: string
-        description: api.ParamsInCookie.string_map
-        name: string_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 183
+          description: api.ParamsInCookie.string_optional
+          name: string_optional
+          in: cookie
+        - x-order: 161
           type: string
           format: binary
-        description: api.ParamsInCookie.bytes_map
-        name: bytes_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 184
+          description: api.ParamsInCookie.bytes_optional
+          name: bytes_optional
+          in: cookie
+        - x-order: 162
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
-        description: api.ParamsInCookie.genre_map
-        name: genre_map
-        in: cookie
-      - type: object
-        collectionFormat: csv
-        additionalProperties:
-          x-order: 185
+            - 0
+            - 1
+            - 2
+            - 3
+          description: api.ParamsInCookie.genre_optional
+          name: genre_optional
+          in: cookie
+        - x-order: 163
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
-        description: api.ParamsInCookie.genre_name_map
-        name: genre_name_map
-        in: cookie
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
+          description: api.ParamsInCookie.genre_name_optional
+          name: genre_name_optional
+          in: cookie
+        - type: array
+          items:
+            x-order: 164
+            type: boolean
+          collectionFormat: csv
+          description: api.ParamsInCookie.bool_repeated
+          name: bool_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 165
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInCookie.int32_repeated
+          name: int32_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 166
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInCookie.int64_repeated
+          name: int64_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 167
+            type: integer
+            format: int32
+          collectionFormat: csv
+          description: api.ParamsInCookie.uint32_repeated
+          name: uint32_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 168
+            type: integer
+            format: int64
+          collectionFormat: csv
+          description: api.ParamsInCookie.uint64_repeated
+          name: uint64_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 169
+            type: number
+            format: float
+          collectionFormat: csv
+          description: api.ParamsInCookie.float_repeated
+          name: float_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 170
+            type: number
+            format: double
+          collectionFormat: csv
+          description: api.ParamsInCookie.double_repeated
+          name: double_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 171
+            type: string
+          collectionFormat: csv
+          description: api.ParamsInCookie.string_repeated
+          name: string_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 172
+            type: string
+            format: binary
+          collectionFormat: csv
+          description: api.ParamsInCookie.bytes_repeated
+          name: bytes_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 173
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          collectionFormat: csv
+          description: api.ParamsInCookie.genre_repeated
+          name: genre_repeated
+          in: cookie
+        - type: array
+          items:
+            x-order: 174
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          collectionFormat: csv
+          description: api.ParamsInCookie.genre_name_repeated
+          name: genre_name_repeated
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 175
+            type: boolean
+          description: api.ParamsInCookie.bool_map
+          name: bool_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 176
+            type: integer
+            format: int32
+          description: api.ParamsInCookie.int32_map
+          name: int32_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 177
+            type: integer
+            format: int64
+          description: api.ParamsInCookie.int64_map
+          name: int64_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 178
+            type: integer
+            format: int32
+          description: api.ParamsInCookie.uint32_map
+          name: uint32_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 179
+            type: integer
+            format: int64
+          description: api.ParamsInCookie.uint64_map
+          name: uint64_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 180
+            type: number
+            format: float
+          description: api.ParamsInCookie.float_map
+          name: float_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 181
+            type: number
+            format: double
+          description: api.ParamsInCookie.double_map
+          name: double_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 182
+            type: string
+          description: api.ParamsInCookie.string_map
+          name: string_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 183
+            type: string
+            format: binary
+          description: api.ParamsInCookie.bytes_map
+          name: bytes_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 184
+            type: integer
+            format: int32
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+          description: api.ParamsInCookie.genre_map
+          name: genre_map
+          in: cookie
+        - type: object
+          collectionFormat: csv
+          additionalProperties:
+            x-order: 185
+            type: string
+            enum:
+              - UNKNOWN
+              - EDUCATION
+              - MAGAZINE
+              - TEXTBOOK
+          description: api.ParamsInCookie.genre_name_map
+          name: genre_name_map
+          in: cookie
       responses:
         "200":
           x-order: 9
@@ -1731,7 +1731,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
 definitions:
   api.ParamsInForm:
     x-order: 1
@@ -1785,19 +1785,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInForm.genre
       genre_name:
         x-order: 198
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInForm.genre_name
       bool_optional:
         x-order: 199
@@ -1847,19 +1847,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInForm.genre_optional
       genre_name_optional:
         x-order: 209
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInForm.genre_name_optional
       bool_repeated:
         x-order: 210
@@ -1939,10 +1939,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInForm.genre_repeated
       genre_name_repeated:
         x-order: 230
@@ -1951,10 +1951,10 @@ definitions:
           x-order: 231
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInForm.genre_name_repeated
       bool_map:
         x-order: 232
@@ -2034,10 +2034,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInForm.genre_map
       genre_name_map:
         x-order: 252
@@ -2046,10 +2046,10 @@ definitions:
           x-order: 253
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInForm.genre_name_map
     description: api.ParamsInForm
   api.ParamsInPath:
@@ -2104,19 +2104,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInPath.genre
       genre_name:
         x-order: 264
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInPath.genre_name
       bool_optional:
         x-order: 265
@@ -2166,19 +2166,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInPath.genre_optional
       genre_name_optional:
         x-order: 275
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInPath.genre_name_optional
       bool_repeated:
         x-order: 276
@@ -2258,10 +2258,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInPath.genre_repeated
       genre_name_repeated:
         x-order: 296
@@ -2270,10 +2270,10 @@ definitions:
           x-order: 297
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInPath.genre_name_repeated
       bool_map:
         x-order: 298
@@ -2353,10 +2353,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInPath.genre_map
       genre_name_map:
         x-order: 318
@@ -2365,57 +2365,57 @@ definitions:
           x-order: 319
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInPath.genre_name_map
     description: api.ParamsInPath
     required:
-    - bool
-    - int32
-    - int64
-    - uint32
-    - uint64
-    - float
-    - double
-    - string
-    - bytes
-    - genre
-    - genre_name
-    - bool_optional
-    - int32_optional
-    - int64_optional
-    - uint32_optional
-    - uint64_optional
-    - float_optional
-    - double_optional
-    - string_optional
-    - bytes_optional
-    - genre_optional
-    - genre_name_optional
-    - bool_repeated
-    - int32_repeated
-    - int64_repeated
-    - uint32_repeated
-    - uint64_repeated
-    - float_repeated
-    - double_repeated
-    - string_repeated
-    - bytes_repeated
-    - genre_repeated
-    - genre_name_repeated
-    - bool_map
-    - int32_map
-    - int64_map
-    - uint32_map
-    - uint64_map
-    - float_map
-    - double_map
-    - string_map
-    - bytes_map
-    - genre_map
-    - genre_name_map
+      - bool
+      - int32
+      - int64
+      - uint32
+      - uint64
+      - float
+      - double
+      - string
+      - bytes
+      - genre
+      - genre_name
+      - bool_optional
+      - int32_optional
+      - int64_optional
+      - uint32_optional
+      - uint64_optional
+      - float_optional
+      - double_optional
+      - string_optional
+      - bytes_optional
+      - genre_optional
+      - genre_name_optional
+      - bool_repeated
+      - int32_repeated
+      - int64_repeated
+      - uint32_repeated
+      - uint64_repeated
+      - float_repeated
+      - double_repeated
+      - string_repeated
+      - bytes_repeated
+      - genre_repeated
+      - genre_name_repeated
+      - bool_map
+      - int32_map
+      - int64_map
+      - uint32_map
+      - uint64_map
+      - float_map
+      - double_map
+      - string_map
+      - bytes_map
+      - genre_map
+      - genre_name_map
   api.ParamsInQuery:
     x-order: 3
     type: object
@@ -2468,19 +2468,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInQuery.genre
       genre_name:
         x-order: 330
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInQuery.genre_name
       bool_optional:
         x-order: 331
@@ -2530,19 +2530,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInQuery.genre_optional
       genre_name_optional:
         x-order: 341
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInQuery.genre_name_optional
       bool_repeated:
         x-order: 342
@@ -2622,10 +2622,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInQuery.genre_repeated
       genre_name_repeated:
         x-order: 362
@@ -2634,10 +2634,10 @@ definitions:
           x-order: 363
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInQuery.genre_name_repeated
       bool_map:
         x-order: 364
@@ -2717,10 +2717,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInQuery.genre_map
       genre_name_map:
         x-order: 384
@@ -2729,10 +2729,10 @@ definitions:
           x-order: 385
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInQuery.genre_name_map
     description: api.ParamsInQuery
   api.ParamsInHeader:
@@ -2787,19 +2787,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInHeader.genre
       genre_name:
         x-order: 396
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInHeader.genre_name
       bool_optional:
         x-order: 397
@@ -2849,19 +2849,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInHeader.genre_optional
       genre_name_optional:
         x-order: 407
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInHeader.genre_name_optional
       bool_repeated:
         x-order: 408
@@ -2941,10 +2941,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInHeader.genre_repeated
       genre_name_repeated:
         x-order: 428
@@ -2953,10 +2953,10 @@ definitions:
           x-order: 429
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInHeader.genre_name_repeated
       bool_map:
         x-order: 430
@@ -3036,10 +3036,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInHeader.genre_map
       genre_name_map:
         x-order: 450
@@ -3048,10 +3048,10 @@ definitions:
           x-order: 451
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInHeader.genre_name_map
     description: api.ParamsInHeader
   api.ParamsInCookie:
@@ -3106,19 +3106,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInCookie.genre
       genre_name:
         x-order: 462
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInCookie.genre_name
       bool_optional:
         x-order: 463
@@ -3168,19 +3168,19 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: api.ParamsInCookie.genre_optional
       genre_name_optional:
         x-order: 473
         type: string
         enum:
-        - UNKNOWN
-        - EDUCATION
-        - MAGAZINE
-        - TEXTBOOK
+          - UNKNOWN
+          - EDUCATION
+          - MAGAZINE
+          - TEXTBOOK
         description: api.ParamsInCookie.genre_name_optional
       bool_repeated:
         x-order: 474
@@ -3260,10 +3260,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInCookie.genre_repeated
       genre_name_repeated:
         x-order: 494
@@ -3272,10 +3272,10 @@ definitions:
           x-order: 495
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInCookie.genre_name_repeated
       bool_map:
         x-order: 496
@@ -3355,10 +3355,10 @@ definitions:
           type: integer
           format: int32
           enum:
-          - 0
-          - 1
-          - 2
-          - 3
+            - 0
+            - 1
+            - 2
+            - 3
         description: api.ParamsInCookie.genre_map
       genre_name_map:
         x-order: 516
@@ -3367,9 +3367,9 @@ definitions:
           x-order: 517
           type: string
           enum:
-          - UNKNOWN
-          - EDUCATION
-          - MAGAZINE
-          - TEXTBOOK
+            - UNKNOWN
+            - EDUCATION
+            - MAGAZINE
+            - TEXTBOOK
         description: api.ParamsInCookie.genre_name_map
     description: api.ParamsInCookie

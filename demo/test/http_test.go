@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/hezof/clients"
 	"github.com/hezof/core"
 	"github.com/hezof/protoapi/demo/api"
 	"math"
@@ -11,7 +12,7 @@ import (
 	"testing"
 )
 
-var cli = core.NewJsonRpcClient("http://localhost:8080", &core.HttpConfig{Debug: os.Stdout}, nil, nil, nil)
+var cli = clients.NewJsonRpcClient("http://localhost:8080", &core.HttpConfig{Debug: os.Stdout}, nil, nil, nil)
 
 var (
 	TRUE           = true

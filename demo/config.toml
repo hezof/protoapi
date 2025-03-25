@@ -1,3 +1,6 @@
+[log]
+level = "WARN"
+
 [protoapi]
 HttpAddr = ":8080"
 GrpcAddr = ":9090"

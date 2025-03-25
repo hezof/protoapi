@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-openapi/runtime/middleware"
-	"gopkg.in/yaml.v3"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -69,7 +68,7 @@ func main() {
 	}
 
 	args = make([]string, 0, len(files))
-	for file, _ := range files {
+	for file := range files {
 		args = append(args, file)
 	}
 

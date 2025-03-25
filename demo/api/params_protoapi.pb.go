@@ -8,9 +8,9 @@
 package api
 
 import (
-	protoapi "github.com/hezof/protoapi"
-	protojson "github.com/hezof/protojson"
-	io "io"
+	"github.com/hezof/protoapi"
+	"github.com/hezof/protojson"
+	"io"
 )
 
 func (x *ParamsInForm) DecodeField(r *protojson.JsonDecoder, f string) {

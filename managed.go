@@ -104,12 +104,12 @@ var _ core.ManagedFactory = (*ServerFactory)(nil)
  * 辅助函数
  ********************************************/
 
-const ComponentBase = "protoapi"
+const Base = "protoapi"
 
 func GetServer() Server {
-	return core.Component[Server](ComponentBase, "")
+	return core.Component[Server](Base, "")
 }
 
 func init() {
-	core.Register(ComponentBase, new(ServerFactory))
+	core.Factory(Base, new(ServerFactory))
 }

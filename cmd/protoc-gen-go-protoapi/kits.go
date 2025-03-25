@@ -28,7 +28,7 @@ func Set(v string, vs ...string) []string {
 		m[v] = true
 	}
 	rt := make([]string, 0, len(m))
-	for k, _ := range m {
+	for k := range m {
 		rt = append(rt, k)
 	}
 	return rt

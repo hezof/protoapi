@@ -1,8 +1,8 @@
 swagger: "2.0"
 tags:
-- x-order: 1
-  name: 商店服务
-  description: 这是一个商店服务示例跨行第一句.protobuf自动拼接相邻字串!跨行第二句.protobuf自动拼接相邻字串!跨行第三句.protobuf自动拼接相邻字串!
+  - x-order: 1
+    name: 商店服务
+    description: 这是一个商店服务示例跨行第一句.protobuf自动拼接相邻字串!跨行第二句.protobuf自动拼接相邻字串!跨行第三句.protobuf自动拼接相邻字串!
 paths:
   /simple/book:
     x-order: 1
@@ -12,15 +12,15 @@ paths:
       summary: 创建书籍
       description: POST /simple/book<br/><br/>通过该方法可以创建一本书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 1
-        name: body
-        in: body
-        schema:
-          x-order: 1
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 1
+          name: body
+          in: body
+          schema:
+            x-order: 1
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 1
@@ -91,7 +91,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /client/book:
     x-order: 2
     get:
@@ -100,15 +100,15 @@ paths:
       summary: 流式批量创建书籍
       description: WEBSOCKET /client/book<br/><br/>通过该方法可以流式批量创建多本书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 2
-        name: body
-        in: body
-        schema:
-          x-order: 6
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 2
+          name: body
+          in: body
+          schema:
+            x-order: 6
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 5
@@ -137,22 +137,22 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
     post:
       x-order: 2
       operationId: api.Store.Client.POST
       summary: 流式批量创建书籍
       description: POST /client/book<br/><br/>通过该方法可以流式批量创建多本书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 2
-        name: body
-        in: body
-        schema:
-          x-order: 6
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 2
+          name: body
+          in: body
+          schema:
+            x-order: 6
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 5
@@ -181,7 +181,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /server/book:
     x-order: 3
     get:
@@ -190,15 +190,15 @@ paths:
       summary: 流式返回批量书籍信息
       description: WEBSOCKET /server/book<br/><br/>通过该方法可以流式返回指书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 3
-        name: body
-        in: body
-        schema:
-          x-order: 9
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 3
+          name: body
+          in: body
+          schema:
+            x-order: 9
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 7
@@ -227,22 +227,22 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
     post:
       x-order: 3
       operationId: api.Store.Server.POST
       summary: 流式返回批量书籍信息
       description: POST /server/book<br/><br/>通过该方法可以流式返回指书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 3
-        name: body
-        in: body
-        schema:
-          x-order: 9
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 3
+          name: body
+          in: body
+          schema:
+            x-order: 9
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 7
@@ -271,7 +271,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /bidirectional/book:
     x-order: 4
     get:
@@ -280,15 +280,15 @@ paths:
       summary: 流式返回批量书籍信息
       description: WEBSOCKET /bidirectional/book<br/><br/>通过该方法可以流式返回指书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 4
-        name: body
-        in: body
-        schema:
-          x-order: 12
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 4
+          name: body
+          in: body
+          schema:
+            x-order: 12
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 9
@@ -317,22 +317,22 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
     post:
       x-order: 4
       operationId: api.Store.Bidirectional.POST
       summary: 流式返回批量书籍信息
       description: POST /bidirectional/book<br/><br/>通过该方法可以流式返回指书籍信息
       tags:
-      - 商店服务
+        - 商店服务
       parameters:
-      - x-order: 4
-        name: body
-        in: body
-        schema:
-          x-order: 12
-          $ref: '#/definitions/api.Book'
-        required: true
+        - x-order: 4
+          name: body
+          in: body
+          schema:
+            x-order: 12
+            $ref: '#/definitions/api.Book'
+          required: true
       responses:
         "200":
           x-order: 9
@@ -361,7 +361,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /covert/upload:
     x-order: 5
     post:
@@ -370,7 +370,7 @@ paths:
       summary: 上传封面图片
       description: POST /covert/upload<br/><br/>通过该方法上传封面图片
       tags:
-      - 商店服务
+        - 商店服务
       responses:
         "201":
           x-order: 11
@@ -409,7 +409,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
   /review/covert:
     x-order: 6
     get:
@@ -418,7 +418,7 @@ paths:
       summary: 预览封面图片
       description: GET /review/covert<br/><br/>通过该方法预览封面图片
       tags:
-      - 商店服务
+        - 商店服务
       responses:
         "202":
           x-order: 13
@@ -457,7 +457,7 @@ paths:
                 type: string
                 description: 错误消息.可选
       produces:
-      - application/json
+        - application/json
 definitions:
   api.Book:
     x-order: 1
@@ -518,20 +518,20 @@ definitions:
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: 书籍类别(枚举数值)
       genre_name:
         x-order: 29
         type: integer
         format: int32
         enum:
-        - 0
-        - 1
-        - 2
-        - 3
+          - 0
+          - 1
+          - 2
+          - 3
         description: 书籍类别(枚举名称)
       author:
         x-order: 30
@@ -543,8 +543,8 @@ definitions:
         description: 书籍惟一编号
     description: 书籍信息
     required:
-    - price
-    - name
+      - price
+      - name
   api.Author:
     x-order: 2
     type: object

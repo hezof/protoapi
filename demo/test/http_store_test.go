@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"fmt"
+	"github.com/hezof/clients"
 	"github.com/hezof/core"
 	"github.com/hezof/protoapi/demo/api"
 	"io"
@@ -35,7 +36,7 @@ var book = &api.Book{
 
 func TestHttpSimple(t *testing.T) {
 	rsp := new(api.Book)
-	err := cli.POST("/simple/book", book, core.NormalResult(rsp), 200)
+	err := cli.POST("/simple/book", book, clients.NormalResult(rsp), 200)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,7 +45,7 @@ func TestHttpSimple(t *testing.T) {
 
 func TestHttpClient(t *testing.T) {
 	rsp := new(api.Book)
-	err := cli.POST("/client/book", book, core.UnwrapResult(rsp), 200)
+	err := cli.POST("/client/book", book, clients.UnwrapResult(rsp), 200)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +54,7 @@ func TestHttpClient(t *testing.T) {
 
 func TestHttpServer(t *testing.T) {
 	rsp := new(api.Book)
-	err := cli.POST("/server/book", book, core.UnwrapResult(rsp), 200)
+	err := cli.POST("/server/book", book, clients.UnwrapResult(rsp), 200)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +63,7 @@ func TestHttpServer(t *testing.T) {
 
 func TestHttpDirectional(t *testing.T) {
 	rsp := new(api.Book)
-	err := cli.POST("/bidirectional/book", book, core.UnwrapResult(rsp), 200)
+	err := cli.POST("/bidirectional/book", book, clients.UnwrapResult(rsp), 200)
 	if err != nil {
 		t.Fatal(err)
 	}

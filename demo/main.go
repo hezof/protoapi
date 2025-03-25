@@ -13,8 +13,6 @@ import (
 
 func main() {
 
-	defer log.Flush()
-
 	core.Init()
 	defer core.Exit()
 

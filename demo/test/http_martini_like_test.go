@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/hezof/clients"
 	"github.com/hezof/core"
 	"github.com/hezof/protoapi/demo/mdl"
 	"net/http"
@@ -21,7 +22,7 @@ func TestGET(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +42,7 @@ func TestPUT(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +62,7 @@ func TestPOST(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}
@@ -81,7 +82,7 @@ func TestDELETE(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +102,7 @@ func TestPATCH(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}
@@ -141,7 +142,7 @@ func TestOPTIONS(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}
@@ -161,7 +162,7 @@ func TestCONNECT(t *testing.T) {
 			"语文": 4,
 			"英语": 1,
 		},
-	}, core.NormalResult(&rsp), http.StatusOK)
+	}, clients.NormalResult(&rsp), http.StatusOK)
 	if err != nil {
 		panic(err)
 	}

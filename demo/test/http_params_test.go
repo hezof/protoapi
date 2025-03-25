@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"fmt"
+	"github.com/hezof/clients"
 	"github.com/hezof/core"
 	"github.com/hezof/protoapi"
 	"github.com/hezof/protoapi/demo/api"
@@ -83,7 +84,7 @@ func TestForm(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, clients.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -109,7 +110,7 @@ func TestPath(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, clients.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +144,7 @@ func TestQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, clients.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +178,7 @@ func TestHeader(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, clients.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -213,7 +214,7 @@ func TestCookie(t *testing.T) {
 		t.Fatal(err)
 	}
 	rsp := new(api.ParamsInForm)
-	err = protoapi.DecodeRequest(data, core.NormalResult(rsp))
+	err = protoapi.DecodeRequest(data, clients.NormalResult(rsp))
 	if err != nil {
 		t.Fatal(err)
 	}

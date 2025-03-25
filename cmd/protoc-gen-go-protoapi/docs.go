@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"gopkg.in/yaml.v2"
 	"net/http"
 	"sort"
 	"strconv"

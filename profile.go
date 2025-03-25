@@ -2,29 +2,18 @@ package protoapi
 
 import (
 	"net/http"
-	"time"
 )
 
 const DefMaxMem = 32 << 20 // 32M
 
 type Profile struct {
-	HttpFormMaxMemory            int64         // 32 MB,同gin及多数web框架.
-	HttpBodyMaxBytes             int64         // 32 MB,默认请求体的字节数. 注意: 请求体不是响应体, 后者没有限制!
-	HttpKeepAlive                time.Duration // 3分钟
-	GrpcKeepAlive                time.Duration // 5分钟
-	GrpcKeepAlivePolicy          time.Duration // 5分钟
-	DefaultApplyStatus           uint32        // 默认成功状态码
-	DefaultErrorStatus           uint32        // 默认错误状态码
-	DefaultBadRequestErrorCode   uint32        // 默认参数解析错误状态码
-	DefaultBadRequestErrorStatus uint32        // 默认参数解析错误代码
+	DefaultApplyStatus           uint32 // 默认成功状态码
+	DefaultErrorStatus           uint32 // 默认错误状态码
+	DefaultBadRequestErrorCode   uint32 // 默认参数解析错误状态码
+	DefaultBadRequestErrorStatus uint32 // 默认参数解析错误代码
 }
 
 var profile = Profile{
-	HttpFormMaxMemory:            DefMaxMem,
-	HttpBodyMaxBytes:             DefMaxMem,
-	HttpKeepAlive:                3 * time.Minute,
-	GrpcKeepAlive:                5 * time.Minute,
-	GrpcKeepAlivePolicy:          5 * time.Minute,
 	DefaultApplyStatus:           uint32(http.StatusOK),
 	DefaultErrorStatus:           uint32(http.StatusForbidden),
 	DefaultBadRequestErrorCode:   uint32(http.StatusBadRequest),
