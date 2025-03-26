@@ -86,7 +86,7 @@ func (s *ServerFactory) Manage(n string) core.ManagedComponent {
 
 func (s *ServerFactory) Create(c *core.ManagedConfig) (core.ManagedTarget, error) {
 	cfg := new(Config)
-	err := core.SimpleStructBinder.MapStruct(c.Value, &cfg, "")
+	err := core.SimpleBindStruct(c.Value, &cfg, "")
 	if err != nil {
 		return nil, err
 	}
